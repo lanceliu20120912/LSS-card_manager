@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CustomCard Vault — Card Creator & Inventory Tracker</title>
+  <title>CustomCard Vault — Card Creator, Stock & AI Deck Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
@@ -15,6 +15,7 @@
     .rarity-Rare { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(250, 204, 21, 0.5); }
     .rarity-Ultrarare { background: rgba(168, 85, 247, 0.22); color: #d8b4fe; border-color: rgba(192, 132, 252, 0.55); }
     .rarity-Secret { background: linear-gradient(90deg, rgba(244, 63, 94, 0.25), rgba(56, 189, 248, 0.25), rgba(250, 204, 21, 0.25)); color: #fff1f2; border-color: rgba(251, 113, 133, 0.6); }
+    .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
   </style>
 </head>
@@ -29,11 +30,14 @@
         </div>
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
-          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation, Rarity & Stock Tracker</p>
+          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation, Rarity & AI Deck Builder</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="openAIDeckModal()" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 transition flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deck Agent
+        </button>
         <button onclick="exportData()" title="Download Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
           <i class="fa-solid fa-download"></i><span class="hidden sm:inline">Export</span>
         </button>
@@ -96,7 +100,14 @@
           <option value="Rare">Rare</option>
           <option value="Ultrarare">Ultrarare</option>
           <option value="Secret">Secret</option>
+          <option value="Leader">Leader</option>
           <option value="None">None</option>
+        </select>
+
+        <select id="filterToken" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">Tokens & Regular</option>
+          <option value="tokens_only">Tokens Only</option>
+          <option value="non_tokens">Non-Tokens Only</option>
         </select>
 
         <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
@@ -133,7 +144,7 @@
     </div>
   </main>
 
-  <!-- Add / Edit Modal -->
+  <!-- Add / Edit Card Modal -->
   <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
@@ -201,9 +212,19 @@
               <option value="Rare">Rare</option>
               <option value="Ultrarare">Ultrarare</option>
               <option value="Secret">Secret</option>
+              <option value="Leader">Leader</option>
               <option value="None">None</option>
             </select>
           </div>
+        </div>
+
+        <!-- Token Checkbox -->
+        <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800">
+          <label for="isToken" class="flex items-center gap-2.5 text-sm font-medium text-teal-300 cursor-pointer select-none">
+            <input type="checkbox" id="isToken" class="w-4 h-4 rounded accent-teal-500 cursor-pointer" />
+            <span><i class="fa-solid fa-coins mr-1.5 text-teal-400"></i>Token Card</span>
+          </label>
+          <span class="text-[11px] text-slate-500">Mark if this card is a Token</span>
         </div>
 
         <!-- Mana (Spend or Add), Attack, Defense -->
@@ -283,14 +304,145 @@
     </div>
   </div>
 
+  <!-- AI Deck Builder Modal -->
+  <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3.5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">AI Deck Builder Agent</h2>
+            <p class="text-xs text-slate-400">Builds decks using your cards, nations, mana curve & remaining copies left</p>
+          </div>
+        </div>
+        <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Deck Builder Settings -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-amber-400 mb-1">Nation Focus</label>
+          <select id="aiNation" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
+            <option value="Any">Any / Multi-Nation</option>
+            <option value="Universal">Universal</option>
+            <option value="Japan">Japan (+ Universal)</option>
+            <option value="India">India (+ Universal)</option>
+            <option value="China">China (+ Universal)</option>
+            <option value="Other">Other (+ Universal)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-indigo-400 mb-1">Playstyle</label>
+          <select id="aiStyle" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
+            <option value="balanced">Balanced Curve</option>
+            <option value="aggro">Aggro (High ATK)</option>
+            <option value="control">Defense / Control</option>
+            <option value="mana">Mana Ramp / Engine</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-teal-400 mb-1">Token Pool</label>
+          <select id="aiTokenMode" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
+            <option value="exclude">Non-Tokens</option>
+            <option value="include">Include Tokens</option>
+            <option value="only">Tokens Only</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-emerald-400 mb-1">Deck Size</label>
+          <input type="number" id="aiDeckSize" min="5" max="100" value="20"
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-sky-400 mb-1">Max Copies / Card</label>
+          <input type="number" id="aiMaxCopies" min="1" max="10" value="3"
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
+        </div>
+      </div>
+
+      <!-- Custom Prompt / Strategy Note -->
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Deck Prompt or Special Instructions (optional)</label>
+        <input type="text" id="aiPrompt" placeholder="e.g., Focus on Leader/Secret/Ultrarare cards, low mana spend, or combo with Special abilities..."
+          class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500" />
+      </div>
+
+      <!-- Optional Gemini LLM Toggle -->
+      <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-200 cursor-pointer">
+            <input type="checkbox" id="useGeminiToggle" onchange="toggleGeminiKeyInput()" class="rounded accent-fuchsia-500" />
+            Use Gemini API for deeper AI strategy & explanations (optional)
+          </label>
+          <span class="text-[11px] text-slate-500">Local engine works without key</span>
+        </div>
+        <div id="geminiKeyBox" class="hidden pt-1">
+          <input type="password" id="geminiApiKey" oninput="saveGeminiKey(this.value)" placeholder="Paste Gemini API key (stored only in your browser)..."
+            class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs focus:outline-none focus:border-fuchsia-500" />
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="generateAIDeck()" id="generateDeckBtn" class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-sparkles"></i> Build Deck Now
+        </button>
+      </div>
+
+      <!-- Generated Deck Output -->
+      <div id="aiDeckResult" class="hidden space-y-4 pt-3 border-t border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 id="generatedDeckTitle" class="text-base font-bold text-white">Suggested Deck</h3>
+            <p id="generatedDeckSummary" class="text-xs text-slate-400"></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyDeckList()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
+              <i class="fa-regular fa-copy mr-1"></i> Copy List
+            </button>
+            <button onclick="applyDeckToUsedStock()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white">
+              <i class="fa-solid fa-check mr-1"></i> Apply to "Used" Stock
+            </button>
+          </div>
+        </div>
+
+        <div id="aiStrategyNote" class="hidden p-3 rounded-xl bg-violet-950/30 border border-violet-500/30 text-xs text-violet-100 leading-relaxed"></div>
+
+        <div id="generatedDeckCards" class="divide-y divide-slate-800 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Full-Size Image Lightbox -->
   <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out">
     <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain" />
   </div>
 
   <script>
-    const STORAGE_KEY = 'customcard_vault_v2';
+    const STORAGE_KEY = 'customcard_vault_v3';
+    const GEMINI_KEY_STORAGE = 'customcard_gemini_key_v1';
     let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let lastGeneratedDeck = [];
+
+    const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE);
+    if (savedKey) {
+      document.getElementById('geminiApiKey').value = savedKey;
+    }
+
+    function saveGeminiKey(val) {
+      localStorage.setItem(GEMINI_KEY_STORAGE, val.trim());
+    }
+
+    function toggleGeminiKeyInput() {
+      const checked = document.getElementById('useGeminiToggle').checked;
+      document.getElementById('geminiKeyBox').classList.toggle('hidden', !checked);
+    }
 
     function saveToStorage() {
       try {
@@ -381,6 +533,7 @@
       document.getElementById('cardId').value = '';
       document.getElementById('nation').value = 'Universal';
       document.getElementById('rarity').value = 'Common';
+      document.getElementById('isToken').checked = false;
       document.getElementById('modalTitle').textContent = 'Add Card';
       clearImage();
 
@@ -393,6 +546,7 @@
           document.getElementById('cardType').value = c.cardType || '';
           document.getElementById('nation').value = c.nation || 'Universal';
           document.getElementById('rarity').value = c.rarity || 'None';
+          document.getElementById('isToken').checked = Boolean(c.isToken);
           document.getElementById('manaAction').value = c.manaAction || 'spend';
           document.getElementById('manaValue').value = c.manaValue ?? 0;
           document.getElementById('attack').value = c.attack || '';
@@ -418,6 +572,18 @@
 
     function closeModal() {
       const modal = document.getElementById('cardModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openAIDeckModal() {
+      const modal = document.getElementById('aiDeckModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAIDeckModal() {
+      const modal = document.getElementById('aiDeckModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
@@ -448,6 +614,7 @@
         cardType: document.getElementById('cardType').value.trim(),
         nation: document.getElementById('nation').value,
         rarity: document.getElementById('rarity').value,
+        isToken: document.getElementById('isToken').checked,
         manaAction: document.getElementById('manaAction').value,
         manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
         attack: document.getElementById('attack').value.trim(),
@@ -477,6 +644,235 @@
         saveToStorage();
         renderCards();
       }
+    }
+
+    function parseStatNumber(val) {
+      const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
+      return Number.isNaN(num) ? 0 : num;
+    }
+
+    function scoreCardForDeck(card, nationFocus, style, promptText) {
+      let score = 50;
+      const left = Math.max(0, card.owned - card.used);
+
+      if (left > 0) score += 35 + Math.min(left * 3, 15);
+      else score -= 40;
+
+      const cardNation = card.nation || 'Universal';
+      if (nationFocus !== 'Any') {
+        if (cardNation === nationFocus) score += 30;
+        else if (cardNation === 'Universal') score += 18;
+        else score -= 25;
+      }
+
+      if (card.rarity === 'Leader') score += 14;
+      if (card.rarity === 'Secret' || card.rarity === 'Ultrarare') score += 8;
+
+      const atk = parseStatNumber(card.attack);
+      const def = parseStatNumber(card.defense);
+      const manaVal = Number(card.manaValue) || 0;
+
+      if (style === 'aggro') {
+        score += atk * 2;
+        if (card.manaAction === 'spend' && manaVal <= 3) score += 10;
+      } else if (style === 'control') {
+        score += def * 2;
+        if (card.restriction || card.ability) score += 10;
+      } else if (style === 'mana') {
+        if (card.manaAction === 'add') score += 25 + manaVal * 5;
+        if (card.manaAction === 'spend' && manaVal >= 4) score += 10;
+      } else {
+        score += (atk + def) * 0.8;
+        if (card.ability) score += 8;
+        if (card.special) score += 8;
+      }
+
+      if (promptText) {
+        const keywords = promptText.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+        const haystack = `${card.name} ${card.cardType} ${card.nation} ${card.rarity} ${card.isToken ? 'token' : ''} ${card.ability} ${card.special} ${card.restriction}`.toLowerCase();
+        for (const kw of keywords) {
+          if (haystack.includes(kw)) score += 14;
+        }
+      }
+
+      score += Math.random() * 6;
+      return score;
+    }
+
+    async function generateAIDeck() {
+      if (cards.length === 0) {
+        alert('Add some cards to your collection first so the AI Deck Builder can build a deck!');
+        return;
+      }
+
+      const nationFocus = document.getElementById('aiNation').value;
+      const style = document.getElementById('aiStyle').value;
+      const tokenMode = document.getElementById('aiTokenMode').value;
+      const deckSize = Math.max(1, parseInt(document.getElementById('aiDeckSize').value) || 20);
+      const maxCopies = Math.max(1, parseInt(document.getElementById('aiMaxCopies').value) || 3);
+      const promptText = document.getElementById('aiPrompt').value.trim();
+      const useGemini = document.getElementById('useGeminiToggle').checked;
+      const geminiKey = document.getElementById('geminiApiKey').value.trim();
+
+      let candidatePool = cards.filter(c => {
+        if (tokenMode === 'only') return Boolean(c.isToken);
+        if (tokenMode === 'exclude') return !c.isToken;
+        return true;
+      });
+
+      if (candidatePool.length === 0) {
+        candidatePool = [...cards];
+      }
+
+      const ranked = candidatePool.sort((a, b) =>
+        scoreCardForDeck(b, nationFocus, style, promptText) - scoreCardForDeck(a, nationFocus, style, promptText)
+      );
+
+      const pickedMap = new Map();
+      let totalPicked = 0;
+
+      for (const card of ranked) {
+        if (totalPicked >= deckSize) break;
+        const left = Math.max(0, card.owned - card.used);
+        if (left <= 0) continue;
+
+        const restrLower = (card.restriction || '').toLowerCase();
+        const cardCap = (restrLower.includes('1 per deck') || restrLower.includes('limit 1')) ? 1 : maxCopies;
+        const addCount = Math.min(cardCap, left, deckSize - totalPicked);
+
+        if (addCount > 0) {
+          pickedMap.set(card.id, { card, count: addCount, fromStock: true });
+          totalPicked += addCount;
+        }
+      }
+
+      if (totalPicked < deckSize) {
+        for (const card of ranked) {
+          if (totalPicked >= deckSize) break;
+          const existing = pickedMap.get(card.id);
+          const currentCount = existing ? existing.count : 0;
+          const restrLower = (card.restriction || '').toLowerCase();
+          const cardCap = (restrLower.includes('1 per deck') || restrLower.includes('limit 1')) ? 1 : maxCopies;
+          const extraNeeded = Math.min(cardCap - currentCount, deckSize - totalPicked);
+
+          if (extraNeeded > 0) {
+            pickedMap.set(card.id, {
+              card,
+              count: currentCount + extraNeeded,
+              fromStock: existing ? existing.fromStock : false
+            });
+            totalPicked += extraNeeded;
+          }
+        }
+      }
+
+      lastGeneratedDeck = [...pickedMap.values()];
+
+      document.getElementById('aiDeckResult').classList.remove('hidden');
+      document.getElementById('generatedDeckTitle').textContent =
+        `${nationFocus === 'Any' ? 'Multi-Nation' : nationFocus} ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
+      document.getElementById('generatedDeckSummary').textContent =
+        `${totalPicked} cards selected across ${lastGeneratedDeck.length} unique cards • Max ${maxCopies} copy/card`;
+
+      const strategyBox = document.getElementById('aiStrategyNote');
+      strategyBox.classList.remove('hidden');
+      strategyBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5 text-fuchsia-400"></i> <strong>Local Deck Engine:</strong> Prioritized available copies left, ${nationFocus} alignment, ${tokenMode} token setting, and ${style} stats.`;
+
+      renderGeneratedDeckList();
+
+      if (useGemini && geminiKey) {
+        strategyBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5 text-fuchsia-400"></i> Asking Gemini for tactical deck tips...`;
+        try {
+          const compactDeck = lastGeneratedDeck.map(item => ({
+            name: item.card.name,
+            count: item.count,
+            nation: item.card.nation,
+            type: item.card.cardType,
+            rarity: item.card.rarity,
+            isToken: Boolean(item.card.isToken),
+            mana: `${item.card.manaAction}:${item.card.manaValue}`,
+            atk: item.card.attack,
+            def: item.card.defense,
+            restriction: item.card.restriction,
+            ability: item.card.ability,
+            special: item.card.special
+          }));
+
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are a trading card game deck coach. Given this generated deck (${JSON.stringify(compactDeck)}) and user note ("${promptText || style}"), write a concise 3-4 sentence strategy tip highlighting key synergies, mana flow, leader/rarity roles, and any card restrictions to watch out for.`
+                }]
+              }]
+            })
+          });
+          const data = await resp.json();
+          const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (aiText) {
+            strategyBox.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-fuchsia-400"></i> <strong>Gemini Coach:</strong> ${escapeHTML(aiText)}`;
+          }
+        } catch (err) {
+          strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing local deck build instead.`;
+        }
+      }
+    }
+
+    function renderGeneratedDeckList() {
+      const container = document.getElementById('generatedDeckCards');
+      container.innerHTML = lastGeneratedDeck.map(({ card, count }) => {
+        const left = Math.max(0, card.owned - card.used);
+        const shortage = count > left;
+        return `
+          <div class="p-3 flex items-center justify-between gap-3 text-xs">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${count}x</span>
+                <span class="font-bold text-white text-sm">${escapeHTML(card.name)}</span>
+                ${card.isToken ? `<span class="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[10px] font-semibold">TOKEN</span>` : ''}
+                <span class="text-slate-400">${escapeHTML(card.nation || 'Universal')} • ${escapeHTML(card.rarity || 'None')}</span>
+              </div>
+              ${card.restriction ? `<p class="text-[11px] text-orange-300 mt-0.5"><i class="fa-solid fa-ban mr-1"></i>${escapeHTML(card.restriction)}</p>` : ''}
+            </div>
+            <div class="text-right shrink-0">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${shortage ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">
+                ${left} in stock left
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function copyDeckList() {
+      if (!lastGeneratedDeck.length) return;
+      const text = lastGeneratedDeck
+        .map(({ card, count }) => `${count}x ${card.name}${card.isToken ? ' [Token]' : ''} [${card.nation || 'Universal'} | ${card.rarity || 'None'}]`)
+        .join('\n');
+      navigator.clipboard.writeText(text);
+      alert('Deck list copied to clipboard!');
+    }
+
+    function applyDeckToUsedStock() {
+      if (!lastGeneratedDeck.length) return;
+      const addMap = new Map();
+      lastGeneratedDeck.forEach(({ card, count }) => {
+        addMap.set(card.id, (addMap.get(card.id) || 0) + count);
+      });
+
+      cards = cards.map(c => {
+        const addUsed = addMap.get(c.id) || 0;
+        if (!addUsed) return c;
+        const newUsed = Math.min(c.owned, c.used + addUsed);
+        return { ...c, used: newUsed };
+      });
+
+      saveToStorage();
+      renderCards();
+      renderGeneratedDeckList();
+      alert('Updated "Used" counts on your cards (capped at Total Owned).');
     }
 
     function exportData() {
@@ -537,6 +933,7 @@
       const query = document.getElementById('searchInput').value.toLowerCase();
       const nationFilter = document.getElementById('filterNation').value;
       const rarityFilter = document.getElementById('filterRarity').value;
+      const tokenFilter = document.getElementById('filterToken').value;
       const stockFilter = document.getElementById('filterStock').value;
       const typeFilter = document.getElementById('filterType').value;
       const manaFilter = document.getElementById('filterMana').value;
@@ -555,17 +952,21 @@
                              (c.nation && c.nation.toLowerCase().includes(query)) ||
                              (c.rarity && c.rarity.toLowerCase().includes(query)) ||
                              (c.cardType && c.cardType.toLowerCase().includes(query)) ||
+                             (c.isToken && 'token'.includes(query)) ||
                              (c.restriction && c.restriction.toLowerCase().includes(query)) ||
                              (c.ability && c.ability.toLowerCase().includes(query)) ||
                              (c.special && c.special.toLowerCase().includes(query));
         const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
         const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
+        const matchesToken = tokenFilter === 'all' ||
+                             (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
+                             (tokenFilter === 'non_tokens' && !c.isToken);
         const matchesStock = stockFilter === 'all' ||
                              (stockFilter === 'available' && left > 0) ||
                              (stockFilter === 'none_left' && left === 0);
         const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
         const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
-        return matchesQuery && matchesNation && matchesRarity && matchesStock && matchesType && matchesMana;
+        return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana;
       });
 
       if (filtered.length === 0) {
@@ -603,14 +1004,19 @@
                    </div>`
               }
 
-              <!-- Nation & Rarity Badges -->
-              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[70%]">
+              <!-- Nation, Rarity & Token Badges -->
+              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[72%]">
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
                   <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
                 </span>
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md rarity-${escapeHTML(rarityLabel)}">
-                  <i class="fa-solid fa-gem mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
+                  <i class="fa-solid ${rarityLabel === 'Leader' ? 'fa-crown' : 'fa-gem'} mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
                 </span>
+                ${card.isToken ? `
+                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-950/90 text-teal-300 border border-teal-400/40 backdrop-blur-md">
+                    <i class="fa-solid fa-coins mr-1 text-[10px]"></i>Token
+                  </span>
+                ` : ''}
               </div>
 
               <!-- Floating "Left" Badge -->

@@ -9,6 +9,13 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; }
+
+    .rarity-Common { background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.4); }
+    .rarity-Uncommon { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.45); }
+    .rarity-Rare { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(250, 204, 21, 0.5); }
+    .rarity-Ultrarare { background: rgba(168, 85, 247, 0.22); color: #d8b4fe; border-color: rgba(192, 132, 252, 0.55); }
+    .rarity-Secret { background: linear-gradient(90deg, rgba(244, 63, 94, 0.25), rgba(56, 189, 248, 0.25), rgba(250, 204, 21, 0.25)); color: #fff1f2; border-color: rgba(251, 113, 133, 0.6); }
+    .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
@@ -22,7 +29,7 @@
         </div>
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
-          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation & Remaining Count Tracker</p>
+          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation, Rarity & Stock Tracker</p>
         </div>
       </div>
 
@@ -68,17 +75,28 @@
     <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-        <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search name, nation, type, or ability..."
+        <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search name, nation, rarity, ability, special..."
           class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
         <select id="filterNation" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
           <option value="all">All Nations</option>
+          <option value="Universal">Universal</option>
           <option value="Japan">Japan</option>
           <option value="India">India</option>
           <option value="China">China</option>
           <option value="Other">Other</option>
+        </select>
+
+        <select id="filterRarity" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">All Rarities</option>
+          <option value="Common">Common</option>
+          <option value="Uncommon">Uncommon</option>
+          <option value="Rare">Rare</option>
+          <option value="Ultrarare">Ultrarare</option>
+          <option value="Secret">Secret</option>
+          <option value="None">None</option>
         </select>
 
         <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
@@ -108,7 +126,7 @@
         <i class="fa-solid fa-wand-sparkles"></i>
       </div>
       <h3 class="text-lg font-semibold text-slate-200 mb-1">No cards created yet</h3>
-      <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Add a card with its picture, nation, type, attack, defense, mana effect, ability text, and track how many copies you have left.</p>
+      <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Add a card with its picture, nation, rarity, stats, ability, special notes, and track how many copies you have left.</p>
       <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
         Create Your First Card
       </button>
@@ -152,7 +170,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Card Name *</label>
-            <input type="text" id="name" required placeholder="e.g., Ronin Vanguard"
+            <input type="text" id="name" required placeholder="e.g., Celestial Sovereign"
               class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
           </div>
           <div>
@@ -162,15 +180,30 @@
           </div>
         </div>
 
-        <!-- Nation Classification -->
-        <div>
-          <label class="block text-xs font-medium text-amber-400 mb-1">Nation *</label>
-          <select id="nation" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-amber-500">
-            <option value="Japan">Japan</option>
-            <option value="India">India</option>
-            <option value="China">China</option>
-            <option value="Other">Other</option>
-          </select>
+        <!-- Nation & Rarity -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-amber-400 mb-1">Nation *</label>
+            <select id="nation" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-amber-500">
+              <option value="Universal">Universal</option>
+              <option value="Japan">Japan</option>
+              <option value="India">India</option>
+              <option value="China">China</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-purple-400 mb-1">Rarity *</label>
+            <select id="rarity" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-purple-500">
+              <option value="Common">Common</option>
+              <option value="Uncommon">Uncommon</option>
+              <option value="Rare">Rare</option>
+              <option value="Ultrarare">Ultrarare</option>
+              <option value="Secret">Secret</option>
+              <option value="None">None</option>
+            </select>
+          </div>
         </div>
 
         <!-- Mana (Spend or Add), Attack, Defense -->
@@ -201,11 +234,25 @@
           </div>
         </div>
 
+        <!-- Restriction -->
+        <div>
+          <label class="block text-xs font-medium text-orange-400 mb-1">Card Restriction (if required)</label>
+          <input type="text" id="restriction" placeholder="e.g., Max 1 per deck, Cannot attack on turn 1..."
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-orange-500" />
+        </div>
+
         <!-- Description of Ability -->
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Description of Ability</label>
-          <textarea id="ability" rows="3" placeholder="Describe what this card does when played or activated..."
+          <textarea id="ability" rows="2" placeholder="Describe what this card does when played or activated..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <!-- Special Section -->
+        <div>
+          <label class="block text-xs font-medium text-fuchsia-400 mb-1">Special</label>
+          <textarea id="special" rows="2" placeholder="Special mechanics, combo notes, artwork/foil info, or unique rules..."
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500"></textarea>
         </div>
 
         <!-- Quantity Math Box -->
@@ -242,7 +289,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'customcard_vault_v1';
+    const STORAGE_KEY = 'customcard_vault_v2';
     let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
     function saveToStorage() {
@@ -332,7 +379,8 @@
       const modal = document.getElementById('cardModal');
       document.getElementById('cardForm').reset();
       document.getElementById('cardId').value = '';
-      document.getElementById('nation').value = 'Japan';
+      document.getElementById('nation').value = 'Universal';
+      document.getElementById('rarity').value = 'Common';
       document.getElementById('modalTitle').textContent = 'Add Card';
       clearImage();
 
@@ -343,12 +391,15 @@
           document.getElementById('cardId').value = c.id;
           document.getElementById('name').value = c.name;
           document.getElementById('cardType').value = c.cardType || '';
-          document.getElementById('nation').value = c.nation || 'Other';
+          document.getElementById('nation').value = c.nation || 'Universal';
+          document.getElementById('rarity').value = c.rarity || 'None';
           document.getElementById('manaAction').value = c.manaAction || 'spend';
           document.getElementById('manaValue').value = c.manaValue ?? 0;
           document.getElementById('attack').value = c.attack || '';
           document.getElementById('defense').value = c.defense || '';
+          document.getElementById('restriction').value = c.restriction || '';
           document.getElementById('ability').value = c.ability || '';
+          document.getElementById('special').value = c.special || '';
           document.getElementById('owned').value = c.owned;
           document.getElementById('used').value = c.used;
           if (c.image) {
@@ -396,11 +447,14 @@
         name: document.getElementById('name').value.trim(),
         cardType: document.getElementById('cardType').value.trim(),
         nation: document.getElementById('nation').value,
+        rarity: document.getElementById('rarity').value,
         manaAction: document.getElementById('manaAction').value,
         manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
         attack: document.getElementById('attack').value.trim(),
         defense: document.getElementById('defense').value.trim(),
+        restriction: document.getElementById('restriction').value.trim(),
         ability: document.getElementById('ability').value.trim(),
+        special: document.getElementById('special').value.trim(),
         image: document.getElementById('imageData').value.trim(),
         owned,
         used
@@ -482,6 +536,7 @@
       const empty = document.getElementById('emptyState');
       const query = document.getElementById('searchInput').value.toLowerCase();
       const nationFilter = document.getElementById('filterNation').value;
+      const rarityFilter = document.getElementById('filterRarity').value;
       const stockFilter = document.getElementById('filterStock').value;
       const typeFilter = document.getElementById('filterType').value;
       const manaFilter = document.getElementById('filterMana').value;
@@ -498,15 +553,19 @@
         const left = Math.max(0, c.owned - c.used);
         const matchesQuery = c.name.toLowerCase().includes(query) ||
                              (c.nation && c.nation.toLowerCase().includes(query)) ||
+                             (c.rarity && c.rarity.toLowerCase().includes(query)) ||
                              (c.cardType && c.cardType.toLowerCase().includes(query)) ||
-                             (c.ability && c.ability.toLowerCase().includes(query));
-        const matchesNation = nationFilter === 'all' || (c.nation || 'Other') === nationFilter;
+                             (c.restriction && c.restriction.toLowerCase().includes(query)) ||
+                             (c.ability && c.ability.toLowerCase().includes(query)) ||
+                             (c.special && c.special.toLowerCase().includes(query));
+        const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
+        const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
         const matchesStock = stockFilter === 'all' ||
                              (stockFilter === 'available' && left > 0) ||
                              (stockFilter === 'none_left' && left === 0);
         const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
         const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
-        return matchesQuery && matchesNation && matchesStock && matchesType && matchesMana;
+        return matchesQuery && matchesNation && matchesRarity && matchesStock && matchesType && matchesMana;
       });
 
       if (filtered.length === 0) {
@@ -519,12 +578,13 @@
       grid.innerHTML = filtered.map(card => {
         const left = Math.max(0, card.owned - card.used);
         const hasCombatStats = card.attack !== '' || card.defense !== '';
-        const nationLabel = card.nation || 'Other';
+        const nationLabel = card.nation || 'Universal';
+        const rarityLabel = card.rarity || 'None';
 
         return `
           <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
             
-            <!-- Top Header: Card Name & Mana -->
+            <!-- Top Header: Card Name, Type & Mana -->
             <div class="px-4 py-3 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <h3 class="font-bold text-base text-white truncate">${escapeHTML(card.name)}</h3>
@@ -543,9 +603,14 @@
                    </div>`
               }
 
-              <!-- Nation Badge -->
-              <div class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
+              <!-- Nation & Rarity Badges -->
+              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[70%]">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                  <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md rarity-${escapeHTML(rarityLabel)}">
+                  <i class="fa-solid fa-gem mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
+                </span>
               </div>
 
               <!-- Floating "Left" Badge -->
@@ -554,14 +619,30 @@
               </div>
             </div>
 
-            <!-- Card Ability & Combat Stats -->
-            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+            <!-- Card Details: Restriction, Ability, Special & Stats -->
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
+              ${card.restriction ? `
+                <div class="px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
+                  <span class="font-bold text-orange-400 uppercase tracking-wide mr-1"><i class="fa-solid fa-ban mr-1"></i>Restriction:</span>
+                  ${escapeHTML(card.restriction)}
+                </div>
+              ` : ''}
+
               <!-- Ability Text -->
-              <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[68px]">
+              <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
+                <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Ability</span>
                 ${card.ability
                   ? escapeHTML(card.ability)
                   : '<span class="text-slate-600 italic">No ability description.</span>'}
               </div>
+
+              <!-- Special Section -->
+              ${card.special ? `
+                <div class="bg-fuchsia-950/25 border border-fuchsia-500/25 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
+                  <span class="block text-[10px] font-semibold uppercase tracking-wider text-fuchsia-400 mb-0.5"><i class="fa-solid fa-sparkles mr-1"></i>Special</span>
+                  ${escapeHTML(card.special)}
+                </div>
+              ` : ''}
 
               <!-- Attack & Defense Bar -->
               ${hasCombatStats ? `

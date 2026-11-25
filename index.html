@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CustomCard Vault — Cloud Card Inventory & AI Deck Builder</title>
+  <title>CustomCard Vault — Card Creator, Stock & AI Deck Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; }
 
-    /* Rarity badges */
     .rarity-Common { background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.4); }
     .rarity-Uncommon { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.45); }
     .rarity-Rare { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(250, 204, 21, 0.5); }
@@ -22,28 +21,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-  <!-- Top Account & Cloud Persistence Strip -->
-  <div class="bg-slate-900 border-b border-slate-800/90">
-    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-      <div class="flex items-center gap-2.5 flex-wrap">
-        <span id="cloudBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
-          <i id="cloudDot" class="fa-solid fa-circle-dot text-amber-400"></i>
-          <span id="cloudStatusText">Connecting Cloud...</span>
-        </span>
-        <span class="text-slate-400">
-          Account: <strong id="accountLabel" class="text-indigo-300 font-mono">Signing in...</strong>
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2 flex-wrap">
-        <button onclick="openAccountModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 font-semibold transition">
-          <i class="fa-solid fa-user-shield mr-1"></i>Account & Cloud Settings
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Header -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
@@ -52,18 +29,18 @@
         </div>
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
-          <p class="text-xs text-slate-400">Cloud Card Inventory, Stock Tracker & AI Deck Builder</p>
+          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation, Rarity & AI Deck Builder</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <div class="flex items-center gap-2 sm:gap-3">
         <button onclick="openAIDeckModal()" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 transition flex items-center gap-2">
           <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deck Agent
         </button>
-        <button onclick="exportData()" title="Download JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+        <button onclick="exportData()" title="Download Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
           <i class="fa-solid fa-download"></i><span class="hidden sm:inline">Export</span>
         </button>
-        <label title="Restore JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+        <label title="Restore Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-upload"></i><span class="hidden sm:inline">Import</span>
           <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
         </label>
@@ -74,21 +51,7 @@
     </div>
   </header>
 
-  <!-- Inline Notification Banner -->
-  <div id="noticeBanner" class="hidden max-w-7xl w-full mx-auto px-4 pt-4">
-    <div id="noticeBox" class="px-4 py-3 rounded-xl border text-xs sm:text-sm flex items-center justify-between gap-3 bg-slate-900 border-indigo-500/40 text-slate-100">
-      <div class="flex items-center gap-2.5">
-        <i id="noticeIcon" class="fa-solid fa-circle-info text-indigo-400"></i>
-        <span id="noticeMessage"></span>
-      </div>
-      <button onclick="hideNotice()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-  </div>
-
-  <!-- Main Content -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-
-    <!-- Summary Stats -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
         <p class="text-xs text-slate-400">Unique Cards</p>
@@ -108,7 +71,6 @@
       </div>
     </div>
 
-    <!-- Search & Filters -->
     <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -155,16 +117,14 @@
 
         <select id="filterStock" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
           <option value="all">All Stock</option>
-          <option value="available">Has Cards Left (&gt; 0)</option>
+          <option value="available">Has Cards Left (greater than 0)</option>
           <option value="none_left">0 Left (All Used)</option>
         </select>
       </div>
     </div>
 
-    <!-- Card Grid -->
     <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
 
-    <!-- Empty State -->
     <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl">
       <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl">
         <i class="fa-solid fa-wand-sparkles"></i>
@@ -177,84 +137,6 @@
     </div>
   </main>
 
-  <!-- Account & Cloud Persistence Modal -->
-  <div id="accountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3.5">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-white">Cross-Device Cloud Account</h2>
-            <p class="text-xs text-slate-400">Sign in with Email/Password to open your cards on any device anywhere</p>
-          </div>
-        </div>
-        <button onclick="closeAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-
-      <!-- Current Session Info -->
-      <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div>
-          <span class="text-slate-400">Active User ID:</span>
-          <span id="modalUserId" class="font-mono text-indigo-300 ml-1 select-all">Loading...</span>
-        </div>
-        <button type="button" id="signOutBtn" onclick="handleSignOut()" class="hidden px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 font-medium">
-          <i class="fa-solid fa-right-from-bracket mr-1"></i>Sign Out
-        </button>
-      </div>
-
-      <!-- Email / Password Sign-In & Account Upgrade -->
-      <form id="authForm" onsubmit="handleEmailAuth(event)" class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 id="authFormTitle" class="text-xs font-bold uppercase tracking-wider text-indigo-400">Sign In or Create Cloud Account</h3>
-          <button type="button" onclick="toggleAuthMode()" id="toggleAuthModeBtn" class="text-xs text-emerald-400 hover:underline font-medium">
-            Switch to Register New Account
-          </button>
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          If you are currently signed in as a guest and have cards saved, registering with Email & Password will link/migrate your cards to your permanent account so you can open them on any device.
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Email</label>
-            <input type="email" id="authEmail" required placeholder="you@example.com"
-              class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">Password</label>
-            <input type="password" id="authPassword" required minlength="6" placeholder="At least 6 characters"
-              class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
-          </div>
-        </div>
-        <div class="flex justify-end pt-1">
-          <button type="submit" id="authSubmitBtn" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold transition">
-            <i class="fa-solid fa-right-to-bracket mr-1.5"></i><span id="authSubmitLabel">Sign In</span>
-          </button>
-        </div>
-      </form>
-
-      <!-- Custom Firebase Config Override (for hosting anywhere outside preview) -->
-      <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Custom Firebase Project Config (Optional)</h3>
-          <button type="button" onclick="clearCustomFirebaseConfig()" class="text-xs text-slate-400 hover:text-rose-300">Reset Default</button>
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Inside this preview environment, Firebase connects automatically. If you host this HTML file on your own domain/device and want your own Firebase project, paste your Firebase config JSON below.
-        </p>
-        <textarea id="customFirebaseJson" rows="3" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'
-          class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-500"></textarea>
-        <div class="flex justify-end">
-          <button type="button" onclick="applyCustomFirebaseConfig()" class="px-3.5 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/35 text-amber-300 border border-amber-500/40 text-xs font-semibold">
-            Save & Reconnect Firebase
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add / Edit Card Modal -->
   <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
@@ -266,7 +148,6 @@
         <input type="hidden" id="cardId" />
         <input type="hidden" id="imageData" />
 
-        <!-- Image Upload & Preview -->
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1.5">Card Picture</label>
           <div class="flex items-center gap-4">
@@ -287,7 +168,6 @@
           </div>
         </div>
 
-        <!-- Name & Type -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Card Name *</label>
@@ -301,7 +181,6 @@
           </div>
         </div>
 
-        <!-- Nation & Rarity -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-amber-400 mb-1">Nation *</label>
@@ -328,7 +207,6 @@
           </div>
         </div>
 
-        <!-- Token Checkbox -->
         <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800">
           <label for="isToken" class="flex items-center gap-2.5 text-sm font-medium text-teal-300 cursor-pointer select-none">
             <input type="checkbox" id="isToken" class="w-4 h-4 rounded accent-teal-500 cursor-pointer" />
@@ -337,7 +215,6 @@
           <span class="text-[11px] text-slate-500">Mark if this card is a Token</span>
         </div>
 
-        <!-- Mana (Spend or Add), Attack, Defense -->
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-medium text-sky-400 mb-1">Mana Action & Value</label>
@@ -365,28 +242,24 @@
           </div>
         </div>
 
-        <!-- Restriction -->
         <div>
           <label class="block text-xs font-medium text-orange-400 mb-1">Card Restriction (if required)</label>
           <input type="text" id="restriction" placeholder="e.g., Max 1 per deck, Cannot attack on turn 1..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-orange-500" />
         </div>
 
-        <!-- Description of Ability -->
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Description of Ability</label>
           <textarea id="ability" rows="2" placeholder="Describe what this card does when played or activated..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
         </div>
 
-        <!-- Special Section -->
         <div>
           <label class="block text-xs font-medium text-fuchsia-400 mb-1">Special</label>
           <textarea id="special" rows="2" placeholder="Special mechanics, combo notes, artwork/foil info, or unique rules..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500"></textarea>
         </div>
 
-        <!-- Quantity Math Box -->
         <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -414,7 +287,6 @@
     </div>
   </div>
 
-  <!-- AI Deck Builder Modal -->
   <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3.5">
@@ -430,7 +302,6 @@
         <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <!-- Deck Builder Settings -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
           <label class="block text-xs font-medium text-amber-400 mb-1">Nation Focus</label>
@@ -476,14 +347,12 @@
         </div>
       </div>
 
-      <!-- Custom Prompt / Strategy Note -->
       <div>
         <label class="block text-xs font-medium text-slate-400 mb-1">Deck Prompt or Special Instructions (optional)</label>
         <input type="text" id="aiPrompt" placeholder="e.g., Focus on Leader/Secret/Ultrarare cards, low mana spend, or combo with Special abilities..."
           class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500" />
       </div>
 
-      <!-- Optional Gemini LLM Toggle -->
       <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between">
           <label class="flex items-center gap-2 text-xs font-semibold text-slate-200 cursor-pointer">
@@ -498,14 +367,12 @@
         </div>
       </div>
 
-      <!-- Generate Button -->
       <div class="flex justify-end gap-2">
         <button type="button" onclick="generateAIDeck()" id="generateDeckBtn" class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg transition flex items-center gap-2">
           <i class="fa-solid fa-sparkles"></i> Build Deck Now
         </button>
       </div>
 
-      <!-- Generated Deck Output -->
       <div id="aiDeckResult" class="hidden space-y-4 pt-3 border-t border-slate-800">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -529,398 +396,39 @@
     </div>
   </div>
 
-  <!-- Full-Size Image Lightbox -->
   <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out">
     <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain" />
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      signInWithCustomToken,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      linkWithCredential,
-      EmailAuthProvider,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-      setDoc,
-      deleteDoc,
-      onSnapshot,
-      collection
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    const CACHE_KEY = 'customcard_vault_cache_v4';
-    const CUSTOM_FB_KEY = 'customcard_custom_firebase_v1';
+  <script>
+    const STORAGE_KEY = 'customcard_vault_v3';
     const GEMINI_KEY_STORAGE = 'customcard_gemini_key_v1';
-
-    let app = null;
-    let auth = null;
-    let db = null;
-    let currentUser = null;
-    let unsubscribeCards = null;
-    let isRegisterMode = false;
-
-    let cards = [];
+    let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     let lastGeneratedDeck = [];
 
-    // Load cached cards immediately for instant display on slow networks
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) cards = parsed;
-      }
-    } catch (e) {
-      cards = [];
+    const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE);
+    if (savedKey) {
+      document.getElementById('geminiApiKey').value = savedKey;
     }
 
-    const savedGeminiKey = localStorage.getItem(GEMINI_KEY_STORAGE);
-    if (savedGeminiKey) {
-      document.getElementById('geminiApiKey').value = savedGeminiKey;
-    }
-
-    const savedCustomFb = localStorage.getItem(CUSTOM_FB_KEY);
-    if (savedCustomFb) {
-      document.getElementById('customFirebaseJson').value = savedCustomFb;
-    }
-
-    function getAppId() {
-      return typeof __app_id !== 'undefined' && __app_id ? __app_id : 'customcard-vault-app';
-    }
-
-    function resolveFirebaseConfig() {
-      if (savedCustomFb) {
-        try {
-          const parsed = JSON.parse(savedCustomFb);
-          if (parsed && parsed.apiKey && parsed.projectId) {
-            return parsed;
-          }
-        } catch (err) {
-          showNotice('Custom Firebase JSON is invalid; falling back to environment config.', 'warn');
-        }
-      }
-      if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-        return JSON.parse(__firebase_config);
-      }
-      return null;
-    }
-
-    function updateCloudBadge(text, colorClass = 'text-emerald-400') {
-      document.getElementById('cloudStatusText').textContent = text;
-      document.getElementById('cloudDot').className = `fa-solid fa-circle-dot ${colorClass}`;
-    }
-
-    function updateAccountHeader() {
-      const label = document.getElementById('accountLabel');
-      const modalUid = document.getElementById('modalUserId');
-      const signOutBtn = document.getElementById('signOutBtn');
-
-      if (!currentUser) {
-        label.textContent = 'Not signed in';
-        modalUid.textContent = 'None';
-        signOutBtn.classList.add('hidden');
-        return;
-      }
-
-      if (currentUser.email) {
-        label.textContent = currentUser.email;
-        signOutBtn.classList.remove('hidden');
-      } else {
-        label.textContent = `Guest (${currentUser.uid.slice(0, 8)}...)`;
-        signOutBtn.classList.add('hidden');
-      }
-      modalUid.textContent = currentUser.uid;
-    }
-
-    function getUserCardsCollection() {
-      if (!db || !currentUser) return null;
-      return collection(db, 'artifacts', getAppId(), 'users', currentUser.uid, 'cards');
-    }
-
-    function getUserCardDocRef(cardId) {
-      if (!db || !currentUser || !cardId) return null;
-      return doc(db, 'artifacts', getAppId(), 'users', currentUser.uid, 'cards', cardId);
-    }
-
-    function writeLocalCache() {
-      try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(cards));
-      } catch (e) {
-        // Ignore quota warnings when cloud sync is active
-      }
-    }
-
-    async function persistCardToCloud(cardObj) {
-      writeLocalCache();
-      const docRef = getUserCardDocRef(cardObj.id);
-      if (!docRef) return;
-      try {
-        updateCloudBadge('Saving to Cloud...', 'text-indigo-400');
-        await setDoc(docRef, {
-          ...cardObj,
-          updatedAt: Date.now()
-        });
-        updateCloudBadge('Cloud Synced', 'text-emerald-400');
-      } catch (err) {
-        updateCloudBadge('Cloud Save Error', 'text-rose-400');
-        showNotice(`Saved locally, but cloud sync failed (${err.message}).`, 'error');
-      }
-    }
-
-    async function removeCardFromCloud(cardId) {
-      writeLocalCache();
-      const docRef = getUserCardDocRef(cardId);
-      if (!docRef) return;
-      try {
-        updateCloudBadge('Syncing Delete...', 'text-indigo-400');
-        await deleteDoc(docRef);
-        updateCloudBadge('Cloud Synced', 'text-emerald-400');
-      } catch (err) {
-        updateCloudBadge('Cloud Delete Error', 'text-rose-400');
-        showNotice(`Removed locally, but cloud delete failed (${err.message}).`, 'error');
-      }
-    }
-
-    async function migrateCardsToCurrentUser(cardsToSync) {
-      if (!db || !currentUser || !Array.isArray(cardsToSync) || cardsToSync.length === 0) return;
-      for (const c of cardsToSync) {
-        try {
-          await setDoc(getUserCardDocRef(c.id), {
-            ...c,
-            updatedAt: Date.now()
-          });
-        } catch (err) {
-          // Continue syncing remaining cards
-        }
-      }
-    }
-
-    function subscribeToUserCards() {
-      if (unsubscribeCards) {
-        unsubscribeCards();
-        unsubscribeCards = null;
-      }
-
-      const colRef = getUserCardsCollection();
-      if (!colRef) return;
-
-      updateCloudBadge('Live Cloud Sync', 'text-emerald-400');
-
-      unsubscribeCards = onSnapshot(
-        colRef,
-        async (snapshot) => {
-          const cloudCards = [];
-          snapshot.forEach((snap) => {
-            const data = snap.data();
-            if (data) {
-              cloudCards.push({
-                ...data,
-                id: data.id || snap.id
-              });
-            }
-          });
-
-          // If cloud is empty for this account and we have local cards, upload them once
-          if (cloudCards.length === 0 && cards.length > 0) {
-            await migrateCardsToCurrentUser(cards);
-            return;
-          }
-
-          cloudCards.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-          cards = cloudCards;
-          writeLocalCache();
-          renderCards();
-          updateCloudBadge('Cloud Synced', 'text-emerald-400');
-        },
-        (err) => {
-          updateCloudBadge('Offline / Cache', 'text-amber-400');
-          showNotice(`Live cloud listener paused (${err.message}). Showing cached cards.`, 'warn');
-        }
-      );
-    }
-
-    async function initFirebase() {
-      const config = resolveFirebaseConfig();
-      if (!config) {
-        updateCloudBadge('Local Cache Mode', 'text-amber-400');
-        document.getElementById('accountLabel').textContent = 'No Firebase Config';
-        document.getElementById('modalUserId').textContent = 'Configure Firebase JSON below to enable cloud sync';
-        renderCards();
-        return;
-      }
-
-      try {
-        app = initializeApp(config);
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (user) => {
-          currentUser = user;
-          updateAccountHeader();
-          if (user) {
-            subscribeToUserCards();
-          } else {
-            if (unsubscribeCards) {
-              unsubscribeCards();
-              unsubscribeCards = null;
-            }
-            updateCloudBadge('Signed Out', 'text-amber-400');
-            renderCards();
-          }
-        });
-
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else if (!auth.currentUser) {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        updateCloudBadge('Cloud Unavailable', 'text-rose-400');
-        document.getElementById('accountLabel').textContent = 'Offline Mode';
-        showNotice(`Could not initialize Firebase (${err.message}). Using local cache.`, 'warn');
-        renderCards();
-      }
-    }
-
-    window.toggleAuthMode = function () {
-      isRegisterMode = !isRegisterMode;
-      document.getElementById('authFormTitle').textContent = isRegisterMode
-        ? 'Create New Cloud Account'
-        : 'Sign In to Existing Cloud Account';
-      document.getElementById('toggleAuthModeBtn').textContent = isRegisterMode
-        ? 'Switch to Sign In'
-        : 'Switch to Register New Account';
-      document.getElementById('authSubmitLabel').textContent = isRegisterMode
-        ? 'Create Account & Sync'
-        : 'Sign In';
-    };
-
-    window.handleEmailAuth = async function (e) {
-      e.preventDefault();
-      if (!auth) {
-        showNotice('Firebase is not initialized yet. Add a Firebase config first.', 'warn');
-        return;
-      }
-
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      const snapshotBeforeAuth = [...cards];
-
-      try {
-        updateCloudBadge('Authenticating...', 'text-indigo-400');
-        if (isRegisterMode) {
-          if (auth.currentUser && auth.currentUser.isAnonymous) {
-            const cred = EmailAuthProvider.credential(email, password);
-            await linkWithCredential(auth.currentUser, cred);
-          } else {
-            await createUserWithEmailAndPassword(auth, email, password);
-          }
-          await migrateCardsToCurrentUser(snapshotBeforeAuth);
-          showNotice(`Account created and synced for ${email}. You can sign in with this email on any device.`, 'info');
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-          showNotice(`Signed in as ${email}. Your cloud collection is synced.`, 'info');
-        }
-        closeAccountModal();
-      } catch (err) {
-        updateCloudBadge('Auth Error', 'text-rose-400');
-        showNotice(`Authentication failed: ${err.message}`, 'error');
-      }
-    };
-
-    window.handleSignOut = async function () {
-      if (!auth) return;
-      try {
-        await signOut(auth);
-        await signInAnonymously(auth);
-        showNotice('Signed out of email account and started a fresh guest session.', 'info');
-      } catch (err) {
-        showNotice(`Sign out error: ${err.message}`, 'error');
-      }
-    };
-
-    window.applyCustomFirebaseConfig = function () {
-      const raw = document.getElementById('customFirebaseJson').value.trim();
-      if (!raw) {
-        showNotice('Paste a valid Firebase configuration JSON first.', 'warn');
-        return;
-      }
-      try {
-        const parsed = JSON.parse(raw);
-        if (!parsed.apiKey || !parsed.projectId) {
-          throw new Error('Missing apiKey or projectId');
-        }
-        localStorage.setItem(CUSTOM_FB_KEY, JSON.stringify(parsed));
-        window.location.reload();
-      } catch (err) {
-        showNotice(`Invalid Firebase config JSON: ${err.message}`, 'error');
-      }
-    };
-
-    window.clearCustomFirebaseConfig = function () {
-      localStorage.removeItem(CUSTOM_FB_KEY);
-      document.getElementById('customFirebaseJson').value = '';
-      window.location.reload();
-    };
-
-    // UI Helpers & Notifications
-    window.showNotice = function (message, type = 'info') {
-      const banner = document.getElementById('noticeBanner');
-      const box = document.getElementById('noticeBox');
-      const icon = document.getElementById('noticeIcon');
-      const msgEl = document.getElementById('noticeMessage');
-
-      msgEl.textContent = message;
-      banner.classList.remove('hidden');
-
-      if (type === 'error') {
-        box.className = 'px-4 py-3 rounded-xl border text-xs sm:text-sm flex items-center justify-between gap-3 bg-rose-950/50 border-rose-500/40 text-rose-100';
-        icon.className = 'fa-solid fa-circle-exclamation text-rose-400';
-      } else if (type === 'warn') {
-        box.className = 'px-4 py-3 rounded-xl border text-xs sm:text-sm flex items-center justify-between gap-3 bg-amber-950/40 border-amber-500/40 text-amber-100';
-        icon.className = 'fa-solid fa-triangle-exclamation text-amber-400';
-      } else {
-        box.className = 'px-4 py-3 rounded-xl border text-xs sm:text-sm flex items-center justify-between gap-3 bg-slate-900 border-indigo-500/40 text-slate-100';
-        icon.className = 'fa-solid fa-circle-check text-emerald-400';
-      }
-    };
-
-    window.hideNotice = function () {
-      document.getElementById('noticeBanner').classList.add('hidden');
-    };
-
-    window.saveGeminiKey = function (val) {
+    function saveGeminiKey(val) {
       localStorage.setItem(GEMINI_KEY_STORAGE, val.trim());
-    };
+    }
 
-    window.toggleGeminiKeyInput = function () {
+    function toggleGeminiKeyInput() {
       const checked = document.getElementById('useGeminiToggle').checked;
       document.getElementById('geminiKeyBox').classList.toggle('hidden', !checked);
-    };
+    }
 
-    window.openAccountModal = function () {
-      updateAccountHeader();
-      const modal = document.getElementById('accountModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    };
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+      } catch (e) {
+        alert('Browser storage is full! Please export a backup and remove a few large images.');
+      }
+    }
 
-    window.closeAccountModal = function () {
-      const modal = document.getElementById('accountModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    // Image Upload & Compression
-    window.handleImageUpload = function (event) {
+    function handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
@@ -928,83 +436,74 @@
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 440;
-            const scale = Math.min(1, MAX_WIDTH / img.width);
-            canvas.width = Math.max(1, Math.round(img.width * scale));
-            canvas.height = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 520;
+          const scale = Math.min(1, MAX_WIDTH / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
-            document.getElementById('imageData').value = compressedDataUrl;
-            document.getElementById('imageUrlInput').value = '';
-            setPreviewImage(compressedDataUrl);
-          } catch (err) {
-            showNotice('Could not process image file. Try another image or paste a URL.', 'error');
-          }
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          document.getElementById('imageData').value = compressedDataUrl;
+          document.getElementById('imageUrlInput').value = '';
+          setPreviewImage(compressedDataUrl);
         };
-        img.onerror = () => showNotice('Invalid image file.', 'error');
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
-    };
+    }
 
-    window.handleImageUrl = function (url) {
+    function handleImageUrl(url) {
       const trimmed = url.trim();
       document.getElementById('imageData').value = trimmed;
       setPreviewImage(trimmed);
-    };
+    }
 
     function setPreviewImage(src) {
       const box = document.getElementById('imagePreviewBox');
       if (src) {
-        box.innerHTML = `<img src="${escapeHTML(src)}" class="w-full h-full object-cover" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'text-[10px] text-rose-400 p-1 text-center\\'>Image error</span>'" />`;
+        box.innerHTML = `<img src="${src}" class="w-full h-full object-cover" alt="Preview" />`;
       } else {
         box.innerHTML = `<i class="fa-regular fa-image text-xl mb-1"></i><span class="text-[10px]">No Image</span>`;
       }
     }
 
-    window.clearImage = function () {
+    function clearImage() {
       document.getElementById('imageData').value = '';
       document.getElementById('imageUrlInput').value = '';
       document.getElementById('photoInput').value = '';
       setPreviewImage('');
-    };
+    }
 
-    window.updateModalPreview = function () {
-      const owned = Math.max(0, parseInt(document.getElementById('owned').value, 10) || 0);
-      const used = Math.max(0, parseInt(document.getElementById('used').value, 10) || 0);
+    function updateModalPreview() {
+      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
+      const used = Math.max(0, parseInt(document.getElementById('used').value) || 0);
       const left = Math.max(0, owned - used);
       const preview = document.getElementById('modalLeftPreview');
       preview.textContent = `${left} left`;
       preview.className = left > 0 ? 'text-sm font-bold text-emerald-400' : 'text-sm font-bold text-rose-400';
-    };
+    }
 
-    window.adjustCount = async function (id, field, delta) {
-      let updatedCard = null;
+    function adjustCount(id, field, delta) {
       cards = cards.map(c => {
         if (c.id !== id) return c;
-        let owned = Number(c.owned) || 0;
-        let used = Number(c.used) || 0;
+        let owned = c.owned;
+        let used = c.used;
         if (field === 'owned') {
           owned = Math.max(0, owned + delta);
           if (used > owned) used = owned;
         } else if (field === 'used') {
           used = Math.min(owned, Math.max(0, used + delta));
         }
-        updatedCard = { ...c, owned, used };
-        return updatedCard;
+        return { ...c, owned, used };
       });
+      saveToStorage();
       renderCards();
-      if (updatedCard) {
-        await persistCardToCloud(updatedCard);
-      }
-    };
+    }
 
-    window.openModal = function (id = null) {
+    function openModal(id = null) {
       const modal = document.getElementById('cardModal');
       document.getElementById('cardForm').reset();
       document.getElementById('cardId').value = '';
@@ -1031,8 +530,8 @@
           document.getElementById('restriction').value = c.restriction || '';
           document.getElementById('ability').value = c.ability || '';
           document.getElementById('special').value = c.special || '';
-          document.getElementById('owned').value = c.owned ?? 1;
-          document.getElementById('used').value = c.used ?? 0;
+          document.getElementById('owned').value = c.owned;
+          document.getElementById('used').value = c.used;
           if (c.image) {
             document.getElementById('imageData').value = c.image;
             if (c.image.startsWith('http')) {
@@ -1045,45 +544,45 @@
       updateModalPreview();
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-    };
+    }
 
-    window.closeModal = function () {
+    function closeModal() {
       const modal = document.getElementById('cardModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-    };
+    }
 
-    window.openAIDeckModal = function () {
+    function openAIDeckModal() {
       const modal = document.getElementById('aiDeckModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-    };
+    }
 
-    window.closeAIDeckModal = function () {
+    function closeAIDeckModal() {
       const modal = document.getElementById('aiDeckModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-    };
+    }
 
-    window.openLightbox = function (src) {
+    function openLightbox(src) {
       if (!src) return;
       document.getElementById('lightboxImg').src = src;
       const lb = document.getElementById('lightbox');
       lb.classList.remove('hidden');
       lb.classList.add('flex');
-    };
+    }
 
-    window.closeLightbox = function () {
+    function closeLightbox() {
       const lb = document.getElementById('lightbox');
       lb.classList.add('hidden');
       lb.classList.remove('flex');
-    };
+    }
 
-    window.saveCard = async function (e) {
+    function saveCard(e) {
       e.preventDefault();
       const id = document.getElementById('cardId').value;
-      const owned = Math.max(0, parseInt(document.getElementById('owned').value, 10) || 0);
-      const used = Math.min(owned, Math.max(0, parseInt(document.getElementById('used').value, 10) || 0));
+      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
+      const used = Math.min(owned, Math.max(0, parseInt(document.getElementById('used').value) || 0));
 
       const cardObj = {
         id: id || crypto.randomUUID(),
@@ -1093,7 +592,7 @@
         rarity: document.getElementById('rarity').value,
         isToken: document.getElementById('isToken').checked,
         manaAction: document.getElementById('manaAction').value,
-        manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value, 10) || 0),
+        manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
         attack: document.getElementById('attack').value.trim(),
         defense: document.getElementById('defense').value.trim(),
         restriction: document.getElementById('restriction').value.trim(),
@@ -1101,30 +600,27 @@
         special: document.getElementById('special').value.trim(),
         image: document.getElementById('imageData').value.trim(),
         owned,
-        used,
-        updatedAt: Date.now()
+        used
       };
 
       if (id) {
         cards = cards.map(c => c.id === id ? cardObj : c);
-        showNotice(`Updated "${cardObj.name}".`, 'info');
       } else {
         cards.unshift(cardObj);
-        showNotice(`Added "${cardObj.name}" to your cloud vault.`, 'info');
       }
 
+      saveToStorage();
       closeModal();
       renderCards();
-      await persistCardToCloud(cardObj);
-    };
+    }
 
-    window.deleteCard = async function (id) {
-      const target = cards.find(c => c.id === id);
-      cards = cards.filter(c => c.id !== id);
-      renderCards();
-      showNotice(`Deleted "${target ? target.name : 'card'}".`, 'info');
-      await removeCardFromCloud(id);
-    };
+    function deleteCard(id) {
+      if (confirm('Delete this card?')) {
+        cards = cards.filter(c => c.id !== id);
+        saveToStorage();
+        renderCards();
+      }
+    }
 
     function parseStatNumber(val) {
       const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
@@ -1133,7 +629,7 @@
 
     function scoreCardForDeck(card, nationFocus, style, promptText) {
       let score = 50;
-      const left = Math.max(0, (Number(card.owned) || 0) - (Number(card.used) || 0));
+      const left = Math.max(0, card.owned - card.used);
 
       if (left > 0) score += 35 + Math.min(left * 3, 15);
       else score -= 40;
@@ -1179,17 +675,17 @@
       return score;
     }
 
-    window.generateAIDeck = async function () {
+    async function generateAIDeck() {
       if (cards.length === 0) {
-        showNotice('Add some cards to your collection first so the AI Deck Builder can assemble a deck.', 'warn');
+        alert('Add some cards to your collection first so the AI Deck Builder can build a deck!');
         return;
       }
 
       const nationFocus = document.getElementById('aiNation').value;
       const style = document.getElementById('aiStyle').value;
       const tokenMode = document.getElementById('aiTokenMode').value;
-      const deckSize = Math.max(1, parseInt(document.getElementById('aiDeckSize').value, 10) || 20);
-      const maxCopies = Math.max(1, parseInt(document.getElementById('aiMaxCopies').value, 10) || 3);
+      const deckSize = Math.max(1, parseInt(document.getElementById('aiDeckSize').value) || 20);
+      const maxCopies = Math.max(1, parseInt(document.getElementById('aiMaxCopies').value) || 3);
       const promptText = document.getElementById('aiPrompt').value.trim();
       const useGemini = document.getElementById('useGeminiToggle').checked;
       const geminiKey = document.getElementById('geminiApiKey').value.trim();
@@ -1213,7 +709,7 @@
 
       for (const card of ranked) {
         if (totalPicked >= deckSize) break;
-        const left = Math.max(0, (Number(card.owned) || 0) - (Number(card.used) || 0));
+        const left = Math.max(0, card.owned - card.used);
         if (left <= 0) continue;
 
         const restrLower = (card.restriction || '').toLowerCase();
@@ -1298,12 +794,12 @@
           strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing local deck build instead.`;
         }
       }
-    };
+    }
 
     function renderGeneratedDeckList() {
       const container = document.getElementById('generatedDeckCards');
       container.innerHTML = lastGeneratedDeck.map(({ card, count }) => {
-        const left = Math.max(0, (Number(card.owned) || 0) - (Number(card.used) || 0));
+        const left = Math.max(0, card.owned - card.used);
         const shortage = count > left;
         return `
           <div class="p-3 flex items-center justify-between gap-3 text-xs">
@@ -1326,102 +822,64 @@
       }).join('');
     }
 
-    window.copyDeckList = function () {
+    function copyDeckList() {
       if (!lastGeneratedDeck.length) return;
       const text = lastGeneratedDeck
         .map(({ card, count }) => `${count}x ${card.name}${card.isToken ? ' [Token]' : ''} [${card.nation || 'Universal'} | ${card.rarity || 'None'}]`)
         .join('\n');
+      navigator.clipboard.writeText(text);
+      alert('Deck list copied to clipboard!');
+    }
 
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text);
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-        }
-        showNotice('Deck list copied to clipboard.', 'info');
-      } catch (err) {
-        showNotice('Could not copy automatically—please select and copy the deck list.', 'warn');
-      }
-    };
-
-    window.applyDeckToUsedStock = async function () {
+    function applyDeckToUsedStock() {
       if (!lastGeneratedDeck.length) return;
       const addMap = new Map();
       lastGeneratedDeck.forEach(({ card, count }) => {
         addMap.set(card.id, (addMap.get(card.id) || 0) + count);
       });
 
-      const changedCards = [];
       cards = cards.map(c => {
         const addUsed = addMap.get(c.id) || 0;
         if (!addUsed) return c;
-        const ownedNum = Number(c.owned) || 0;
-        const usedNum = Number(c.used) || 0;
-        const newUsed = Math.min(ownedNum, usedNum + addUsed);
-        const updated = { ...c, used: newUsed, updatedAt: Date.now() };
-        changedCards.push(updated);
-        return updated;
+        const newUsed = Math.min(c.owned, c.used + addUsed);
+        return { ...c, used: newUsed };
       });
 
+      saveToStorage();
       renderCards();
       renderGeneratedDeckList();
-      showNotice('Updated "Used" counts on your cards and synced to cloud.', 'info');
-      for (const ch of changedCards) {
-        await persistCardToCloud(ch);
-      }
-    };
+      alert('Updated "Used" counts on your cards (capped at Total Owned).');
+    }
 
-    window.exportData = function () {
-      const backupPayload = {
-        app: 'CustomCard Vault',
-        version: 4,
-        userId: currentUser ? currentUser.uid : null,
-        exportedAt: new Date().toISOString(),
-        cards
-      };
-      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+    function exportData() {
+      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `customcards-vault-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `customcards-backup-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      showNotice(`Exported ${cards.length} cards to JSON backup.`, 'info');
-    };
+    }
 
-    window.importData = function (event) {
+    function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = (e) => {
         try {
-          const parsed = JSON.parse(e.target.result);
-          const importedCards = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.cards) ? parsed.cards : null);
-          if (!importedCards) {
-            throw new Error('Missing cards array');
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            cards = imported;
+            saveToStorage();
+            renderCards();
           }
-          cards = importedCards.map(c => ({
-            ...c,
-            id: c.id || crypto.randomUUID(),
-            updatedAt: c.updatedAt || Date.now()
-          }));
-          writeLocalCache();
-          renderCards();
-          showNotice(`Imported ${cards.length} cards and syncing to cloud...`, 'info');
-          await migrateCardsToCurrentUser(cards);
-        } catch (err) {
-          showNotice('Invalid JSON backup file. Please choose a valid CustomCard Vault export.', 'error');
+        } catch {
+          alert('Invalid JSON backup file.');
         }
       };
-      reader.onerror = () => showNotice('Could not read the selected file.', 'error');
       reader.readAsText(file);
       event.target.value = '';
-    };
+    }
 
     function updateTypeDropdown() {
       const select = document.getElementById('filterType');
@@ -1444,7 +902,7 @@
               </span>`;
     }
 
-    window.renderCards = function () {
+    function renderCards() {
       updateTypeDropdown();
       const grid = document.getElementById('cardGrid');
       const empty = document.getElementById('emptyState');
@@ -1456,17 +914,17 @@
       const typeFilter = document.getElementById('filterType').value;
       const manaFilter = document.getElementById('filterMana').value;
 
-      const totalOwned = cards.reduce((sum, c) => sum + (Number(c.owned) || 0), 0);
-      const totalUsed = cards.reduce((sum, c) => sum + (Number(c.used) || 0), 0);
-      const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, (Number(c.owned) || 0) - (Number(c.used) || 0)), 0);
+      const totalOwned = cards.reduce((sum, c) => sum + c.owned, 0);
+      const totalUsed = cards.reduce((sum, c) => sum + c.used, 0);
+      const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
       document.getElementById('statUnique').textContent = cards.length;
       document.getElementById('statOwned').textContent = totalOwned;
       document.getElementById('statUsed').textContent = totalUsed;
       document.getElementById('statLeft').textContent = totalLeft;
 
       const filtered = cards.filter(c => {
-        const left = Math.max(0, (Number(c.owned) || 0) - (Number(c.used) || 0));
-        const matchesQuery = (c.name || '').toLowerCase().includes(query) ||
+        const left = Math.max(0, c.owned - c.used);
+        const matchesQuery = c.name.toLowerCase().includes(query) ||
                              (c.nation && c.nation.toLowerCase().includes(query)) ||
                              (c.rarity && c.rarity.toLowerCase().includes(query)) ||
                              (c.cardType && c.cardType.toLowerCase().includes(query)) ||
@@ -1495,17 +953,13 @@
 
       empty.classList.add('hidden');
       grid.innerHTML = filtered.map(card => {
-        const ownedNum = Number(card.owned) || 0;
-        const usedNum = Number(card.used) || 0;
-        const left = Math.max(0, ownedNum - usedNum);
-        const hasCombatStats = (card.attack !== undefined && card.attack !== '') || (card.defense !== undefined && card.defense !== '');
+        const left = Math.max(0, card.owned - card.used);
+        const hasCombatStats = card.attack !== '' || card.defense !== '';
         const nationLabel = card.nation || 'Universal';
         const rarityLabel = card.rarity || 'None';
 
         return `
           <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
-            
-            <!-- Top Header: Card Name, Type & Mana -->
             <div class="px-4 py-3 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <h3 class="font-bold text-base text-white truncate">${escapeHTML(card.name)}</h3>
@@ -1514,17 +968,15 @@
               ${renderManaBadge(card)}
             </div>
 
-            <!-- Card Artwork -->
             <div class="relative aspect-[4/3] bg-slate-950 flex items-center justify-center overflow-hidden group border-b border-slate-800">
               ${card.image
-                ? `<img src="${escapeHTML(card.image)}" alt="${escapeHTML(card.name)}" onclick="openLightbox('${escapeHTML(card.image)}')" class="w-full h-full object-cover cursor-zoom-in transition duration-300 group-hover:scale-105" />`
+                ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" onclick="openLightbox('${card.image}')" class="w-full h-full object-cover cursor-zoom-in transition duration-300 group-hover:scale-105" />`
                 : `<div class="text-center p-4 text-slate-600">
                      <i class="fa-regular fa-image text-3xl mb-1.5"></i>
                      <p class="text-xs">No Picture Uploaded</p>
                    </div>`
               }
 
-              <!-- Nation, Rarity & Token Badges -->
               <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[72%]">
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
                   <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
@@ -1539,13 +991,11 @@
                 ` : ''}
               </div>
 
-              <!-- Floating "Left" Badge -->
               <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
                 ${left} Left
               </div>
             </div>
 
-            <!-- Card Details: Restriction, Ability, Special & Stats -->
             <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
               ${card.restriction ? `
                 <div class="px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
@@ -1554,7 +1004,6 @@
                 </div>
               ` : ''}
 
-              <!-- Ability Text -->
               <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
                 <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Ability</span>
                 ${card.ability
@@ -1562,7 +1011,6 @@
                   : '<span class="text-slate-600 italic">No ability description.</span>'}
               </div>
 
-              <!-- Special Section -->
               ${card.special ? `
                 <div class="bg-fuchsia-950/25 border border-fuchsia-500/25 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
                   <span class="block text-[10px] font-semibold uppercase tracking-wider text-fuchsia-400 mb-0.5"><i class="fa-solid fa-sparkles mr-1"></i>Special</span>
@@ -1570,7 +1018,6 @@
                 </div>
               ` : ''}
 
-              <!-- Attack & Defense Bar -->
               ${hasCombatStats ? `
                 <div class="grid grid-cols-2 gap-2">
                   <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/25 text-xs">
@@ -1584,14 +1031,13 @@
                 </div>
               ` : ''}
 
-              <!-- Inventory Controls -->
               <div class="space-y-2 pt-2 border-t border-slate-800">
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
                     <span class="text-slate-400">Owned:</span>
                     <div class="flex items-center gap-1.5">
                       <button onclick="adjustCount('${card.id}', 'owned', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
-                      <span class="font-bold w-4 text-center text-white">${ownedNum}</span>
+                      <span class="font-bold w-4 text-center text-white">${card.owned}</span>
                       <button onclick="adjustCount('${card.id}', 'owned', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
                     </div>
                   </div>
@@ -1600,15 +1046,14 @@
                     <span class="text-slate-400">Used:</span>
                     <div class="flex items-center gap-1.5">
                       <button onclick="adjustCount('${card.id}', 'used', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
-                      <span class="font-bold w-4 text-center text-amber-400">${usedNum}</span>
+                      <span class="font-bold w-4 text-center text-amber-400">${card.used}</span>
                       <button onclick="adjustCount('${card.id}', 'used', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
                     </div>
                   </div>
                 </div>
 
-                <!-- Edit & Delete Footer -->
                 <div class="flex justify-between items-center pt-1 text-xs">
-                  <span class="text-slate-500">${ownedNum} owned &minus; ${usedNum} used</span>
+                  <span class="text-slate-500">${card.owned} owned &minus; ${card.used} used</span>
                   <div class="flex items-center gap-3">
                     <button onclick="openModal('${card.id}')" class="text-slate-400 hover:text-white flex items-center gap-1">
                       <i class="fa-solid fa-pen"></i> Edit
@@ -1620,11 +1065,10 @@
                 </div>
               </div>
             </div>
-
           </div>
         `;
       }).join('');
-    };
+    }
 
     function escapeHTML(str) {
       if (!str) return '';
@@ -1634,7 +1078,6 @@
     }
 
     renderCards();
-    initFirebase();
   </script>
 </body>
 </html>

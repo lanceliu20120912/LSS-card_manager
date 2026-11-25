@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CustomCard Vault — Card Creator, Stock & AI Deck Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -16,6 +17,39 @@
     .rarity-Secret { background: linear-gradient(90deg, rgba(244, 63, 94, 0.25), rgba(56, 189, 248, 0.25), rgba(250, 204, 21, 0.25)); color: #fff1f2; border-color: rgba(251, 113, 133, 0.6); }
     .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
+
+    @media print {
+      body { background: #ffffff !important; color: #0f172a !important; }
+      header, .no-print, #cardModal, #aiDeckModal, #lightbox { display: none !important; }
+      main { max-width: 100% !important; padding: 0 !important; }
+      #cardGrid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+      }
+      .card-item {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1.5px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .card-item * {
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+      }
+      .card-item .print-surface {
+        background: #f8fafc !important;
+      }
+      body.print-single-mode .card-item:not(.print-target) {
+        display: none !important;
+      }
+      body.print-single-mode #cardGrid {
+        grid-template-columns: minmax(0, 440px) !important;
+        justify-content: center !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
@@ -30,15 +64,21 @@
           <p class="text-xs text-slate-400">Card Stats, Artwork, Nation, Rarity & AI Deck Builder</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
         <button onclick="openAIDeckModal()" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 transition flex items-center gap-2">
           <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deck Agent
         </button>
-        <button onclick="exportData()" title="Download Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-download"></i><span class="hidden sm:inline">Export</span>
+        <button onclick="printCards()" title="Print or Save as PDF" class="px-3 py-2 text-xs font-medium rounded-lg bg-rose-950/70 hover:bg-rose-900/80 text-rose-200 border border-rose-500/40 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-pdf"></i><span>Print / PDF</span>
         </button>
-        <label title="Restore Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-upload"></i><span class="hidden sm:inline">Import</span>
+        <button onclick="exportToExcel()" title="Export Visible Cards to Excel (.xlsx)" class="px-3 py-2 text-xs font-medium rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-500/40 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-excel"></i><span>Excel</span>
+        </button>
+        <button onclick="exportData()" title="Download JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i><span class="hidden md:inline">JSON</span>
+        </button>
+        <label title="Restore JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-upload"></i><span class="hidden md:inline">Import</span>
           <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
         </label>
         <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
@@ -47,8 +87,9 @@
       </div>
     </div>
   </header>
+
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
         <p class="text-xs text-slate-400">Unique Cards</p>
         <p id="statUnique" class="text-2xl font-bold text-white mt-0.5">0</p>
@@ -66,7 +107,8 @@
         <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
       </div>
     </div>
-    <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6">
+
+    <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6 no-print">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
         <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search name, nation, rarity, ability, condition..."
@@ -116,8 +158,9 @@
         </select>
       </div>
     </div>
+
     <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
-    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl">
+    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl no-print">
       <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl">
         <i class="fa-solid fa-wand-sparkles"></i>
       </div>
@@ -809,6 +852,126 @@
       renderGeneratedDeckList();
       alert('Updated "Used" counts on your cards (capped at Total Owned).');
     }
+
+    /* Export & Print Functions */
+    function getFilteredCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const nationFilter = document.getElementById('filterNation').value;
+      const rarityFilter = document.getElementById('filterRarity').value;
+      const tokenFilter = document.getElementById('filterToken').value;
+      const stockFilter = document.getElementById('filterStock').value;
+      const typeFilter = document.getElementById('filterType').value;
+      const manaFilter = document.getElementById('filterMana').value;
+      const conditionFilter = document.getElementById('filterCondition').value;
+
+      return cards.filter(c => {
+        const left = Math.max(0, c.owned - c.used);
+        const matchesQuery = c.name.toLowerCase().includes(query) ||
+                             (c.nation && c.nation.toLowerCase().includes(query)) ||
+                             (c.rarity && c.rarity.toLowerCase().includes(query)) ||
+                             (c.cardType && c.cardType.toLowerCase().includes(query)) ||
+                             (c.isToken && 'token'.includes(query)) ||
+                             (c.hasConditionalEvent && 'conditional event'.includes(query)) ||
+                             (c.conditionTrigger && c.conditionTrigger.toLowerCase().includes(query)) ||
+                             (c.conditionEffect && c.conditionEffect.toLowerCase().includes(query)) ||
+                             (c.restriction && c.restriction.toLowerCase().includes(query)) ||
+                             (c.ability && c.ability.toLowerCase().includes(query)) ||
+                             (c.special && c.special.toLowerCase().includes(query));
+        const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
+        const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
+        const matchesToken = tokenFilter === 'all' ||
+                             (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
+                             (tokenFilter === 'non_tokens' && !c.isToken);
+        const matchesStock = stockFilter === 'all' ||
+                             (stockFilter === 'available' && left > 0) ||
+                             (stockFilter === 'none_left' && left === 0);
+        const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
+        const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
+        const matchesCondition = conditionFilter === 'all' ||
+                                 (conditionFilter === 'has_condition' && Boolean(c.hasConditionalEvent)) ||
+                                 (conditionFilter === 'no_condition' && !c.hasConditionalEvent);
+        return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana && matchesCondition;
+      });
+    }
+
+    function printCards(singleCardId = null) {
+      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
+      if (!targetCards.length) {
+        alert('No cards available to print or save as PDF.');
+        return;
+      }
+
+      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
+      if (singleCardId) {
+        document.body.classList.add('print-single-mode');
+        const targetEl = document.getElementById(`card-${singleCardId}`);
+        if (targetEl) targetEl.classList.add('print-target');
+      } else {
+        document.body.classList.remove('print-single-mode');
+      }
+
+      window.print();
+
+      document.body.classList.remove('print-single-mode');
+      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
+    }
+
+    function exportToExcel(singleCardId = null) {
+      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
+      if (!targetCards.length) {
+        alert('No cards available to export to Excel.');
+        return;
+      }
+      if (typeof XLSX === 'undefined') {
+        alert('Excel export library failed to load. Check your internet connection and reload.');
+        return;
+      }
+
+      const rows = targetCards.map(c => {
+        const left = Math.max(0, (c.owned || 0) - (c.used || 0));
+        const manaText = (!c.manaAction || c.manaAction === 'none')
+          ? 'None'
+          : `${c.manaAction === 'add' ? '+' : '-'}${c.manaValue || 0}`;
+
+        return {
+          'Card Name': c.name || '',
+          'Type': c.cardType || '',
+          'Nation': c.nation || 'Universal',
+          'Rarity': c.rarity || 'None',
+          'Is Token': c.isToken ? 'Yes' : 'No',
+          'Mana': manaText,
+          'Attack (ATK)': c.attack || '',
+          'Defense (DEF)': c.defense || '',
+          'Restriction': c.restriction || '',
+          'Ability': c.ability || '',
+          'Conditional Trigger': c.hasConditionalEvent ? (c.conditionTrigger || '') : '',
+          'Conditional Effect': c.hasConditionalEvent ? (c.conditionEffect || '') : '',
+          'Special': c.special || '',
+          'Total Owned': c.owned || 0,
+          'Used / In Deck': c.used || 0,
+          'Available Left': left,
+          'Image URL': (c.image && c.image.startsWith('http')) ? c.image : (c.image ? '[Embedded Photo]' : '')
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet['!cols'] = [
+        { wch: 24 }, { wch: 15 }, { wch: 13 }, { wch: 13 }, { wch: 10 },
+        { wch: 10 }, { wch: 13 }, { wch: 13 }, { wch: 24 }, { wch: 36 },
+        { wch: 28 }, { wch: 32 }, { wch: 28 }, { wch: 12 }, { wch: 14 },
+        { wch: 14 }, { wch: 24 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Cards');
+
+      const safeName = singleCardId
+        ? `${(targetCards[0].name || 'card').replace(/[^a-z0-9-_]/gi, '_')}.xlsx`
+        : `customcards-${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+      XLSX.writeFile(workbook, safeName);
+    }
+
     function exportData() {
       const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -860,14 +1023,6 @@
       updateTypeDropdown();
       const grid = document.getElementById('cardGrid');
       const empty = document.getElementById('emptyState');
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const nationFilter = document.getElementById('filterNation').value;
-      const rarityFilter = document.getElementById('filterRarity').value;
-      const tokenFilter = document.getElementById('filterToken').value;
-      const stockFilter = document.getElementById('filterStock').value;
-      const typeFilter = document.getElementById('filterType').value;
-      const manaFilter = document.getElementById('filterMana').value;
-      const conditionFilter = document.getElementById('filterCondition').value;
       const totalOwned = cards.reduce((sum, c) => sum + c.owned, 0);
       const totalUsed = cards.reduce((sum, c) => sum + c.used, 0);
       const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
@@ -875,34 +1030,8 @@
       document.getElementById('statOwned').textContent = totalOwned;
       document.getElementById('statUsed').textContent = totalUsed;
       document.getElementById('statLeft').textContent = totalLeft;
-      const filtered = cards.filter(c => {
-        const left = Math.max(0, c.owned - c.used);
-        const matchesQuery = c.name.toLowerCase().includes(query) ||
-                             (c.nation && c.nation.toLowerCase().includes(query)) ||
-                             (c.rarity && c.rarity.toLowerCase().includes(query)) ||
-                             (c.cardType && c.cardType.toLowerCase().includes(query)) ||
-                             (c.isToken && 'token'.includes(query)) ||
-                             (c.hasConditionalEvent && 'conditional event'.includes(query)) ||
-                             (c.conditionTrigger && c.conditionTrigger.toLowerCase().includes(query)) ||
-                             (c.conditionEffect && c.conditionEffect.toLowerCase().includes(query)) ||
-                             (c.restriction && c.restriction.toLowerCase().includes(query)) ||
-                             (c.ability && c.ability.toLowerCase().includes(query)) ||
-                             (c.special && c.special.toLowerCase().includes(query));
-        const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
-        const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
-        const matchesToken = tokenFilter === 'all' ||
-                             (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
-                             (tokenFilter === 'non_tokens' && !c.isToken);
-        const matchesStock = stockFilter === 'all' ||
-                             (stockFilter === 'available' && left > 0) ||
-                             (stockFilter === 'none_left' && left === 0);
-        const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
-        const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
-        const matchesCondition = conditionFilter === 'all' ||
-                                 (conditionFilter === 'has_condition' && Boolean(c.hasConditionalEvent)) ||
-                                 (conditionFilter === 'no_condition' && !c.hasConditionalEvent);
-        return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana && matchesCondition;
-      });
+
+      const filtered = getFilteredCards();
       if (filtered.length === 0) {
         grid.innerHTML = '';
         empty.classList.remove('hidden');
@@ -915,15 +1044,15 @@
         const nationLabel = card.nation || 'Universal';
         const rarityLabel = card.rarity || 'None';
         return `
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
-            <div class="px-4 py-3 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between gap-2">
+          <div id="card-${card.id}" class="card-item bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
+            <div class="px-4 py-3 bg-slate-950/70 print-surface border-b border-slate-800 flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <h3 class="font-bold text-base text-white truncate">${escapeHTML(card.name)}</h3>
                 <p class="text-[11px] font-medium text-indigo-400 uppercase tracking-wider truncate">${escapeHTML(card.cardType || 'Card')}</p>
               </div>
               ${renderManaBadge(card)}
             </div>
-            <div class="relative aspect-[4/3] bg-slate-950 flex items-center justify-center overflow-hidden group border-b border-slate-800">
+            <div class="relative aspect-[4/3] bg-slate-950 print-surface flex items-center justify-center overflow-hidden group border-b border-slate-800">
               ${card.image
                 ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" onclick="openLightbox('${card.image}')" class="w-full h-full object-cover cursor-zoom-in transition duration-300 group-hover:scale-105" />`
                 : `<div class="text-center p-4 text-slate-600">
@@ -932,67 +1061,67 @@
                    </div>`
               }
               <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[72%]">
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 print-surface text-amber-300 border border-amber-500/30 backdrop-blur-md">
                   <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
                 </span>
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md rarity-${escapeHTML(rarityLabel)}">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md print-surface rarity-${escapeHTML(rarityLabel)}">
                   <i class="fa-solid ${rarityLabel === 'Leader' ? 'fa-crown' : 'fa-gem'} mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
                 </span>
                 ${card.isToken ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-950/90 text-teal-300 border border-teal-400/40 backdrop-blur-md">
+                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-950/90 print-surface text-teal-300 border border-teal-400/40 backdrop-blur-md">
                     <i class="fa-solid fa-coins mr-1 text-[10px]"></i>Token
                   </span>
                 ` : ''}
                 ${card.hasConditionalEvent ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-950/90 text-cyan-300 border border-cyan-400/40 backdrop-blur-md">
+                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-950/90 print-surface text-cyan-300 border border-cyan-400/40 backdrop-blur-md">
                     <i class="fa-solid fa-bolt mr-1 text-[10px]"></i>Conditional
                   </span>
                 ` : ''}
               </div>
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
+              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md print-surface ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
                 ${left} Left
               </div>
             </div>
             <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
               ${card.restriction ? `
-                <div class="px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
+                <div class="px-3 py-2 rounded-lg bg-orange-500/10 print-surface border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
                   <span class="font-bold text-orange-400 uppercase tracking-wide mr-1"><i class="fa-solid fa-ban mr-1"></i>Restriction:</span>
                   ${escapeHTML(card.restriction)}
                 </div>
               ` : ''}
-              <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
+              <div class="bg-slate-950/80 print-surface border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
                 <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Ability</span>
                 ${card.ability
                   ? escapeHTML(card.ability)
                   : '<span class="text-slate-600 italic">No ability description.</span>'}
               </div>
               ${card.hasConditionalEvent && (card.conditionTrigger || card.conditionEffect) ? `
-                <div class="bg-cyan-950/25 border border-cyan-500/30 rounded-xl p-3 text-xs text-cyan-100 leading-relaxed space-y-1">
+                <div class="bg-cyan-950/25 print-surface border border-cyan-500/30 rounded-xl p-3 text-xs text-cyan-100 leading-relaxed space-y-1">
                   <span class="block text-[10px] font-semibold uppercase tracking-wider text-cyan-400"><i class="fa-solid fa-bolt mr-1"></i>Conditional Event</span>
                   ${card.conditionTrigger ? `<p class="text-[11px] text-cyan-300"><span class="font-semibold">If/When:</span> ${escapeHTML(card.conditionTrigger)}</p>` : ''}
                   ${card.conditionEffect ? `<p class="text-xs text-slate-200"><span class="font-semibold text-cyan-300">Then:</span> ${escapeHTML(card.conditionEffect)}</p>` : ''}
                 </div>
               ` : ''}
               ${card.special ? `
-                <div class="bg-fuchsia-950/25 border border-fuchsia-500/25 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
+                <div class="bg-fuchsia-950/25 print-surface border border-fuchsia-500/25 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
                   <span class="block text-[10px] font-semibold uppercase tracking-wider text-fuchsia-400 mb-0.5"><i class="fa-solid fa-sparkles mr-1"></i>Special</span>
                   ${escapeHTML(card.special)}
                 </div>
               ` : ''}
               ${hasCombatStats ? `
                 <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/25 text-xs">
+                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-rose-500/10 print-surface border border-rose-500/25 text-xs">
                     <span class="text-rose-300 font-medium"><i class="fa-solid fa-khanda mr-1.5"></i>ATK</span>
                     <span class="font-extrabold text-rose-400 text-sm">${escapeHTML(card.attack || '0')}</span>
                   </div>
-                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/25 text-xs">
+                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 print-surface border border-blue-500/25 text-xs">
                     <span class="text-blue-300 font-medium"><i class="fa-solid fa-shield-halved mr-1.5"></i>DEF</span>
                     <span class="font-extrabold text-blue-400 text-sm">${escapeHTML(card.defense || '0')}</span>
                   </div>
                 </div>
               ` : ''}
               <div class="space-y-2 pt-2 border-t border-slate-800">
-                <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="grid grid-cols-2 gap-2 text-xs no-print">
                   <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
                     <span class="text-slate-400">Owned:</span>
                     <div class="flex items-center gap-1.5">
@@ -1012,7 +1141,13 @@
                 </div>
                 <div class="flex justify-between items-center pt-1 text-xs">
                   <span class="text-slate-500">${card.owned} owned &minus; ${card.used} used</span>
-                  <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-2.5 no-print">
+                    <button onclick="printCards('${card.id}')" title="Print or Save Card as PDF" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </button>
+                    <button onclick="exportToExcel('${card.id}')" title="Export Card to Excel" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                      <i class="fa-solid fa-file-excel"></i>
+                    </button>
                     <button onclick="openModal('${card.id}')" class="text-slate-400 hover:text-white flex items-center gap-1">
                       <i class="fa-solid fa-pen"></i> Edit
                     </button>

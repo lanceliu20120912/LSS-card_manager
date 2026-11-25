@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CustomCard Vault — Card Creator & Inventory Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <i class="fa-solid fa-layer-group text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
+          <p class="text-xs text-slate-400">Card Stats, Artwork, Nation & Remaining Count Tracker</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="exportData()" title="Download Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i><span class="hidden sm:inline">Export</span>
+        </button>
+        <label title="Restore Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-upload"></i><span class="hidden sm:inline">Import</span>
+          <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
+        </label>
+        <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> Add Card
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <p class="text-xs text-slate-400">Unique Cards</p>
+        <p id="statUnique" class="text-2xl font-bold text-white mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <p class="text-xs text-slate-400">Total Owned</p>
+        <p id="statOwned" class="text-2xl font-bold text-indigo-400 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <p class="text-xs text-slate-400">Used / In Deck</p>
+        <p id="statUsed" class="text-2xl font-bold text-amber-400 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-4">
+        <p class="text-xs text-emerald-400 font-medium">Available Left</p>
+        <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6">
+      <div class="relative flex-1 max-w-md">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search name, nation, type, or ability..."
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <select id="filterNation" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">All Nations</option>
+          <option value="Japan">Japan</option>
+          <option value="India">India</option>
+          <option value="China">China</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">All Card Types</option>
+        </select>
+
+        <select id="filterMana" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">All Mana Effects</option>
+          <option value="spend">Spends Mana</option>
+          <option value="add">Adds Mana</option>
+        </select>
+
+        <select id="filterStock" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="all">All Stock</option>
+          <option value="available">Has Cards Left (&gt; 0)</option>
+          <option value="none_left">0 Left (All Used)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Card Grid -->
+    <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl">
+      <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl">
+        <i class="fa-solid fa-wand-sparkles"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-slate-200 mb-1">No cards created yet</h3>
+      <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Add a card with its picture, nation, type, attack, defense, mana effect, ability text, and track how many copies you have left.</p>
+      <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
+        Create Your First Card
+      </button>
+    </div>
+  </main>
+
+  <!-- Add / Edit Modal -->
+  <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="modalTitle" class="text-lg font-bold text-white">Add Card</h2>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form id="cardForm" onsubmit="saveCard(event)" class="space-y-4">
+        <input type="hidden" id="cardId" />
+        <input type="hidden" id="imageData" />
+
+        <!-- Image Upload & Preview -->
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1.5">Card Picture</label>
+          <div class="flex items-center gap-4">
+            <div id="imagePreviewBox" class="w-24 h-28 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden shrink-0 text-slate-500">
+              <i class="fa-regular fa-image text-xl mb-1"></i>
+              <span class="text-[10px]">No Image</span>
+            </div>
+
+            <div class="flex-1 space-y-2">
+              <label class="w-full px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-camera"></i> Upload Photo
+                <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+              </label>
+              <input type="url" id="imageUrlInput" oninput="handleImageUrl(this.value)" placeholder="Or paste image URL..."
+                class="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
+              <button type="button" onclick="clearImage()" class="text-[11px] text-rose-400 hover:underline">Remove picture</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Name & Type -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Card Name *</label>
+            <input type="text" id="name" required placeholder="e.g., Ronin Vanguard"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Type of Card *</label>
+            <input type="text" id="cardType" required placeholder="e.g., Warrior, Spell, Relic"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
+          </div>
+        </div>
+
+        <!-- Nation Classification -->
+        <div>
+          <label class="block text-xs font-medium text-amber-400 mb-1">Nation *</label>
+          <select id="nation" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-amber-500">
+            <option value="Japan">Japan</option>
+            <option value="India">India</option>
+            <option value="China">China</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Mana (Spend or Add), Attack, Defense -->
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-sky-400 mb-1">Mana Action & Value</label>
+            <div class="flex rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+              <select id="manaAction" class="px-2 py-2 bg-slate-900 text-xs font-semibold text-slate-200 border-r border-slate-800 focus:outline-none">
+                <option value="spend">Spend (-)</option>
+                <option value="add">Add (+)</option>
+                <option value="none">None</option>
+              </select>
+              <input type="number" id="manaValue" min="0" value="0" placeholder="0"
+                class="w-full px-2 py-2 bg-slate-950 text-sm font-bold text-center focus:outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-rose-400 mb-1">Attack Damage</label>
+            <input type="text" id="attack" placeholder="e.g., 5 or 1200"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-rose-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-blue-400 mb-1">Defense</label>
+            <input type="text" id="defense" placeholder="e.g., 4 or 1000"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-blue-500" />
+          </div>
+        </div>
+
+        <!-- Description of Ability -->
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Description of Ability</label>
+          <textarea id="ability" rows="3" placeholder="Describe what this card does when played or activated..."
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <!-- Quantity Math Box -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-indigo-400 mb-1">Total Owned *</label>
+              <input type="number" id="owned" min="0" value="1" required oninput="updateModalPreview()"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm font-bold focus:outline-none focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-amber-400 mb-1">Used / In Deck *</label>
+              <input type="number" id="used" min="0" value="0" required oninput="updateModalPreview()"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm font-bold focus:outline-none focus:border-amber-500" />
+            </div>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
+            <span class="text-slate-400">Cards Left Available:</span>
+            <span id="modalLeftPreview" class="text-sm font-bold text-emerald-400">1 left</span>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white">Save Card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full-Size Image Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out">
+    <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain" />
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'customcard_vault_v1';
+    let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+      } catch (e) {
+        alert('Browser storage is full! Please export a backup and remove a few large images.');
+      }
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 520;
+          const scale = Math.min(1, MAX_WIDTH / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          document.getElementById('imageData').value = compressedDataUrl;
+          document.getElementById('imageUrlInput').value = '';
+          setPreviewImage(compressedDataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleImageUrl(url) {
+      const trimmed = url.trim();
+      document.getElementById('imageData').value = trimmed;
+      setPreviewImage(trimmed);
+    }
+
+    function setPreviewImage(src) {
+      const box = document.getElementById('imagePreviewBox');
+      if (src) {
+        box.innerHTML = `<img src="${src}" class="w-full h-full object-cover" alt="Preview" />`;
+      } else {
+        box.innerHTML = `<i class="fa-regular fa-image text-xl mb-1"></i><span class="text-[10px]">No Image</span>`;
+      }
+    }
+
+    function clearImage() {
+      document.getElementById('imageData').value = '';
+      document.getElementById('imageUrlInput').value = '';
+      document.getElementById('photoInput').value = '';
+      setPreviewImage('');
+    }
+
+    function updateModalPreview() {
+      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
+      const used = Math.max(0, parseInt(document.getElementById('used').value) || 0);
+      const left = Math.max(0, owned - used);
+      const preview = document.getElementById('modalLeftPreview');
+      preview.textContent = `${left} left`;
+      preview.className = left > 0 ? 'text-sm font-bold text-emerald-400' : 'text-sm font-bold text-rose-400';
+    }
+
+    function adjustCount(id, field, delta) {
+      cards = cards.map(c => {
+        if (c.id !== id) return c;
+        let owned = c.owned;
+        let used = c.used;
+        if (field === 'owned') {
+          owned = Math.max(0, owned + delta);
+          if (used > owned) used = owned;
+        } else if (field === 'used') {
+          used = Math.min(owned, Math.max(0, used + delta));
+        }
+        return { ...c, owned, used };
+      });
+      saveToStorage();
+      renderCards();
+    }
+
+    function openModal(id = null) {
+      const modal = document.getElementById('cardModal');
+      document.getElementById('cardForm').reset();
+      document.getElementById('cardId').value = '';
+      document.getElementById('nation').value = 'Japan';
+      document.getElementById('modalTitle').textContent = 'Add Card';
+      clearImage();
+
+      if (id) {
+        const c = cards.find(item => item.id === id);
+        if (c) {
+          document.getElementById('modalTitle').textContent = 'Edit Card';
+          document.getElementById('cardId').value = c.id;
+          document.getElementById('name').value = c.name;
+          document.getElementById('cardType').value = c.cardType || '';
+          document.getElementById('nation').value = c.nation || 'Other';
+          document.getElementById('manaAction').value = c.manaAction || 'spend';
+          document.getElementById('manaValue').value = c.manaValue ?? 0;
+          document.getElementById('attack').value = c.attack || '';
+          document.getElementById('defense').value = c.defense || '';
+          document.getElementById('ability').value = c.ability || '';
+          document.getElementById('owned').value = c.owned;
+          document.getElementById('used').value = c.used;
+          if (c.image) {
+            document.getElementById('imageData').value = c.image;
+            if (c.image.startsWith('http')) {
+              document.getElementById('imageUrlInput').value = c.image;
+            }
+            setPreviewImage(c.image);
+          }
+        }
+      }
+      updateModalPreview();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('cardModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openLightbox(src) {
+      if (!src) return;
+      document.getElementById('lightboxImg').src = src;
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.add('hidden');
+      lb.classList.remove('flex');
+    }
+
+    function saveCard(e) {
+      e.preventDefault();
+      const id = document.getElementById('cardId').value;
+      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
+      const used = Math.min(owned, Math.max(0, parseInt(document.getElementById('used').value) || 0));
+
+      const cardObj = {
+        id: id || crypto.randomUUID(),
+        name: document.getElementById('name').value.trim(),
+        cardType: document.getElementById('cardType').value.trim(),
+        nation: document.getElementById('nation').value,
+        manaAction: document.getElementById('manaAction').value,
+        manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
+        attack: document.getElementById('attack').value.trim(),
+        defense: document.getElementById('defense').value.trim(),
+        ability: document.getElementById('ability').value.trim(),
+        image: document.getElementById('imageData').value.trim(),
+        owned,
+        used
+      };
+
+      if (id) {
+        cards = cards.map(c => c.id === id ? cardObj : c);
+      } else {
+        cards.unshift(cardObj);
+      }
+
+      saveToStorage();
+      closeModal();
+      renderCards();
+    }
+
+    function deleteCard(id) {
+      if (confirm('Delete this card?')) {
+        cards = cards.filter(c => c.id !== id);
+        saveToStorage();
+        renderCards();
+      }
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `customcards-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            cards = imported;
+            saveToStorage();
+            renderCards();
+          }
+        } catch {
+          alert('Invalid JSON backup file.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function updateTypeDropdown() {
+      const select = document.getElementById('filterType');
+      const currentVal = select.value;
+      const types = [...new Set(cards.map(c => c.cardType).filter(Boolean))].sort();
+      select.innerHTML = `<option value="all">All Card Types</option>` +
+        types.map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
+      if (types.includes(currentVal)) select.value = currentVal;
+    }
+
+    function renderManaBadge(card) {
+      if (!card.manaAction || card.manaAction === 'none') return '';
+      if (card.manaAction === 'add') {
+        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0" title="Adds Mana">
+                  <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>+${card.manaValue} Mana
+                </span>`;
+      }
+      return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-500/40 shrink-0" title="Spends Mana">
+                <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>-${card.manaValue} Mana
+              </span>`;
+    }
+
+    function renderCards() {
+      updateTypeDropdown();
+      const grid = document.getElementById('cardGrid');
+      const empty = document.getElementById('emptyState');
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const nationFilter = document.getElementById('filterNation').value;
+      const stockFilter = document.getElementById('filterStock').value;
+      const typeFilter = document.getElementById('filterType').value;
+      const manaFilter = document.getElementById('filterMana').value;
+
+      const totalOwned = cards.reduce((sum, c) => sum + c.owned, 0);
+      const totalUsed = cards.reduce((sum, c) => sum + c.used, 0);
+      const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
+      document.getElementById('statUnique').textContent = cards.length;
+      document.getElementById('statOwned').textContent = totalOwned;
+      document.getElementById('statUsed').textContent = totalUsed;
+      document.getElementById('statLeft').textContent = totalLeft;
+
+      const filtered = cards.filter(c => {
+        const left = Math.max(0, c.owned - c.used);
+        const matchesQuery = c.name.toLowerCase().includes(query) ||
+                             (c.nation && c.nation.toLowerCase().includes(query)) ||
+                             (c.cardType && c.cardType.toLowerCase().includes(query)) ||
+                             (c.ability && c.ability.toLowerCase().includes(query));
+        const matchesNation = nationFilter === 'all' || (c.nation || 'Other') === nationFilter;
+        const matchesStock = stockFilter === 'all' ||
+                             (stockFilter === 'available' && left > 0) ||
+                             (stockFilter === 'none_left' && left === 0);
+        const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
+        const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
+        return matchesQuery && matchesNation && matchesStock && matchesType && matchesMana;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = filtered.map(card => {
+        const left = Math.max(0, card.owned - card.used);
+        const hasCombatStats = card.attack !== '' || card.defense !== '';
+        const nationLabel = card.nation || 'Other';
+
+        return `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
+            
+            <!-- Top Header: Card Name & Mana -->
+            <div class="px-4 py-3 bg-slate-950/70 border-b border-slate-800 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <h3 class="font-bold text-base text-white truncate">${escapeHTML(card.name)}</h3>
+                <p class="text-[11px] font-medium text-indigo-400 uppercase tracking-wider truncate">${escapeHTML(card.cardType || 'Card')}</p>
+              </div>
+              ${renderManaBadge(card)}
+            </div>
+
+            <!-- Card Artwork -->
+            <div class="relative aspect-[4/3] bg-slate-950 flex items-center justify-center overflow-hidden group border-b border-slate-800">
+              ${card.image
+                ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" onclick="openLightbox('${card.image}')" class="w-full h-full object-cover cursor-zoom-in transition duration-300 group-hover:scale-105" />`
+                : `<div class="text-center p-4 text-slate-600">
+                     <i class="fa-regular fa-image text-3xl mb-1.5"></i>
+                     <p class="text-xs">No Picture Uploaded</p>
+                   </div>`
+              }
+
+              <!-- Nation Badge -->
+              <div class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
+              </div>
+
+              <!-- Floating "Left" Badge -->
+              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
+                ${left} Left
+              </div>
+            </div>
+
+            <!-- Card Ability & Combat Stats -->
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <!-- Ability Text -->
+              <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[68px]">
+                ${card.ability
+                  ? escapeHTML(card.ability)
+                  : '<span class="text-slate-600 italic">No ability description.</span>'}
+              </div>
+
+              <!-- Attack & Defense Bar -->
+              ${hasCombatStats ? `
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/25 text-xs">
+                    <span class="text-rose-300 font-medium"><i class="fa-solid fa-khanda mr-1.5"></i>ATK</span>
+                    <span class="font-extrabold text-rose-400 text-sm">${escapeHTML(card.attack || '0')}</span>
+                  </div>
+                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/25 text-xs">
+                    <span class="text-blue-300 font-medium"><i class="fa-solid fa-shield-halved mr-1.5"></i>DEF</span>
+                    <span class="font-extrabold text-blue-400 text-sm">${escapeHTML(card.defense || '0')}</span>
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Inventory Controls -->
+              <div class="space-y-2 pt-2 border-t border-slate-800">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
+                    <span class="text-slate-400">Owned:</span>
+                    <div class="flex items-center gap-1.5">
+                      <button onclick="adjustCount('${card.id}', 'owned', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
+                      <span class="font-bold w-4 text-center text-white">${card.owned}</span>
+                      <button onclick="adjustCount('${card.id}', 'owned', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
+                    <span class="text-slate-400">Used:</span>
+                    <div class="flex items-center gap-1.5">
+                      <button onclick="adjustCount('${card.id}', 'used', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
+                      <span class="font-bold w-4 text-center text-amber-400">${card.used}</span>
+                      <button onclick="adjustCount('${card.id}', 'used', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Edit & Delete Footer -->
+                <div class="flex justify-between items-center pt-1 text-xs">
+                  <span class="text-slate-500">${card.owned} owned &minus; ${card.used} used</span>
+                  <div class="flex items-center gap-3">
+                    <button onclick="openModal('${card.id}')" class="text-slate-400 hover:text-white flex items-center gap-1">
+                      <i class="fa-solid fa-pen"></i> Edit
+                    </button>
+                    <button onclick="deleteCard('${card.id}')" class="text-slate-400 hover:text-rose-400 flex items-center gap-1">
+                      <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag]));
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>

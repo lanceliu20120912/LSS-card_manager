@@ -19,9 +19,11 @@
     .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
 
-    /* Interactive Animations */
+    /* ============================================================
+       SITE-WIDE & BATTLE ARENA KEYFRAME ANIMATIONS
+    ============================================================ */
     @keyframes fadeSlideUp {
-      0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+      0% { opacity: 0; transform: translateY(18px) scale(0.97); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     @keyframes modalBackdropIn {
@@ -29,25 +31,84 @@
       100% { opacity: 1; }
     }
     @keyframes modalPanelIn {
-      0% { opacity: 0; transform: translateY(18px) scale(0.95); }
+      0% { opacity: 0; transform: translateY(20px) scale(0.94); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     @keyframes gentleFloat {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes ambientOrbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(28px, -20px) scale(1.06); }
+      66% { transform: translate(-22px, 16px) scale(0.96); }
     }
     @keyframes shimmerSweep {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(200%); }
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(220%); }
     }
     @keyframes statPop {
       0% { transform: scale(1); }
-      45% { transform: scale(1.14); }
+      45% { transform: scale(1.18); color: #34d399; }
       100% { transform: scale(1); }
     }
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
-      50% { box-shadow: 0 0 16px 2px rgba(16, 185, 129, 0.35); }
+      50% { box-shadow: 0 0 18px 3px rgba(16, 185, 129, 0.35); }
+    }
+
+    /* Practice Battle Animations */
+    @keyframes summonPop {
+      0% { opacity: 0; transform: scale(0.65) translateY(-16px); }
+      65% { opacity: 1; transform: scale(1.06) translateY(2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes moveSlide {
+      0% { opacity: 0.4; transform: scale(0.9) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes attackLungeUp {
+      0% { transform: translateY(0) scale(1); z-index: 20; }
+      35% { transform: translateY(10px) scale(0.96); z-index: 20; }
+      65% { transform: translateY(-34px) scale(1.1); box-shadow: 0 16px 32px rgba(244, 63, 94, 0.55); z-index: 20; }
+      100% { transform: translateY(0) scale(1); z-index: 20; }
+    }
+    @keyframes attackLungeDown {
+      0% { transform: translateY(0) scale(1); z-index: 20; }
+      35% { transform: translateY(-10px) scale(0.96); z-index: 20; }
+      65% { transform: translateY(34px) scale(1.1); box-shadow: 0 16px 32px rgba(217, 70, 239, 0.55); z-index: 20; }
+      100% { transform: translateY(0) scale(1); z-index: 20; }
+    }
+    @keyframes hitShake {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(-8px) rotate(-2deg); background-color: rgba(225, 29, 72, 0.45); border-color: #fb7185; }
+      38% { transform: translateX(8px) rotate(2deg); background-color: rgba(225, 29, 72, 0.45); border-color: #fb7185; }
+      58% { transform: translateX(-6px) rotate(-1deg); }
+      78% { transform: translateX(5px) rotate(1deg); }
+    }
+    @keyframes floatDamagePop {
+      0% { opacity: 0; transform: translate(-50%, 6px) scale(0.6); }
+      22% { opacity: 1; transform: translate(-50%, -8px) scale(1.18); }
+      80% { opacity: 1; transform: translate(-50%, -26px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -38px) scale(0.9); }
+    }
+    @keyframes tacticFlash {
+      0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.85); border-color: #22d3ee; }
+      50% { box-shadow: 0 0 22px 6px rgba(34, 211, 238, 0.45); border-color: #67e8f9; transform: scale(1.04); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); transform: scale(1); }
+    }
+    @keyframes battleLinePulse {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); box-shadow: 0 0 14px rgba(245, 158, 11, 0.35); }
+    }
+    @keyframes logSlideIn {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes victoryCelebrate {
+      0% { opacity: 0; transform: scale(0.85) translateY(12px); }
+      60% { opacity: 1; transform: scale(1.03) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .animate-card-enter {
@@ -65,11 +126,52 @@
     .animate-float-slow {
       animation: gentleFloat 3.4s ease-in-out infinite;
     }
+    .animate-orb-1 {
+      animation: ambientOrbDrift 14s ease-in-out infinite;
+    }
+    .animate-orb-2 {
+      animation: ambientOrbDrift 18s ease-in-out infinite reverse;
+    }
     .animate-stat-pop {
-      animation: statPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      animation: statPop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .animate-pulse-glow {
-      animation: pulseGlow 2s infinite;
+      animation: pulseGlow 1.9s infinite;
+    }
+    .animate-summon-pop {
+      animation: summonPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-move-slide {
+      animation: moveSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-attack-up {
+      animation: attackLungeUp 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-attack-down {
+      animation: attackLungeDown 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-hit-shake {
+      animation: hitShake 0.48s ease-in-out both;
+    }
+    .animate-tactic-flash {
+      animation: tacticFlash 0.65s ease-out both;
+    }
+    .animate-battle-line {
+      animation: battleLinePulse 2.8s ease-in-out infinite;
+    }
+    .animate-log-in {
+      animation: logSlideIn 0.26s ease-out both;
+    }
+    .animate-victory {
+      animation: victoryCelebrate 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .floating-dmg-badge {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      z-index: 30;
+      pointer-events: none;
+      animation: floatDamagePop 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .btn-animated {
       position: relative;
@@ -87,33 +189,40 @@
       position: absolute;
       inset: 0;
       width: 50%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+      transform: translateX(-120%);
       pointer-events: none;
     }
     .btn-shimmer:hover::after {
       animation: shimmerSweep 0.75s ease-in-out;
     }
     .card-item {
-      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s ease, border-color 0.26s ease;
     }
     .card-item:hover {
       transform: translateY(-5px);
-      box-shadow: 0 18px 35px -10px rgba(79, 70, 229, 0.22);
-      border-color: rgba(99, 102, 241, 0.45);
+      box-shadow: 0 18px 35px -10px rgba(79, 70, 229, 0.24);
+      border-color: rgba(99, 102, 241, 0.48);
     }
     .stat-card {
       transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
     .stat-card:hover {
       transform: translateY(-2px);
-      border-color: rgba(99, 102, 241, 0.4);
-      box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.8);
+      border-color: rgba(99, 102, 241, 0.45);
+      box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.85);
+    }
+    .hand-card-animated {
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .hand-card-animated:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 24px -8px rgba(34, 211, 238, 0.28);
     }
 
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      header, .no-print, #cardModal, #aiDeckModal, #rulebookModal, #practiceModal, #lightbox { display: none !important; }
+      header, .no-print, .ambient-bg, #cardModal, #aiDeckModal, #rulebookModal, #practiceModal, #lightbox { display: none !important; }
       main { max-width: 100% !important; padding: 0 !important; }
       #cardGrid {
         display: grid !important;
@@ -147,7 +256,13 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col relative overflow-x-hidden">
+  <!-- Ambient Animated Background Glow -->
+  <div class="ambient-bg pointer-events-none fixed inset-0 overflow-hidden z-0">
+    <div class="animate-orb-1 absolute -top-24 -left-24 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl"></div>
+    <div class="animate-orb-2 absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-600/10 blur-3xl"></div>
+  </div>
+
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
@@ -188,21 +303,21 @@
       </div>
     </div>
   </header>
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 relative z-10">
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
-      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card animate-card-enter bg-slate-900/90 border border-slate-800 rounded-xl p-4" style="animation-delay: 0ms">
         <p class="text-xs text-slate-400">Unique Cards</p>
         <p id="statUnique" class="text-2xl font-bold text-white mt-0.5">0</p>
       </div>
-      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card animate-card-enter bg-slate-900/90 border border-slate-800 rounded-xl p-4" style="animation-delay: 50ms">
         <p class="text-xs text-slate-400">Total Owned</p>
         <p id="statOwned" class="text-2xl font-bold text-indigo-400 mt-0.5">0</p>
       </div>
-      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card animate-card-enter bg-slate-900/90 border border-slate-800 rounded-xl p-4" style="animation-delay: 100ms">
         <p class="text-xs text-slate-400">Used / In Deck</p>
         <p id="statUsed" class="text-2xl font-bold text-amber-400 mt-0.5">0</p>
       </div>
-      <div class="stat-card bg-slate-900 border border-emerald-500/30 rounded-xl p-4">
+      <div class="stat-card animate-card-enter bg-slate-900/90 border border-emerald-500/30 rounded-xl p-4" style="animation-delay: 150ms">
         <p class="text-xs text-emerald-400 font-medium">Available Left</p>
         <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
       </div>
@@ -277,7 +392,7 @@
       <!-- Top Bar -->
       <div class="px-5 py-3.5 bg-gradient-to-r from-slate-950 via-cyan-950/35 to-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 animate-float-slow">
             <i class="fa-solid fa-gamepad"></i>
           </div>
           <div>
@@ -296,14 +411,14 @@
       </div>
 
       <!-- STEP 1: PRACTICE DECK SETUP -->
-      <div id="practiceSetupView" class="p-5 overflow-y-auto space-y-5">
+      <div id="practiceSetupView" class="p-5 overflow-y-auto space-y-5 animate-tab-panel">
         <div class="p-3.5 rounded-xl bg-cyan-950/25 border border-cyan-500/30 text-xs text-cyan-100 flex flex-wrap items-center justify-between gap-3">
           <div>
             <span class="font-bold text-cyan-300"><i class="fa-solid fa-circle-info mr-1.5"></i>How Practice Mode Works:</span>
             Select your starting Leader/Capital & cards below, then choose what cards the <strong>AI Robot</strong> puts in its deck (or let the Robot mirror your cards).
           </div>
           <div class="flex flex-wrap gap-2">
-            <button type="button" onclick="quickFillPracticeDecks()" class="btn-animated px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs">
+            <button type="button" onclick="quickFillPracticeDecks()" class="btn-animated btn-shimmer px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs">
               <i class="fa-solid fa-bolt mr-1"></i> Auto-Fill Both Decks
             </button>
             <button type="button" onclick="loadSamplePracticeCardsIfEmpty()" class="btn-animated px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-semibold text-xs">
@@ -314,7 +429,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <!-- PLAYER DECK CONFIGURATION -->
-          <div class="bg-slate-950/80 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
+          <div class="bg-slate-950/80 border border-indigo-500/30 rounded-2xl p-4 space-y-3 animate-card-enter" style="animation-delay: 40ms">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <div class="flex items-center gap-2">
                 <span class="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-300 flex items-center justify-center text-xs"><i class="fa-solid fa-user"></i></span>
@@ -348,7 +463,7 @@
           </div>
 
           <!-- ROBOT DECK CONFIGURATION -->
-          <div class="bg-slate-950/80 border border-fuchsia-500/30 rounded-2xl p-4 space-y-3">
+          <div class="bg-slate-950/80 border border-fuchsia-500/30 rounded-2xl p-4 space-y-3 animate-card-enter" style="animation-delay: 100ms">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <div class="flex items-center gap-2">
                 <span class="w-7 h-7 rounded-lg bg-fuchsia-600/30 text-fuchsia-300 flex items-center justify-center text-xs"><i class="fa-solid fa-robot"></i></span>
@@ -403,13 +518,13 @@
       </div>
 
       <!-- STEP 2: LIVE PRACTICE BATTLEFIELD -->
-      <div id="practiceBoardView" class="hidden flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+      <div id="practiceBoardView" class="hidden flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 animate-tab-panel">
         <!-- Victory Banner -->
-        <div id="practiceWinnerBanner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-cyan-500/20 border border-amber-400/50 text-center space-y-2 animate-card-enter">
+        <div id="practiceWinnerBanner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-cyan-500/20 border border-amber-400/50 text-center space-y-2 animate-victory">
           <h3 id="practiceWinnerTitle" class="text-xl font-extrabold text-amber-300">Victory!</h3>
           <p id="practiceWinnerReason" class="text-xs text-slate-200"></p>
           <div class="flex justify-center gap-2 pt-1">
-            <button onclick="startPracticeMatch()" class="btn-animated px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+            <button onclick="startPracticeMatch()" class="btn-animated btn-shimmer px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
               <i class="fa-solid fa-rotate-right mr-1"></i> Rematch
             </button>
             <button onclick="showPracticeSetup()" class="btn-animated px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">
@@ -421,13 +536,13 @@
         <!-- Turn & Phase Status Bar -->
         <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 flex-wrap">
-            <span id="turnIndicatorBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white">YOUR TURN</span>
+            <span id="turnIndicatorBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white transition-all duration-300">YOUR TURN</span>
             <span id="roundNumberBadge" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300">Round 1</span>
             <div class="flex items-center gap-1 text-[11px]">
-              <span id="phasePill-draw" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">1. Draw</span>
-              <span id="phasePill-play" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">2. Play</span>
-              <span id="phasePill-fight" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">3. Fight</span>
-              <span id="phasePill-move" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">4. Move</span>
+              <span id="phasePill-draw" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200">1. Draw</span>
+              <span id="phasePill-play" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200">2. Play</span>
+              <span id="phasePill-fight" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200">3. Fight</span>
+              <span id="phasePill-move" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200">4. Move</span>
             </div>
           </div>
 
@@ -449,8 +564,8 @@
                 <span class="font-bold text-white">AI Robot</span>
                 <span id="robotHudStats" class="text-fuchsia-200">Res: 0/0 • Hand: 4 • Deck: 15 • Silk: 0/3</span>
               </div>
-              <span id="robotThinkingBadge" class="hidden px-2.5 py-0.5 rounded-full bg-fuchsia-600/30 text-fuchsia-200 text-[11px] font-semibold">
-                <i class="fa-solid fa-spinner fa-spin mr-1"></i>Robot thinking...
+              <span id="robotThinkingBadge" class="hidden px-2.5 py-0.5 rounded-full bg-fuchsia-600/30 text-fuchsia-200 text-[11px] font-semibold animate-pulse">
+                <i class="fa-solid fa-spinner fa-spin mr-1"></i>Robot thinking & battling...
               </span>
             </div>
 
@@ -469,7 +584,7 @@
             <!-- BATTLE LINE DIVIDER -->
             <div class="relative py-1 flex items-center justify-center">
               <div class="w-full border-t border-dashed border-amber-500/40"></div>
-              <span class="px-3 py-0.5 rounded-full bg-slate-900 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 shrink-0 mx-2">
+              <span class="animate-battle-line px-3 py-0.5 rounded-full bg-slate-900 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 shrink-0 mx-2">
                 <i class="fa-solid fa-swords mr-1"></i>Battle Line
               </span>
               <div class="w-full border-t border-dashed border-amber-500/40"></div>
@@ -507,7 +622,7 @@
                   </button>
                 </div>
               </div>
-              <div id="playerHandZone" class="flex gap-2.5 overflow-x-auto pb-1 min-h-[112px]"></div>
+              <div id="playerHandZone" class="flex gap-2.5 overflow-x-auto pb-1 pt-1 min-h-[116px]"></div>
             </div>
           </div>
 
@@ -1487,12 +1602,17 @@
     }
 
     /* ============================================================
-       AI PRACTICE ARENA (PLAYER VS ROBOT USING CHOSEN CARDS)
+       AI PRACTICE ARENA (PLAYER VS ROBOT WITH BATTLE ANIMATIONS)
     ============================================================ */
     let practicePlayerCounts = {};
     let practiceRobotCounts = {};
     let practiceGame = null;
-    let robotTurnTimer = null;
+    let robotTurnTimers = [];
+
+    function clearRobotTimers() {
+      robotTurnTimers.forEach(t => clearTimeout(t));
+      robotTurnTimers = [];
+    }
 
     function openPracticeModal() {
       const modal = document.getElementById('practiceModal');
@@ -1502,26 +1622,20 @@
       modal.classList.add('flex');
     }
     function closePracticeModal() {
-      if (robotTurnTimer) {
-        clearTimeout(robotTurnTimer);
-        robotTurnTimer = null;
-      }
+      clearRobotTimers();
       const modal = document.getElementById('practiceModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
     function showPracticeSetup() {
-      if (robotTurnTimer) {
-        clearTimeout(robotTurnTimer);
-        robotTurnTimer = null;
-      }
+      clearRobotTimers();
       document.getElementById('practiceSetupView').classList.remove('hidden');
       document.getElementById('practiceBoardView').classList.add('hidden');
       document.getElementById('practiceBackToSetupBtn').classList.add('hidden');
       populatePracticeSetupLists();
     }
     function loadSamplePracticeCardsIfEmpty() {
-      if (cards.length > 0 && !confirm('Add official LSS starter sample cards (Mohenjo-Daro, Sunzi, Irrigation System, Horse Sacrifice, Ashoka, Samurai Vanguard) to your collection?')) {
+      if (cards.length > 0 && !confirm('Add official LSS starter sample cards (Mohenjo-Daro, Sunzi, Irrigation System, Horse Sacrifice, Ashoka, Steppe Horse Archer) to your collection?')) {
         return;
       }
       const samples = [
@@ -1663,7 +1777,7 @@
           ? 'Tactic (0 Res)'
           : `${c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`} • ${c.attack || 0}/${c.defense || 0}`;
         return `
-          <div class="px-3 py-2 flex items-center justify-between gap-2 text-xs ${currentQty > 0 ? 'bg-slate-800/45' : ''}">
+          <div class="px-3 py-2 flex items-center justify-between gap-2 text-xs transition-colors ${currentQty > 0 ? 'bg-slate-800/45' : ''}">
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="font-mono text-[10px] text-emerald-300">${escapeHTML(c.cardCode || '')}</span>
@@ -1675,9 +1789,9 @@
             <div class="flex items-center gap-1.5 shrink-0">
               ${isLockedMirror
                 ? `<span class="px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 font-bold">${currentQty}x (Mirrored)</span>`
-                : `<button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', -1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200">-</button>
+                : `<button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', -1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200">-</button>
                    <span class="w-5 text-center font-bold ${currentQty > 0 ? 'text-cyan-300' : 'text-slate-500'}">${currentQty}</span>
-                   <button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', 1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200" title="Max ${maxAllowed}">+</button>`
+                   <button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', 1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200" title="Max ${maxAllowed}">+</button>`
               }
             </div>
           </div>
@@ -1812,7 +1926,7 @@
         isCapital: isCardCapital(cardTemplate),
         isBuilding: isCardBuilding(cardTemplate),
         isTactic: isCardTactic(cardTemplate),
-        prepared: isStarter, // Starting Leader/Capital begins ready
+        prepared: isStarter,
         hasAttackedThisTurn: false,
         mustAttackThisTurn: false,
         heritageTokens: 0,
@@ -1835,7 +1949,6 @@
           deck.push(tmpl);
         }
       }
-      // If user left deck empty, auto-populate 15 cards so they can play immediately
       if (deck.length === 0) {
         const pool = cards.filter(c => !c.isToken && (!fallbackStarter || c.id !== fallbackStarter.id));
         const source = pool.length > 0 ? pool : cards;
@@ -1845,7 +1958,6 @@
           idx++;
         }
       }
-      // Shuffle deck
       for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -1853,11 +1965,30 @@
       return deck;
     }
 
+    function triggerSlotAnimation(ownerKey, row, slot, animClass, floatingText = null, floatingColor = 'text-rose-300') {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`pslot-${ownerKey}-${row}-${slot}`);
+        if (!el) return;
+        el.classList.remove('animate-summon-pop', 'animate-move-slide', 'animate-attack-up', 'animate-attack-down', 'animate-hit-shake', 'animate-tactic-flash');
+        void el.offsetWidth;
+        el.classList.add(animClass);
+
+        if (floatingText) {
+          const badge = document.createElement('div');
+          badge.className = `floating-dmg-badge px-2 py-0.5 rounded-full bg-slate-950/95 border border-rose-500/60 text-xs font-extrabold shadow-lg ${floatingColor}`;
+          badge.textContent = floatingText;
+          el.appendChild(badge);
+          setTimeout(() => badge.remove(), 1100);
+        }
+      });
+    }
+
     function startPracticeMatch() {
       if (cards.length === 0) {
         alert('Add at least 1 card (or click "Load Demo LSS Cards") before starting a practice match!');
         return;
       }
+      clearRobotTimers();
       const pStarterId = document.getElementById('practicePlayerStarter').value;
       const pStarterRow = document.getElementById('practicePlayerStarterRow').value;
       const rMode = document.getElementById('practiceRobotMode').value;
@@ -1885,11 +2016,11 @@
       practiceGame = {
         round: 1,
         turn: firstTurn,
-        phase: 'play', // Round 1 starts directly in Play phase after 4-card draw
+        phase: 'play',
         winner: null,
         winReason: '',
         selectedHandUid: null,
-        selectedBoardUnit: null, // { row: 'front'|'back', slot: 0..4 }
+        selectedBoardUnit: null,
         logs: [],
         player: {
           name: 'You',
@@ -1917,14 +2048,12 @@
         }
       };
 
-      // Place starting Leaders/Capitals
       const actualPRow = pStarterUnit.isCapital ? 'back' : pStarterRow;
       practiceGame.player[actualPRow][2] = pStarterUnit;
 
-      const actualRRow = rStarterUnit.isCapital ? 'back' : 'back';
+      const actualRRow = 'back';
       practiceGame.robot[actualRRow][2] = rStarterUnit;
 
-      // Each player draws 4 starting cards
       for (let i = 0; i < 4; i++) {
         drawCardForSide('player', true);
         drawCardForSide('robot', true);
@@ -1939,6 +2068,8 @@
       addPracticeLog(`${firstTurn === 'player' ? 'You go' : 'AI Robot goes'} first (lower starter resource score)! Both players drew 4 cards.`);
 
       renderPracticeBoard();
+      triggerSlotAnimation('player', actualPRow, 2, 'animate-summon-pop');
+      triggerSlotAnimation('robot', actualRRow, 2, 'animate-summon-pop');
 
       if (firstTurn === 'robot') {
         scheduleRobotTurn();
@@ -1988,7 +2119,6 @@
         const side = practiceGame[sideKey];
         const opp = practiceGame[oppKey];
 
-        // 1. Steel Victory: Opponent has no Leader or Capital remaining on board
         const oppUnits = [...opp.front, ...opp.back].filter(Boolean);
         const oppHasWinTarget = oppUnits.some(u => u.isStarter || u.isLeader);
         if (!oppHasWinTarget) {
@@ -1996,7 +2126,6 @@
           return true;
         }
 
-        // 2. Legend Victory: Friendly Capital reached heritage threshold (default 5)
         const sideUnits = [...side.front, ...side.back].filter(Boolean);
         for (const u of sideUnits) {
           if (u.isCapital) {
@@ -2013,6 +2142,7 @@
     }
 
     function declarePracticeWinner(winnerKey, reason) {
+      clearRobotTimers();
       practiceGame.winner = winnerKey;
       practiceGame.winReason = reason;
       addPracticeLog(`🏆 ${reason}`);
@@ -2029,10 +2159,8 @@
       const side = practiceGame[sideKey];
       side.playedBuildingThisTurn = false;
 
-      // Draw Phase: draw 1 card
       drawCardForSide(sideKey, false);
 
-      // Prepare all units & reset turn flags
       [...side.front, ...side.back].filter(Boolean).forEach(u => {
         u.prepared = true;
         u.hasAttackedThisTurn = false;
@@ -2043,7 +2171,6 @@
       recalculateSideResources(sideKey);
       const availableRes = side.resourceCap - side.usedResources;
 
-      // Silk Victory token check during Draw Phase (10+ resources)
       if (side.resourceCap >= 10 || availableRes >= 10) {
         side.silkTokens += 1;
         addPracticeLog(`${side.name} maintained 10+ resources in Draw Phase and gained a Silk Token (${side.silkTokens}/3)!`);
@@ -2064,7 +2191,6 @@
       if (!practiceGame || practiceGame.winner) return;
       const side = practiceGame[sideKey];
 
-      // Heal all Champions and Buildings (Leaders & Capitals do NOT heal)
       [...side.front, ...side.back].filter(Boolean).forEach(u => {
         if (!u.isLeader && !u.isCapital) {
           u.currentDef = u.maxDef;
@@ -2073,7 +2199,6 @@
         u.mustAttackThisTurn = false;
       });
 
-      // Silk Victory win check at end of Move Phase
       if (side.silkTokens >= 3) {
         declarePracticeWinner(sideKey, `Silk Victory! ${side.name} held 3 Silk Tokens at the end of the Move Phase!`);
         return;
@@ -2119,21 +2244,24 @@
 
     function triggerCapitalHeritageOnPlay(sideKey, playedUnit) {
       const side = practiceGame[sideKey];
-      const allFriendly = [...side.front, ...side.back].filter(Boolean);
       const playedText = `${playedUnit.name} ${playedUnit.cardType}`.toLowerCase();
 
-      for (const u of allFriendly) {
-        if (u.isCapital && u.hasConditionalEvent) {
-          const trig = (u.conditionTrigger || '').toLowerCase();
-          const matchesSubtype = (trig.includes('shudra') && playedText.includes('shudra')) ||
-                                 (trig.includes('vaisya') && playedText.includes('vaisya')) ||
-                                 (trig.includes('champion') && !playedUnit.isBuilding && !playedUnit.isTactic) ||
-                                 (!trig.includes('shudra') && !trig.includes('vaisya') && !playedUnit.isBuilding && !playedUnit.isTactic);
-          if (matchesSubtype) {
-            u.heritageTokens += 1;
-            u.maxDef += 1;
-            u.currentDef += 1;
-            addPracticeLog(`✨ ${u.name} gained +1 Heritage Token (${u.heritageTokens} total, +1 DEF)!`);
+      for (const r of ['front', 'back']) {
+        for (let s = 0; s < 5; s++) {
+          const u = side[r][s];
+          if (u && u.isCapital && u.hasConditionalEvent) {
+            const trig = (u.conditionTrigger || '').toLowerCase();
+            const matchesSubtype = (trig.includes('shudra') && playedText.includes('shudra')) ||
+                                   (trig.includes('vaisya') && playedText.includes('vaisya')) ||
+                                   (trig.includes('champion') && !playedUnit.isBuilding && !playedUnit.isTactic) ||
+                                   (!trig.includes('shudra') && !trig.includes('vaisya') && !playedUnit.isBuilding && !playedUnit.isTactic);
+            if (matchesSubtype) {
+              u.heritageTokens += 1;
+              u.maxDef += 1;
+              u.currentDef += 1;
+              addPracticeLog(`✨ ${u.name} gained +1 Heritage Token (${u.heritageTokens} total, +1 DEF)!`);
+              triggerSlotAnimation(sideKey, r, s, 'animate-tactic-flash', '+1 Heritage ★', 'text-amber-300');
+            }
           }
         }
       }
@@ -2174,18 +2302,20 @@
         return false;
       }
 
-      // Remove from hand & place on board
       side.hand.splice(handIdx, 1);
       if (card.isCapital || card.isBuilding) {
         side.playedBuildingThisTurn = true;
         card.prepared = true;
       } else {
-        card.prepared = false; // Champions enter play unprepared
+        card.prepared = false;
       }
 
       side[targetRow][targetSlot] = card;
       recalculateSideResources(sideKey);
       addPracticeLog(`${side.name} played ${card.name} to ${targetRow} row (Slot ${targetSlot + 1}).`);
+
+      renderPracticeBoard();
+      triggerSlotAnimation(sideKey, targetRow, targetSlot, 'animate-summon-pop');
 
       triggerCapitalHeritageOnPlay(sideKey, card);
       checkLSSVictoryConditions();
@@ -2203,20 +2333,28 @@
 
       const effLower = `${tactic.conditionEffect} ${tactic.ability} ${tactic.special}`.toLowerCase();
       let buffed = 0;
-      [...side.front, ...side.back].filter(Boolean).forEach(u => {
-        if (!u.isBuilding && !u.isCapital) {
-          const matchesKshatriya = effLower.includes('kshatriya') ? u.cardType.toLowerCase().includes('kshatriya') : true;
-          if (matchesKshatriya) {
-            u.tempAtkBuff += 1;
-            if (effLower.includes('must attack')) u.mustAttackThisTurn = true;
-            buffed++;
+      const buffedCoords = [];
+      for (const r of ['front', 'back']) {
+        for (let s = 0; s < 5; s++) {
+          const u = side[r][s];
+          if (u && !u.isBuilding && !u.isCapital) {
+            const matchesKshatriya = effLower.includes('kshatriya') ? u.cardType.toLowerCase().includes('kshatriya') : true;
+            if (matchesKshatriya) {
+              u.tempAtkBuff += 1;
+              if (effLower.includes('must attack')) u.mustAttackThisTurn = true;
+              buffed++;
+              buffedCoords.push({ r, s });
+            }
           }
         }
-      });
+      }
 
       addPracticeLog(`⚡ ${side.name} activated Tactic "${tactic.name}"! (${buffed} friendly unit(s) gained +1 Strength this turn)`);
       practiceGame.selectedHandUid = null;
       renderPracticeBoard();
+      buffedCoords.forEach(({ r, s }) => {
+        triggerSlotAnimation(sideKey, r, s, 'animate-tactic-flash', '+1 STR ⚡', 'text-cyan-300');
+      });
       return true;
     }
 
@@ -2244,7 +2382,6 @@
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
       const unit = practiceGame[ownerKey][row][slot];
 
-      // 1. Play Phase: deploy selected hand card to clicked empty player slot
       if (practiceGame.phase === 'play' && ownerKey === 'player' && practiceGame.selectedHandUid && !unit) {
         if (playCardFromHandToSlot('player', practiceGame.selectedHandUid, row, slot)) {
           practiceGame.selectedHandUid = null;
@@ -2253,7 +2390,6 @@
         return;
       }
 
-      // 2. Fight Phase: select player attacker OR attack clicked enemy target
       if (practiceGame.phase === 'fight') {
         if (ownerKey === 'player' && unit) {
           if (!unit.prepared || unit.hasAttackedThisTurn || unit.keywords.pacifist || unit.isCapital || unit.isBuilding) {
@@ -2273,14 +2409,13 @@
         }
 
         if (ownerKey === 'robot' && unit && practiceGame.selectedBoardUnit) {
-          executeAttack('player', practiceGame.selectedBoardUnit, { row, slot });
+          const attPos = { ...practiceGame.selectedBoardUnit };
           practiceGame.selectedBoardUnit = null;
-          renderPracticeBoard();
+          executeAttack('player', attPos, { row, slot });
           return;
         }
       }
 
-      // 3. Move Phase: select player unit OR move it to clicked empty player slot
       if (practiceGame.phase === 'move' && ownerKey === 'player') {
         if (unit) {
           if (!unit.prepared || unit.keywords.noMove) {
@@ -2302,6 +2437,7 @@
           }
           practiceGame.selectedBoardUnit = null;
           renderPracticeBoard();
+          triggerSlotAnimation('player', row, slot, 'animate-move-slide');
         }
       }
     }
@@ -2319,10 +2455,12 @@
       if (targetPos.row === 'back' && defFrontHasUnits) {
         if (!attacker.keywords.ranged) {
           if (attackerOwner === 'player') addPracticeLog('Rule: You must attack enemy Front Row targets first unless you have Ranged.');
+          renderPracticeBoard();
           return false;
         }
         if (target.isLeader || target.isCapital) {
           if (attackerOwner === 'player') addPracticeLog('Rule: Ranged units cannot directly target an enemy Leader/Capital while their Front Row has units.');
+          renderPracticeBoard();
           return false;
         }
       }
@@ -2331,13 +2469,33 @@
       const defDamage = target.baseAtk + target.tempAtkBuff;
       const isRangedOverTwoRows = attacker.keywords.ranged && (attackerPos.row === 'back' || targetPos.row === 'back');
 
+      // 1. Trigger Attack Lunge & Impact Hit Animation BEFORE removing destroyed cards
+      renderPracticeBoard();
+      triggerSlotAnimation(
+        attackerOwner,
+        attackerPos.row,
+        attackerPos.slot,
+        attackerOwner === 'player' ? 'animate-attack-up' : 'animate-attack-down',
+        !isRangedOverTwoRows && defDamage > 0 ? `-${defDamage} ⚔️` : null,
+        'text-amber-300'
+      );
+      triggerSlotAnimation(
+        defenderOwner,
+        targetPos.row,
+        targetPos.slot,
+        'animate-hit-shake',
+        `-${attDamage} 💥`,
+        'text-rose-300'
+      );
+
+      // Apply combat damage
       target.currentDef -= attDamage;
       if (!isRangedOverTwoRows) {
         attacker.currentDef -= defDamage;
       }
       attacker.hasAttackedThisTurn = true;
 
-      addPracticeLog(`⚔️ ${attSide.name}'s ${attacker.name} (${attDamage} STR) attacked ${defSide.name}'s ${target.name} (${target.currentDef}/${target.maxDef} DEF left).`);
+      addPracticeLog(`⚔️ ${attSide.name}'s ${attacker.name} (${attDamage} STR) attacked ${defSide.name}'s ${target.name} (${Math.max(0, target.currentDef)}/${target.maxDef} DEF left).`);
 
       // Breach keyword spillover if front-row target is destroyed
       if (attacker.keywords.breach && targetPos.row === 'front' && target.currentDef <= 0) {
@@ -2345,143 +2503,177 @@
         if (behindUnit) {
           behindUnit.currentDef -= attDamage;
           addPracticeLog(`💥 Breach! ${attacker.name} dealt ${attDamage} spillover damage to ${behindUnit.name}!`);
+          triggerSlotAnimation(defenderOwner, 'back', targetPos.slot, 'animate-hit-shake', `BREACH -${attDamage} 💥`, 'text-orange-300');
         }
       }
 
-      // Clean up destroyed units
-      for (const r of ['front', 'back']) {
-        for (let s = 0; s < 5; s++) {
-          const uDef = defSide[r][s];
-          if (uDef && uDef.currentDef <= 0) {
-            defSide[r][s] = null;
-            defSide.discard.push(uDef);
-            addPracticeLog(`💀 ${defSide.name}'s ${uDef.name} was destroyed!`);
-          }
-          const uAtt = attSide[r][s];
-          if (uAtt && uAtt.currentDef <= 0) {
-            attSide[r][s] = null;
-            attSide.discard.push(uAtt);
-            addPracticeLog(`💀 ${attSide.name}'s ${uAtt.name} was destroyed!`);
+      // Clean up destroyed units after hit animation plays
+      const cleanupTimer = setTimeout(() => {
+        if (!practiceGame) return;
+        for (const r of ['front', 'back']) {
+          for (let s = 0; s < 5; s++) {
+            const uDef = defSide[r][s];
+            if (uDef && uDef.currentDef <= 0) {
+              defSide[r][s] = null;
+              defSide.discard.push(uDef);
+              addPracticeLog(`💀 ${defSide.name}'s ${uDef.name} was destroyed!`);
+            }
+            const uAtt = attSide[r][s];
+            if (uAtt && uAtt.currentDef <= 0) {
+              attSide[r][s] = null;
+              attSide.discard.push(uAtt);
+              addPracticeLog(`💀 ${attSide.name}'s ${uAtt.name} was destroyed!`);
+            }
           }
         }
-      }
-
-      recalculateSideResources('player');
-      recalculateSideResources('robot');
-      checkLSSVictoryConditions();
+        recalculateSideResources('player');
+        recalculateSideResources('robot');
+        if (!checkLSSVictoryConditions()) {
+          renderPracticeBoard();
+        }
+      }, 460);
+      robotTurnTimers.push(cleanupTimer);
       return true;
     }
 
     function scheduleRobotTurn() {
       if (!practiceGame || practiceGame.winner) return;
       document.getElementById('robotThinkingBadge').classList.remove('hidden');
-      robotTurnTimer = setTimeout(() => {
-        runRobotTurnAI();
-      }, 750);
+      const t = setTimeout(() => {
+        runRobotTurnAIAnimated();
+      }, 650);
+      robotTurnTimers.push(t);
     }
 
-    function runRobotTurnAI() {
+    function runRobotTurnAIAnimated() {
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
       const difficulty = document.getElementById('practiceDifficulty').value;
       const robot = practiceGame.robot;
       const player = practiceGame.player;
 
-      // 1. PLAY PHASE: Play Tactics, 1 Building/Capital, and Champions within resource cap
+      // Step 1: Robot Play Phase (sequentially animated)
       practiceGame.phase = 'play';
+      renderPracticeBoard();
+
       const handSnapshot = [...robot.hand];
+      let delay = 250;
+
       for (const card of handSnapshot) {
-        if (practiceGame.winner) break;
-        if (card.isTactic) {
-          const hasFriendlyWarrior = [...robot.front, ...robot.back].some(u => u && !u.isBuilding && !u.isCapital);
-          if (hasFriendlyWarrior) {
-            activateTacticFromHand('robot', card.uid);
-          }
-          continue;
-        }
-        const preferredRow = (card.isCapital || card.isBuilding || card.keywords.ranged || card.keywords.pacifist) ? 'back' : 'front';
-        const fallbackRow = preferredRow === 'front' ? 'back' : 'front';
-        let slot = robot[preferredRow].findIndex(s => s === null);
-        let chosenRow = preferredRow;
-        if (slot === -1) {
-          slot = robot[fallbackRow].findIndex(s => s === null);
-          chosenRow = fallbackRow;
-        }
-        if (slot !== -1) {
-          playCardFromHandToSlot('robot', card.uid, chosenRow, slot);
-        }
-      }
-
-      if (practiceGame.winner) {
-        document.getElementById('robotThinkingBadge').classList.add('hidden');
-        return;
-      }
-
-      // 2. FIGHT PHASE: Attack with all eligible Robot units
-      practiceGame.phase = 'fight';
-      for (const r of ['front', 'back']) {
-        for (let s = 0; s < 5; s++) {
-          if (practiceGame.winner) break;
-          const attacker = robot[r][s];
-          if (!attacker || !attacker.prepared || attacker.hasAttackedThisTurn || attacker.keywords.pacifist || attacker.isBuilding || attacker.isCapital) {
-            continue;
-          }
-          const robotFrontHasUnits = robot.front.some(Boolean);
-          if (r === 'back' && robotFrontHasUnits && !attacker.keywords.ranged) continue;
-
-          // Find legal targets
-          const playerFrontTargets = [];
-          const playerBackTargets = [];
-          for (let ts = 0; ts < 5; ts++) {
-            if (player.front[ts]) playerFrontTargets.push({ row: 'front', slot: ts, unit: player.front[ts] });
-            if (player.back[ts]) playerBackTargets.push({ row: 'back', slot: ts, unit: player.back[ts] });
-          }
-
-          let legalTargets = [];
-          if (playerFrontTargets.length > 0) {
-            legalTargets = [...playerFrontTargets];
-            if (attacker.keywords.ranged) {
-              legalTargets.push(...playerBackTargets.filter(t => !t.unit.isLeader && !t.unit.isCapital));
+        const playTimer = setTimeout(() => {
+          if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
+          if (card.isTactic) {
+            const hasFriendlyWarrior = [...robot.front, ...robot.back].some(u => u && !u.isBuilding && !u.isCapital);
+            if (hasFriendlyWarrior) {
+              activateTacticFromHand('robot', card.uid);
             }
-          } else {
-            legalTargets = [...playerBackTargets];
+            return;
           }
+          const preferredRow = (card.isCapital || card.isBuilding || card.keywords.ranged || card.keywords.pacifist) ? 'back' : 'front';
+          const fallbackRow = preferredRow === 'front' ? 'back' : 'front';
+          let slot = robot[preferredRow].findIndex(s => s === null);
+          let chosenRow = preferredRow;
+          if (slot === -1) {
+            slot = robot[fallbackRow].findIndex(s => s === null);
+            chosenRow = fallbackRow;
+          }
+          if (slot !== -1) {
+            playCardFromHandToSlot('robot', card.uid, chosenRow, slot);
+          }
+        }, delay);
+        robotTurnTimers.push(playTimer);
+        delay += 420;
+      }
 
-          if (legalTargets.length > 0) {
-            if (difficulty === 'tactical') {
-              // Prioritize enemy Leader/Capital, or targets Robot can destroy cleanly
-              legalTargets.sort((a, b) => {
-                const aScore = (a.unit.isLeader || a.unit.isCapital ? 100 : 0) + (a.unit.currentDef <= (attacker.baseAtk + attacker.tempAtkBuff) ? 30 : 0);
-                const bScore = (b.unit.isLeader || b.unit.isCapital ? 100 : 0) + (b.unit.currentDef <= (attacker.baseAtk + attacker.tempAtkBuff) ? 30 : 0);
-                return bScore - aScore;
-              });
+      // Step 2: Robot Fight Phase (each attack animates one after another)
+      const fightPhaseTimer = setTimeout(() => {
+        if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
+        practiceGame.phase = 'fight';
+        renderPracticeBoard();
+
+        const potentialAttackers = [];
+        for (const r of ['front', 'back']) {
+          for (let s = 0; s < 5; s++) {
+            const u = robot[r][s];
+            if (u && u.prepared && !u.hasAttackedThisTurn && !u.keywords.pacifist && !u.isBuilding && !u.isCapital) {
+              potentialAttackers.push({ uid: u.uid });
             }
-            const chosenTarget = legalTargets[0];
-            executeAttack('robot', { row: r, slot: s }, { row: chosenTarget.row, slot: chosenTarget.slot });
           }
         }
-      }
 
-      if (practiceGame.winner) {
-        document.getElementById('robotThinkingBadge').classList.add('hidden');
-        return;
-      }
+        let fightDelay = 200;
+        for (const attRef of potentialAttackers) {
+          const singleAttackTimer = setTimeout(() => {
+            if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
+            // Locate current coordinates of attacker
+            let attPos = null;
+            for (const r of ['front', 'back']) {
+              for (let s = 0; s < 5; s++) {
+                if (robot[r][s] && robot[r][s].uid === attRef.uid) {
+                  attPos = { row: r, slot: s, unit: robot[r][s] };
+                }
+              }
+            }
+            if (!attPos || attPos.unit.hasAttackedThisTurn) return;
+            const robotFrontHasUnits = robot.front.some(Boolean);
+            if (attPos.row === 'back' && robotFrontHasUnits && !attPos.unit.keywords.ranged) return;
 
-      // 3. MOVE PHASE: Advance back-row melee champions to front row if open
-      practiceGame.phase = 'move';
-      for (let s = 0; s < 5; s++) {
-        const backUnit = robot.back[s];
-        if (backUnit && backUnit.prepared && !backUnit.keywords.noMove && !backUnit.keywords.ranged && !backUnit.keywords.pacifist) {
-          const openFront = robot.front.findIndex(x => x === null);
-          if (openFront !== -1) {
-            robot.back[s] = null;
-            robot.front[openFront] = backUnit;
-            addPracticeLog(`AI Robot moved ${backUnit.name} up to the Front Row.`);
-          }
+            const playerFrontTargets = [];
+            const playerBackTargets = [];
+            for (let ts = 0; ts < 5; ts++) {
+              if (player.front[ts]) playerFrontTargets.push({ row: 'front', slot: ts, unit: player.front[ts] });
+              if (player.back[ts]) playerBackTargets.push({ row: 'back', slot: ts, unit: player.back[ts] });
+            }
+
+            let legalTargets = [];
+            if (playerFrontTargets.length > 0) {
+              legalTargets = [...playerFrontTargets];
+              if (attPos.unit.keywords.ranged) {
+                legalTargets.push(...playerBackTargets.filter(t => !t.unit.isLeader && !t.unit.isCapital));
+              }
+            } else {
+              legalTargets = [...playerBackTargets];
+            }
+
+            if (legalTargets.length > 0) {
+              if (difficulty === 'tactical') {
+                legalTargets.sort((a, b) => {
+                  const aScore = (a.unit.isLeader || a.unit.isCapital ? 100 : 0) + (a.unit.currentDef <= (attPos.unit.baseAtk + attPos.unit.tempAtkBuff) ? 30 : 0);
+                  const bScore = (b.unit.isLeader || b.unit.isCapital ? 100 : 0) + (b.unit.currentDef <= (attPos.unit.baseAtk + attPos.unit.tempAtkBuff) ? 30 : 0);
+                  return bScore - aScore;
+                });
+              }
+              const chosenTarget = legalTargets[0];
+              executeAttack('robot', { row: attPos.row, slot: attPos.slot }, { row: chosenTarget.row, slot: chosenTarget.slot });
+            }
+          }, fightDelay);
+          robotTurnTimers.push(singleAttackTimer);
+          fightDelay += 720;
         }
-      }
 
-      document.getElementById('robotThinkingBadge').classList.add('hidden');
-      endMovePhaseForSide('robot');
+        // Step 3: Robot Move Phase & End Turn
+        const moveAndEndTimer = setTimeout(() => {
+          if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
+          practiceGame.phase = 'move';
+          for (let s = 0; s < 5; s++) {
+            const backUnit = robot.back[s];
+            if (backUnit && backUnit.prepared && !backUnit.keywords.noMove && !backUnit.keywords.ranged && !backUnit.keywords.pacifist) {
+              const openFront = robot.front.findIndex(x => x === null);
+              if (openFront !== -1) {
+                robot.back[s] = null;
+                robot.front[openFront] = backUnit;
+                addPracticeLog(`AI Robot moved ${backUnit.name} up to the Front Row.`);
+                renderPracticeBoard();
+                triggerSlotAnimation('robot', 'front', openFront, 'animate-move-slide');
+              }
+            }
+          }
+          document.getElementById('robotThinkingBadge').classList.add('hidden');
+          endMovePhaseForSide('robot');
+        }, fightDelay + 250);
+        robotTurnTimers.push(moveAndEndTimer);
+      }, delay + 150);
+
+      robotTurnTimers.push(fightPhaseTimer);
     }
 
     function renderPracticeBoard() {
@@ -2489,20 +2681,19 @@
       const g = practiceGame;
       const isPlayerTurn = g.turn === 'player' && !g.winner;
 
-      // Turn & Phase badges
       const turnBadge = document.getElementById('turnIndicatorBadge');
       turnBadge.textContent = g.winner ? 'MATCH OVER' : (g.turn === 'player' ? 'YOUR TURN' : 'AI ROBOT TURN');
       turnBadge.className = g.turn === 'player'
-        ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white'
-        : 'px-3 py-1 rounded-full text-xs font-extrabold bg-fuchsia-600 text-white';
+        ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white shadow-md shadow-emerald-500/20 transition-all duration-300'
+        : 'px-3 py-1 rounded-full text-xs font-extrabold bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/20 transition-all duration-300';
 
       document.getElementById('roundNumberBadge').textContent = `Round ${g.round}`;
       ['draw', 'play', 'fight', 'move'].forEach(p => {
         const pill = document.getElementById(`phasePill-${p}`);
         if (g.phase === p) {
-          pill.className = 'px-2.5 py-0.5 rounded bg-indigo-600 text-white font-bold';
+          pill.className = 'px-2.5 py-0.5 rounded bg-indigo-600 text-white font-bold scale-105 shadow-sm transition-all duration-200';
         } else {
-          pill.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+          pill.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200';
         }
       });
 
@@ -2513,7 +2704,6 @@
       else if (g.phase === 'fight') advanceBtn.innerHTML = 'To Move Phase <i class="fa-solid fa-arrow-right ml-1"></i>';
       else advanceBtn.innerHTML = 'End Turn <i class="fa-solid fa-check ml-1"></i>';
 
-      // Action Hint
       const hint = document.getElementById('practiceActionHint');
       if (g.winner) {
         hint.textContent = g.winReason;
@@ -2527,7 +2717,6 @@
         hint.textContent = g.selectedBoardUnit ? 'Click an empty slot on your board to move there!' : 'Move Phase: Click a ready unit to reposition, or click End Turn.';
       }
 
-      // HUD Stats
       const pAvail = Math.max(0, g.player.resourceCap - g.player.usedResources);
       const rAvail = Math.max(0, g.robot.resourceCap - g.robot.usedResources);
       document.getElementById('playerHudStats').textContent =
@@ -2535,13 +2724,11 @@
       document.getElementById('robotHudStats').textContent =
         `Res: ${rAvail}/${g.robot.resourceCap} • Hand: ${g.robot.hand.length} • Deck: ${g.robot.deck.length} • Silk: ${g.robot.silkTokens}/3`;
 
-      // Render 4 Board Rows
       renderBoardRow('robotBackRow', 'robot', 'back');
       renderBoardRow('robotFrontRow', 'robot', 'front');
       renderBoardRow('playerFrontRow', 'player', 'front');
       renderBoardRow('playerBackRow', 'player', 'back');
 
-      // Render Player Hand
       const handZone = document.getElementById('playerHandZone');
       const selectedHandCard = g.player.hand.find(c => c.uid === g.selectedHandUid);
       const handControls = document.getElementById('selectedHandControls');
@@ -2561,7 +2748,7 @@
           const isSelected = g.selectedHandUid === c.uid;
           const costLabel = c.isTactic ? 'Tactic (0)' : (c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`);
           return `
-            <div onclick="selectHandCard('${c.uid}')" class="w-40 shrink-0 p-2.5 rounded-xl border cursor-pointer transition flex flex-col justify-between ${isSelected ? 'bg-indigo-950/80 border-cyan-400 ring-2 ring-cyan-400/50 -translate-y-1' : 'bg-slate-900 border-slate-700 hover:border-indigo-400'}">
+            <div onclick="selectHandCard('${c.uid}')" class="hand-card-animated w-40 shrink-0 p-2.5 rounded-xl border cursor-pointer flex flex-col justify-between ${isSelected ? 'bg-indigo-950/85 border-cyan-400 ring-2 ring-cyan-400/60 -translate-y-2 shadow-lg shadow-cyan-500/20' : 'bg-slate-900 border-slate-700 hover:border-indigo-400'}">
               <div>
                 <div class="flex items-center justify-between gap-1">
                   <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-sky-300">${costLabel}</span>
@@ -2579,12 +2766,10 @@
         }).join('');
       }
 
-      // Battle Log
-      document.getElementById('practiceBattleLog').innerHTML = g.logs.map(line =>
-        `<div class="p-1.5 rounded bg-slate-900/90 border border-slate-800/80 leading-snug">${escapeHTML(line)}</div>`
+      document.getElementById('practiceBattleLog').innerHTML = g.logs.map((line, i) =>
+        `<div class="${i === 0 ? 'animate-log-in border-cyan-500/30 bg-slate-900' : 'border-slate-800/80 bg-slate-900/75'} p-1.5 rounded border leading-snug">${escapeHTML(line)}</div>`
       ).join('');
 
-      // Winner Banner
       const winnerBanner = document.getElementById('practiceWinnerBanner');
       if (g.winner) {
         winnerBanner.classList.remove('hidden');
@@ -2601,13 +2786,14 @@
       const isPlayerTurn = practiceGame.turn === 'player' && !practiceGame.winner;
 
       container.innerHTML = slots.map((unit, slotIdx) => {
+        const slotDomId = `pslot-${ownerKey}-${row}-${slotIdx}`;
         if (!unit) {
           const canDropHere = isPlayerTurn && ownerKey === 'player' &&
             ((practiceGame.phase === 'play' && practiceGame.selectedHandUid) ||
              (practiceGame.phase === 'move' && practiceGame.selectedBoardUnit));
           return `
-            <div onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
-              class="h-24 sm:h-28 rounded-xl border border-dashed flex flex-col items-center justify-center text-[10px] transition ${canDropHere ? 'border-emerald-400 bg-emerald-950/25 text-emerald-300 cursor-pointer animate-pulse-glow' : 'border-slate-800 bg-slate-950/50 text-slate-600'}">
+            <div id="${slotDomId}" onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
+              class="h-24 sm:h-28 rounded-xl border border-dashed flex flex-col items-center justify-center text-[10px] transition relative ${canDropHere ? 'border-emerald-400 bg-emerald-950/25 text-emerald-300 cursor-pointer animate-pulse-glow' : 'border-slate-800 bg-slate-950/50 text-slate-600'}">
               <span>Slot ${slotIdx + 1}</span>
               ${canDropHere ? `<span class="font-bold mt-0.5">+ Place Here</span>` : ''}
             </div>
@@ -2626,12 +2812,12 @@
         const roleBadge = unit.isLeader ? '👑 Leader' : (unit.isCapital ? `🏛️ Capital (${unit.heritageTokens}★)` : (unit.isBuilding ? '🏗️ Bldg' : '⚔️ Unit'));
 
         return `
-          <div onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
-            class="h-24 sm:h-28 p-2 rounded-xl border flex flex-col justify-between cursor-pointer transition relative ${
-              isSelectedAttackerOrMover ? 'bg-indigo-950/90 border-cyan-400 ring-2 ring-cyan-400/60 -translate-y-0.5' :
-              isTargetableEnemy ? 'bg-rose-950/40 border-rose-400/70 hover:bg-rose-900/50' :
-              unit.isLeader || unit.isCapital ? 'bg-amber-950/25 border-amber-500/45' :
-              'bg-slate-900 border-slate-700/90 hover:border-slate-500'
+          <div id="${slotDomId}" onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
+            class="h-24 sm:h-28 p-2 rounded-xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative ${
+              isSelectedAttackerOrMover ? 'bg-indigo-950/90 border-cyan-400 ring-2 ring-cyan-400/60 -translate-y-1 shadow-lg shadow-cyan-500/25' :
+              isTargetableEnemy ? 'bg-rose-950/45 border-rose-400/80 hover:bg-rose-900/60 hover:scale-[1.03] shadow-md shadow-rose-500/20' :
+              unit.isLeader || unit.isCapital ? 'bg-amber-950/25 border-amber-500/45 hover:border-amber-400' :
+              'bg-slate-900 border-slate-700/90 hover:border-slate-500 hover:-translate-y-0.5'
             } ${!unit.prepared ? 'opacity-75' : ''}">
             <div class="flex items-center justify-between gap-1">
               <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-950/80 text-amber-300 truncate">${roleBadge}</span>
@@ -2649,7 +2835,7 @@
 
             <div class="flex items-center justify-between pt-1 border-t border-slate-800/80 text-[11px] font-extrabold">
               <span class="text-rose-400"><i class="fa-solid fa-khanda mr-0.5 text-[9px]"></i>${totalAtk}</span>
-              <span class="${unit.currentDef < unit.maxDef ? 'text-amber-300' : 'text-blue-400'}"><i class="fa-solid fa-shield-halved mr-0.5 text-[9px]"></i>${unit.currentDef}/${unit.maxDef}</span>
+              <span class="${unit.currentDef < unit.maxDef ? 'text-amber-300' : 'text-blue-400'}"><i class="fa-solid fa-shield-halved mr-0.5 text-[9px]"></i>${Math.max(0, unit.currentDef)}/${unit.maxDef}</span>
             </div>
           </div>
         `;
@@ -2671,7 +2857,6 @@
       const cLower = `${condTriggerText} ${condEffectText}`.toLowerCase();
       const sLower = specialText.toLowerCase();
       const combinedMechanics = `${aLower} ${cLower} ${sLower}`;
-      // 1. Read Card Restriction (LSS row/movement/pacifist/unique rules)
       if (restrictionText) {
         if (rLower.includes('cannot attack') || rLower.includes("can't attack") || rLower.includes('pacifist')) {
           if (style === 'aggro') textScore -= 16;
@@ -2684,7 +2869,6 @@
           reasons.push('Back row placement');
         }
       }
-      // 2. Read Ability, Conditional Event & Special for LSS Keywords, Types & Win Paths
       const aggroTerms = ['attack', 'atk', 'strength', 'damage', 'strike', 'breach', 'ranged', 'must attack', 'steel'];
       const controlTerms = ['defense', 'def', 'heal', 'restore', 'guard', 'pacifist', 'back row', 'adjacent', 'behind', 'beside'];
       const manaTerms = ['resource', 'resources', 'silk', 'heritage', 'threshold', 'reincarnate', 'draw', 'shudra', 'vaisya', 'legend'];
@@ -2726,7 +2910,6 @@
           reasons.push('LSS positional synergy');
         }
       }
-      // 3. Match user prompt keywords (e.g., Shudra, Vaisya, Scholar, Kshatriya, Breach, Ranged)
       let promptMatched = false;
       if (promptText) {
         const keywords = promptText.toLowerCase().split(/\W+/).filter(w => w.length > 2);
@@ -2813,7 +2996,6 @@
       if (tokenFiltered.length === 0) {
         tokenFiltered = [...cards];
       }
-      // 1. Resolve single Faction (+ Neutral/Universal)
       let activeNation = nationSetting;
       if (nationSetting === 'Auto') {
         const nonUniversalNations = [...new Set(
@@ -2841,7 +3023,6 @@
         if (activeNation === 'Universal') return n === 'Universal';
         return n === activeNation || n === 'Universal';
       });
-      // 2. Pick Starting Leader or Capital (begins in play, does NOT count toward the 15-card main deck)
       const leadersPool = nationLegalPool
         .filter(isCardLeader)
         .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
@@ -2866,8 +3047,6 @@
         }
       }
       lastStarterCard = starterCard ? { card: starterCard, role: starterRoleLabel } : null;
-      // LSS Rule: If starting with a Leader, at most 1 Capital of matching faction in deck (and 0 Leaders in deck).
-      // If starting with a Capital, at most 1 Leader of matching faction in deck (and 0 Capitals in deck).
       const starterIsCapital = starterCard ? isCardCapital(starterCard) : false;
       const oppositeRolePool = starterIsCapital ? leadersPool : capitalsPool;
       const chosenOppositeInDeck = oppositeRolePool.find(c => {
@@ -2901,7 +3080,6 @@
         if (isStarterRoleCard(card)) return 1;
         return Math.min(3, maxCopies);
       };
-      // Pass 1: Fill main deck from available remaining stock
       for (const card of mainDeckPool) {
         if (totalPicked >= deckSize) break;
         const left = Math.max(0, card.owned - card.used);
@@ -2915,7 +3093,6 @@
           totalPicked += addCount;
         }
       }
-      // Pass 2: If still under deckSize, fill up to cardCap from legal faction pool
       if (totalPicked < deckSize) {
         for (const card of mainDeckPool) {
           if (totalPicked >= deckSize) break;

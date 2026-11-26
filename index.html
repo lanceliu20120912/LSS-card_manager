@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Legend of Silk and Steel Card Vault</title>
+  <title>CustomCard Vault — Card Creator, Stock & AI Deck Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -14,6 +14,7 @@
     .rarity-Uncommon { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.45); }
     .rarity-Rare { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(250, 204, 21, 0.5); }
     .rarity-Ultrarare { background: rgba(168, 85, 247, 0.22); color: #d8b4fe; border-color: rgba(192, 132, 252, 0.55); }
+    .rarity-Unique { background: rgba(6, 182, 212, 0.22); color: #67e8f9; border-color: rgba(34, 211, 238, 0.55); }
     .rarity-Secret { background: linear-gradient(90deg, rgba(244, 63, 94, 0.25), rgba(56, 189, 248, 0.25), rgba(250, 204, 21, 0.25)); color: #fff1f2; border-color: rgba(251, 113, 133, 0.6); }
     .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
@@ -129,6 +130,7 @@
           <option value="Uncommon">Uncommon</option>
           <option value="Rare">Rare</option>
           <option value="Ultrarare">Ultrarare</option>
+          <option value="Unique">Unique</option>
           <option value="Secret">Secret</option>
           <option value="Leader">Leader</option>
           <option value="None">None</option>
@@ -230,8 +232,9 @@
               <option value="Uncommon">Uncommon</option>
               <option value="Rare">Rare</option>
               <option value="Ultrarare">Ultrarare</option>
+              <option value="Unique">Unique (Max 1 / Deck)</option>
               <option value="Secret">Secret</option>
-              <option value="Leader">Leader</option>
+              <option value="Leader">Leader (1 / Deck)</option>
               <option value="None">None</option>
             </select>
           </div>
@@ -269,7 +272,7 @@
         </div>
         <div>
           <label class="block text-xs font-medium text-orange-400 mb-1">Card Restriction (if required)</label>
-          <input type="text" id="restriction" placeholder="e.g., Max 1 per deck, Cannot attack on turn 1..."
+          <input type="text" id="restriction" placeholder="e.g., Unique, Max 1 per deck, Cannot attack on turn 1..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-orange-500" />
         </div>
         <div>
@@ -342,21 +345,35 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-white">AI Deck Builder Agent</h2>
-            <p class="text-xs text-slate-400">Builds decks using your cards, nations, mana curve & remaining copies left</p>
+            <p class="text-xs text-slate-400">Enforces official deck rules: 1 Leader, 1 Nation + Universal, Unique max 1, min 15 cards</p>
           </div>
         </div>
         <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
+
+      <!-- Active AI Deck Rules Banner -->
+      <div class="p-3 rounded-xl bg-slate-950/90 border border-fuchsia-500/30 text-xs text-slate-300 space-y-1.5">
+        <div class="font-semibold text-fuchsia-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-scale-balanced"></i> Active AI Deck-Building Rules:
+        </div>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300 list-disc pl-4">
+          <li><strong>Unique Cards:</strong> Max <strong>1 copy</strong> per Unique card (non-Unique cards may have duplicates).</li>
+          <li><strong>Nation Lock:</strong> Only <strong>1 Nation + Universal</strong> cards allowed per deck.</li>
+          <li><strong>Leader Requirement:</strong> Must include <strong>exactly 1 Leader</strong> card.</li>
+          <li><strong>Minimum Size:</strong> Must contain at least <strong>15 cards</strong> total.</li>
+        </ul>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
-          <label class="block text-xs font-medium text-amber-400 mb-1">Nation Focus</label>
+          <label class="block text-xs font-medium text-amber-400 mb-1">Nation (+ Universal)</label>
           <select id="aiNation" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
-            <option value="Any">Any / Multi-Nation</option>
-            <option value="Universal">Universal</option>
-            <option value="Japan">Japan (+ Universal)</option>
-            <option value="India">India (+ Universal)</option>
-            <option value="China">China (+ Universal)</option>
-            <option value="Other">Other (+ Universal)</option>
+            <option value="Auto">Auto-Pick Best Nation</option>
+            <option value="Universal">Universal Only</option>
+            <option value="Japan">Japan + Universal</option>
+            <option value="India">India + Universal</option>
+            <option value="China">China + Universal</option>
+            <option value="Other">Other + Universal</option>
           </select>
         </div>
         <div>
@@ -377,19 +394,19 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-medium text-emerald-400 mb-1">Deck Size</label>
-          <input type="number" id="aiDeckSize" min="5" max="100" value="20"
+          <label class="block text-xs font-medium text-emerald-400 mb-1">Deck Size (Min 15)</label>
+          <input type="number" id="aiDeckSize" min="15" max="100" value="20"
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-sky-400 mb-1">Max Copies / Card</label>
+          <label class="block text-xs font-medium text-sky-400 mb-1">Max Copies (Non-Unique)</label>
           <input type="number" id="aiMaxCopies" min="1" max="10" value="3"
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
         </div>
       </div>
       <div>
         <label class="block text-xs font-medium text-slate-400 mb-1">Deck Prompt or Special Instructions (optional)</label>
-        <input type="text" id="aiPrompt" placeholder="e.g., Focus on Leader/Secret/Ultrarare cards, low mana spend, or conditional events..."
+        <input type="text" id="aiPrompt" placeholder="e.g., Focus on Secret/Ultrarare cards, low mana spend, or conditional events..."
           class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500" />
       </div>
       <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
@@ -425,6 +442,7 @@
             </button>
           </div>
         </div>
+        <div id="aiRuleWarnings" class="hidden p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 leading-relaxed space-y-1"></div>
         <div id="aiStrategyNote" class="hidden p-3 rounded-xl bg-violet-950/30 border border-violet-500/30 text-xs text-violet-100 leading-relaxed"></div>
         <div id="generatedDeckCards" class="divide-y divide-slate-800 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden"></div>
       </div>
@@ -653,19 +671,30 @@
       const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
       return Number.isNaN(num) ? 0 : num;
     }
-    function scoreCardForDeck(card, nationFocus, style, promptText) {
+    function isCardUnique(card) {
+      const rarityLower = (card.rarity || '').toLowerCase();
+      const restrLower = (card.restriction || '').toLowerCase();
+      const specialLower = (card.special || '').toLowerCase();
+      return rarityLower === 'unique' ||
+             restrLower.includes('unique') ||
+             restrLower.includes('1 per deck') ||
+             restrLower.includes('limit 1') ||
+             specialLower.includes('unique');
+    }
+    function isCardLeader(card) {
+      return (card.rarity || '').toLowerCase() === 'leader';
+    }
+    function scoreCardForDeck(card, selectedNation, style, promptText) {
       let score = 50;
       const left = Math.max(0, card.owned - card.used);
       if (left > 0) score += 35 + Math.min(left * 3, 15);
       else score -= 40;
       const cardNation = card.nation || 'Universal';
-      if (nationFocus !== 'Any') {
-        if (cardNation === nationFocus) score += 30;
+      if (selectedNation !== 'Universal') {
+        if (cardNation === selectedNation) score += 30;
         else if (cardNation === 'Universal') score += 18;
-        else score -= 25;
       }
-      if (card.rarity === 'Leader') score += 14;
-      if (card.rarity === 'Secret' || card.rarity === 'Ultrarare') score += 8;
+      if (card.rarity === 'Secret' || card.rarity === 'Ultrarare' || card.rarity === 'Unique') score += 10;
       if (card.hasConditionalEvent) score += 7;
       const atk = parseStatNumber(card.attack);
       const def = parseStatNumber(card.defense);
@@ -694,52 +723,117 @@
       score += Math.random() * 6;
       return score;
     }
+
     async function generateAIDeck() {
       if (cards.length === 0) {
         alert('Add some cards to your collection first so the AI Deck Builder can build a deck!');
         return;
       }
-      const nationFocus = document.getElementById('aiNation').value;
+
+      const nationSetting = document.getElementById('aiNation').value;
       const style = document.getElementById('aiStyle').value;
       const tokenMode = document.getElementById('aiTokenMode').value;
-      const deckSize = Math.max(1, parseInt(document.getElementById('aiDeckSize').value) || 20);
+      const requestedSize = parseInt(document.getElementById('aiDeckSize').value) || 15;
+      const deckSize = Math.max(15, requestedSize);
+      document.getElementById('aiDeckSize').value = deckSize;
       const maxCopies = Math.max(1, parseInt(document.getElementById('aiMaxCopies').value) || 3);
       const promptText = document.getElementById('aiPrompt').value.trim();
       const useGemini = document.getElementById('useGeminiToggle').checked;
       const geminiKey = document.getElementById('geminiApiKey').value.trim();
-      let candidatePool = cards.filter(c => {
+
+      // Filter by token preference
+      let tokenFiltered = cards.filter(c => {
         if (tokenMode === 'only') return Boolean(c.isToken);
         if (tokenMode === 'exclude') return !c.isToken;
         return true;
       });
-      if (candidatePool.length === 0) {
-        candidatePool = [...cards];
+      if (tokenFiltered.length === 0) {
+        tokenFiltered = [...cards];
       }
-      const ranked = candidatePool.sort((a, b) =>
-        scoreCardForDeck(b, nationFocus, style, promptText) - scoreCardForDeck(a, nationFocus, style, promptText)
-      );
+
+      // Rule 2: Resolve single primary nation (+ Universal)
+      let activeNation = nationSetting;
+      if (nationSetting === 'Auto') {
+        const nonUniversalNations = [...new Set(
+          tokenFiltered
+            .map(c => c.nation || 'Universal')
+            .filter(n => n !== 'Universal')
+        )];
+        if (nonUniversalNations.length === 0) {
+          activeNation = 'Universal';
+        } else {
+          // Pick the nation with the strongest leader + available cards
+          nonUniversalNations.sort((a, b) => {
+            const aCards = tokenFiltered.filter(c => (c.nation || 'Universal') === a);
+            const bCards = tokenFiltered.filter(c => (c.nation || 'Universal') === b);
+            const aHasLeader = aCards.some(isCardLeader) ? 100 : 0;
+            const bHasLeader = bCards.some(isCardLeader) ? 100 : 0;
+            const aStock = aCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
+            const bStock = bCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
+            return (bHasLeader + bStock) - (aHasLeader + aStock);
+          });
+          activeNation = nonUniversalNations[0];
+        }
+      }
+
+      // Strict Nation + Universal pool
+      const nationLegalPool = tokenFiltered.filter(c => {
+        const n = c.nation || 'Universal';
+        if (activeNation === 'Universal') return n === 'Universal';
+        return n === activeNation || n === 'Universal';
+      });
+
+      // Separate Leaders from Main Deck cards (Rule 3: Exactly 1 Leader)
+      const leaderPool = nationLegalPool
+        .filter(isCardLeader)
+        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
+
+      const nonLeaderPool = nationLegalPool
+        .filter(c => !isCardLeader(c))
+        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
+
       const pickedMap = new Map();
       let totalPicked = 0;
-      for (const card of ranked) {
+      const warnings = [];
+
+      // Pick 1 and only 1 Leader
+      let chosenLeader = leaderPool.find(c => Math.max(0, c.owned - c.used) > 0) || leaderPool[0];
+      if (chosenLeader) {
+        const left = Math.max(0, chosenLeader.owned - chosenLeader.used);
+        pickedMap.set(chosenLeader.id, {
+          card: chosenLeader,
+          count: 1,
+          fromStock: left > 0
+        });
+        totalPicked += 1;
+      } else {
+        warnings.push(`Missing Leader: No Leader card found for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} / Universal`}. Add a card with Rarity set to "Leader" to satisfy the 1-Leader rule.`);
+      }
+
+      // Helper to determine max allowed copies (Rule 1: Unique cards max 1)
+      const getCardCap = (card) => isCardUnique(card) ? 1 : maxCopies;
+
+      // Pass 1: Fill non-leader slots from available remaining stock
+      for (const card of nonLeaderPool) {
         if (totalPicked >= deckSize) break;
         const left = Math.max(0, card.owned - card.used);
         if (left <= 0) continue;
-        const restrLower = (card.restriction || '').toLowerCase();
-        const cardCap = (restrLower.includes('1 per deck') || restrLower.includes('limit 1')) ? 1 : maxCopies;
-        const addCount = Math.min(cardCap, left, deckSize - totalPicked);
+        const cap = getCardCap(card);
+        const addCount = Math.min(cap, left, deckSize - totalPicked);
         if (addCount > 0) {
           pickedMap.set(card.id, { card, count: addCount, fromStock: true });
           totalPicked += addCount;
         }
       }
+
+      // Pass 2: If still under deckSize, fill up to cardCap from owned/existing cards in the legal nation pool
       if (totalPicked < deckSize) {
-        for (const card of ranked) {
+        for (const card of nonLeaderPool) {
           if (totalPicked >= deckSize) break;
           const existing = pickedMap.get(card.id);
           const currentCount = existing ? existing.count : 0;
-          const restrLower = (card.restriction || '').toLowerCase();
-          const cardCap = (restrLower.includes('1 per deck') || restrLower.includes('limit 1')) ? 1 : maxCopies;
-          const extraNeeded = Math.min(cardCap - currentCount, deckSize - totalPicked);
+          const cap = getCardCap(card);
+          const extraNeeded = Math.min(cap - currentCount, deckSize - totalPicked);
           if (extraNeeded > 0) {
             pickedMap.set(card.id, {
               card,
@@ -750,16 +844,34 @@
           }
         }
       }
+
+      if (totalPicked < 15) {
+        warnings.push(`Minimum 15-Card Rule: Only ${totalPicked} legal card(s) could be assembled for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`} (remember Unique cards can only appear once, and only 1 Leader is allowed). Add more non-Unique ${activeNation} or Universal cards to reach at least 15 cards.`);
+      }
+
       lastGeneratedDeck = [...pickedMap.values()];
       document.getElementById('aiDeckResult').classList.remove('hidden');
+
+      const nationTitle = activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`;
       document.getElementById('generatedDeckTitle').textContent =
-        `${nationFocus === 'Any' ? 'Multi-Nation' : nationFocus} ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
+        `${nationTitle} ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
       document.getElementById('generatedDeckSummary').textContent =
-        `${totalPicked} cards selected across ${lastGeneratedDeck.length} unique cards • Max ${maxCopies} copy/card`;
+        `${totalPicked} cards total • ${chosenLeader ? `Leader: ${chosenLeader.name}` : '0 Leaders'} • Unique max 1 • Non-Unique max ${maxCopies}`;
+
+      const warningBox = document.getElementById('aiRuleWarnings');
+      if (warnings.length > 0) {
+        warningBox.classList.remove('hidden');
+        warningBox.innerHTML = warnings.map(w => `<div><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>${escapeHTML(w)}</div>`).join('');
+      } else {
+        warningBox.classList.add('hidden');
+        warningBox.innerHTML = '';
+      }
+
       const strategyBox = document.getElementById('aiStrategyNote');
       strategyBox.classList.remove('hidden');
-      strategyBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5 text-fuchsia-400"></i> <strong>Local Deck Engine:</strong> Prioritized available copies left, ${nationFocus} alignment, ${tokenMode} token setting, and ${style} stats.`;
+      strategyBox.innerHTML = `<i class="fa-solid fa-lightbulb mr-1.5 text-fuchsia-400"></i> <strong>Rule-Verified Engine:</strong> Built a ${totalPicked}-card ${nationTitle} deck with ${chosenLeader ? '1 Leader' : 'no Leader available'}, capped all Unique cards at 1 copy, allowed duplicates for non-Unique cards, and prioritized remaining stock.`;
       renderGeneratedDeckList();
+
       if (useGemini && geminiKey) {
         strategyBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5 text-fuchsia-400"></i> Asking Gemini for tactical deck tips...`;
         try {
@@ -769,6 +881,8 @@
             nation: item.card.nation,
             type: item.card.cardType,
             rarity: item.card.rarity,
+            isUnique: isCardUnique(item.card),
+            isLeader: isCardLeader(item.card),
             isToken: Boolean(item.card.isToken),
             mana: `${item.card.manaAction}:${item.card.manaValue}`,
             atk: item.card.attack,
@@ -786,7 +900,7 @@
             body: JSON.stringify({
               contents: [{
                 parts: [{
-                  text: `You are a trading card game deck coach. Given this generated deck (${JSON.stringify(compactDeck)}) and user note ("${promptText || style}"), write a concise 3-4 sentence strategy tip highlighting key synergies, conditional event triggers, mana flow, leader/rarity roles, and any card restrictions to watch out for.`
+                  text: `You are a trading card game deck coach following strict deck-building rules: (1) Unique cards may only appear once in a deck, though different cards and duplicate non-Unique cards are allowed; (2) Each deck can only contain cards from a single Nation plus Universal cards; (3) Each deck must have 1 and only 1 Leader; (4) Each deck must have a minimum of 15 cards. Given this generated ${nationTitle} deck (${JSON.stringify(compactDeck)}) and user note ("${promptText || style}"), write a concise 3-4 sentence strategy tip highlighting Leader synergy, 1-of Unique card timing, conditional events, and mana flow.`
                 }]
               }]
             })
@@ -797,23 +911,28 @@
             strategyBox.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-fuchsia-400"></i> <strong>Gemini Coach:</strong> ${escapeHTML(aiText)}`;
           }
         } catch (err) {
-          strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing local deck build instead.`;
+          strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing rule-verified local deck build instead.`;
         }
       }
     }
+
     function renderGeneratedDeckList() {
       const container = document.getElementById('generatedDeckCards');
       container.innerHTML = lastGeneratedDeck.map(({ card, count }) => {
         const left = Math.max(0, card.owned - card.used);
         const shortage = count > left;
+        const uniqueFlag = isCardUnique(card);
+        const leaderFlag = isCardLeader(card);
         return `
           <div class="p-3 flex items-center justify-between gap-3 text-xs">
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${count}x</span>
                 <span class="font-bold text-white text-sm">${escapeHTML(card.name)}</span>
+                ${leaderFlag ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold"><i class="fa-solid fa-crown mr-0.5"></i>LEADER</span>` : ''}
+                ${uniqueFlag ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-semibold">UNIQUE (1 MAX)</span>` : ''}
                 ${card.isToken ? `<span class="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[10px] font-semibold">TOKEN</span>` : ''}
-                ${card.hasConditionalEvent ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-semibold"><i class="fa-solid fa-bolt mr-0.5"></i>EVENT</span>` : ''}
+                ${card.hasConditionalEvent ? `<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-semibold"><i class="fa-solid fa-bolt mr-0.5"></i>EVENT</span>` : ''}
                 <span class="text-slate-400">${escapeHTML(card.nation || 'Universal')} • ${escapeHTML(card.rarity || 'None')}</span>
               </div>
               ${card.restriction ? `<p class="text-[11px] text-orange-300 mt-0.5"><i class="fa-solid fa-ban mr-1"></i>${escapeHTML(card.restriction)}</p>` : ''}

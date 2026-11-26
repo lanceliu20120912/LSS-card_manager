@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CustomCard Vault — Legends of Steel & Silk Card Creator & AI Deck Builder</title>
+  <title>CustomCard Vault — Legends of Steel & Silk Card Creator, AI Deck Builder & Practice Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -45,6 +45,10 @@
       45% { transform: scale(1.14); }
       100% { transform: scale(1); }
     }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
+      50% { box-shadow: 0 0 16px 2px rgba(16, 185, 129, 0.35); }
+    }
 
     .animate-card-enter {
       animation: fadeSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -63,6 +67,9 @@
     }
     .animate-stat-pop {
       animation: statPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 2s infinite;
     }
     .btn-animated {
       position: relative;
@@ -106,7 +113,7 @@
 
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      header, .no-print, #cardModal, #aiDeckModal, #rulebookModal, #lightbox { display: none !important; }
+      header, .no-print, #cardModal, #aiDeckModal, #rulebookModal, #practiceModal, #lightbox { display: none !important; }
       main { max-width: 100% !important; padding: 0 !important; }
       #cardGrid {
         display: grid !important;
@@ -153,6 +160,9 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+        <button onclick="openPracticeModal()" title="Practice Playing Against AI Robot" class="btn-animated btn-shimmer px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white shadow-lg shadow-cyan-500/20 flex items-center gap-2">
+          <i class="fa-solid fa-gamepad"></i> AI Practice
+        </button>
         <button onclick="openRulebookModal()" title="Open Official Legends of Steel & Silk Rulebook" class="btn-animated btn-shimmer px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg shadow-amber-500/20 flex items-center gap-2">
           <i class="fa-solid fa-book-open"></i> Rulebook
         </button>
@@ -261,6 +271,268 @@
     </div>
   </main>
 
+  <!-- AI Practice Arena Modal -->
+  <div id="practiceModal" onclick="if(event.target===this) closePracticeModal()" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 z-50 animate-modal-backdrop">
+    <div class="bg-slate-900 border border-cyan-500/35 rounded-2xl max-w-6xl w-full shadow-2xl max-h-[95vh] flex flex-col overflow-hidden animate-modal-panel">
+      <!-- Top Bar -->
+      <div class="px-5 py-3.5 bg-gradient-to-r from-slate-950 via-cyan-950/35 to-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25">
+            <i class="fa-solid fa-gamepad"></i>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight">AI Practice Arena — Legends of Steel & Silk</h2>
+            <p class="text-[11px] text-cyan-300/80">Choose your deck & choose which cards the AI Robot uses to practice against you</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="practiceBackToSetupBtn" onclick="showPracticeSetup()" class="hidden btn-animated px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700">
+            <i class="fa-solid fa-sliders mr-1"></i> Change Decks
+          </button>
+          <button onclick="closePracticeModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 1: PRACTICE DECK SETUP -->
+      <div id="practiceSetupView" class="p-5 overflow-y-auto space-y-5">
+        <div class="p-3.5 rounded-xl bg-cyan-950/25 border border-cyan-500/30 text-xs text-cyan-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="font-bold text-cyan-300"><i class="fa-solid fa-circle-info mr-1.5"></i>How Practice Mode Works:</span>
+            Select your starting Leader/Capital & cards below, then choose what cards the <strong>AI Robot</strong> puts in its deck (or let the Robot mirror your cards).
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="quickFillPracticeDecks()" class="btn-animated px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs">
+              <i class="fa-solid fa-bolt mr-1"></i> Auto-Fill Both Decks
+            </button>
+            <button type="button" onclick="loadSamplePracticeCardsIfEmpty()" class="btn-animated px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-semibold text-xs">
+              <i class="fa-solid fa-wand-sparkles mr-1"></i> Load Demo LSS Cards (if empty)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- PLAYER DECK CONFIGURATION -->
+          <div class="bg-slate-950/80 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-300 flex items-center justify-center text-xs"><i class="fa-solid fa-user"></i></span>
+                <div>
+                  <h3 class="text-sm font-bold text-white">1. Your Practice Deck</h3>
+                  <p class="text-[11px] text-slate-400">Pick your Starter + Main Deck cards</p>
+                </div>
+              </div>
+              <span id="playerSetupCountBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300">0 cards</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-semibold text-amber-300 mb-1">Your Starting Leader / Capital</label>
+                <select id="practicePlayerStarter" class="w-full px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-indigo-500"></select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Starting Row</label>
+                <select id="practicePlayerStarterRow" class="w-full px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                  <option value="back">Back Row (Safer)</option>
+                  <option value="front">Front Row (Aggressive)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+              <span>Choose copies for your deck (0–3):</span>
+              <button type="button" onclick="clearPracticeSide('player')" class="text-rose-400 hover:underline">Clear Your Deck</button>
+            </div>
+            <div id="practicePlayerCardList" class="max-h-64 overflow-y-auto divide-y divide-slate-800/80 border border-slate-800 rounded-xl bg-slate-900/60"></div>
+          </div>
+
+          <!-- ROBOT DECK CONFIGURATION -->
+          <div class="bg-slate-950/80 border border-fuchsia-500/30 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-fuchsia-600/30 text-fuchsia-300 flex items-center justify-center text-xs"><i class="fa-solid fa-robot"></i></span>
+                <div>
+                  <h3 class="text-sm font-bold text-white">2. AI Robot's Deck (You Choose!)</h3>
+                  <p class="text-[11px] text-slate-400">Let Robot use your chosen cards or custom picks</p>
+                </div>
+              </div>
+              <span id="robotSetupCountBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-fuchsia-500/20 text-fuchsia-300">0 cards</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-semibold text-fuchsia-300 mb-1">Robot Deck Mode</label>
+                <select id="practiceRobotMode" onchange="handleRobotDeckModeChange()" class="w-full px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-fuchsia-500">
+                  <option value="custom">Choose Specific Cards for Robot</option>
+                  <option value="mirror">Robot Uses My Chosen Deck (Mirror Match)</option>
+                  <option value="auto">AI Auto-Builds From My Collection</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-amber-300 mb-1">Robot Starting Leader / Capital</label>
+                <select id="practiceRobotStarter" class="w-full px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-fuchsia-500"></select>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+              <span>Choose copies for Robot's deck (0–3):</span>
+              <div class="flex items-center gap-3">
+                <button type="button" onclick="copyPlayerDeckToRobot()" class="text-cyan-300 hover:underline">Copy Player's Picks</button>
+                <button type="button" onclick="clearPracticeSide('robot')" class="text-rose-400 hover:underline">Clear Robot</button>
+              </div>
+            </div>
+            <div id="practiceRobotCardList" class="max-h-64 overflow-y-auto divide-y divide-slate-800/80 border border-slate-800 rounded-xl bg-slate-900/60"></div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <span>AI Difficulty:</span>
+              <select id="practiceDifficulty" class="px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-200">
+                <option value="tactical">Tactical Coach (Smart LSS Play)</option>
+                <option value="casual">Casual Sparring</option>
+              </select>
+            </label>
+          </div>
+          <button type="button" onclick="startPracticeMatch()" class="btn-animated btn-shimmer px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+            <i class="fa-solid fa-play"></i> Start Practice Match
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: LIVE PRACTICE BATTLEFIELD -->
+      <div id="practiceBoardView" class="hidden flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+        <!-- Victory Banner -->
+        <div id="practiceWinnerBanner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-cyan-500/20 border border-amber-400/50 text-center space-y-2 animate-card-enter">
+          <h3 id="practiceWinnerTitle" class="text-xl font-extrabold text-amber-300">Victory!</h3>
+          <p id="practiceWinnerReason" class="text-xs text-slate-200"></p>
+          <div class="flex justify-center gap-2 pt-1">
+            <button onclick="startPracticeMatch()" class="btn-animated px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Rematch
+            </button>
+            <button onclick="showPracticeSetup()" class="btn-animated px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">
+              Change Decks
+            </button>
+          </div>
+        </div>
+
+        <!-- Turn & Phase Status Bar -->
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span id="turnIndicatorBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white">YOUR TURN</span>
+            <span id="roundNumberBadge" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300">Round 1</span>
+            <div class="flex items-center gap-1 text-[11px]">
+              <span id="phasePill-draw" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">1. Draw</span>
+              <span id="phasePill-play" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">2. Play</span>
+              <span id="phasePill-fight" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">3. Fight</span>
+              <span id="phasePill-move" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">4. Move</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="practiceActionHint" class="text-xs text-cyan-300 font-medium">Select a card in your hand to play, or advance phase.</span>
+            <button id="advancePhaseBtn" onclick="advancePlayerPhase()" class="btn-animated btn-shimmer px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">
+              Next Phase <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-3">
+          <!-- Main 2x5 Board (3 columns wide on XL) -->
+          <div class="xl:col-span-3 space-y-2.5">
+            <!-- ROBOT HUD -->
+            <div class="px-3.5 py-2 rounded-xl bg-fuchsia-950/25 border border-fuchsia-500/30 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-robot text-fuchsia-400"></i>
+                <span class="font-bold text-white">AI Robot</span>
+                <span id="robotHudStats" class="text-fuchsia-200">Res: 0/0 • Hand: 4 • Deck: 15 • Silk: 0/3</span>
+              </div>
+              <span id="robotThinkingBadge" class="hidden px-2.5 py-0.5 rounded-full bg-fuchsia-600/30 text-fuchsia-200 text-[11px] font-semibold">
+                <i class="fa-solid fa-spinner fa-spin mr-1"></i>Robot thinking...
+              </span>
+            </div>
+
+            <!-- ROBOT BACK ROW -->
+            <div class="space-y-1">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-fuchsia-300/70 px-1">Robot Back Row (Capitals / Support / Ranged)</div>
+              <div id="robotBackRow" class="grid grid-cols-5 gap-2"></div>
+            </div>
+
+            <!-- ROBOT FRONT ROW -->
+            <div class="space-y-1">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-rose-300/80 px-1">Robot Front Row (Battle Line — Click Enemy Target in Fight Phase)</div>
+              <div id="robotFrontRow" class="grid grid-cols-5 gap-2"></div>
+            </div>
+
+            <!-- BATTLE LINE DIVIDER -->
+            <div class="relative py-1 flex items-center justify-center">
+              <div class="w-full border-t border-dashed border-amber-500/40"></div>
+              <span class="px-3 py-0.5 rounded-full bg-slate-900 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 shrink-0 mx-2">
+                <i class="fa-solid fa-swords mr-1"></i>Battle Line
+              </span>
+              <div class="w-full border-t border-dashed border-amber-500/40"></div>
+            </div>
+
+            <!-- PLAYER FRONT ROW -->
+            <div class="space-y-1">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-300/80 px-1">Your Front Row (Click Slot to Deploy / Move • Click Unit to Attack / Move)</div>
+              <div id="playerFrontRow" class="grid grid-cols-5 gap-2"></div>
+            </div>
+
+            <!-- PLAYER BACK ROW -->
+            <div class="space-y-1">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-300/80 px-1">Your Back Row (Capitals / Buildings / Support)</div>
+              <div id="playerBackRow" class="grid grid-cols-5 gap-2"></div>
+            </div>
+
+            <!-- PLAYER HUD & HAND -->
+            <div class="p-3 rounded-xl bg-slate-950 border border-indigo-500/35 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-user text-indigo-400"></i>
+                  <span class="font-bold text-white">Your Hand & Resources</span>
+                  <span id="playerHudStats" class="text-indigo-200">Res: 0/0 • Deck: 15 • Discard: 0 • Silk: 0/3</span>
+                </div>
+                <div id="selectedHandControls" class="hidden flex items-center gap-2">
+                  <button onclick="playSelectedHandCard('front')" class="btn-animated px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold">
+                    Play Front Row
+                  </button>
+                  <button onclick="playSelectedHandCard('back')" class="btn-animated px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold">
+                    Play Back Row
+                  </button>
+                  <button onclick="playSelectedTacticCard()" id="playTacticBtn" class="hidden btn-animated px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-bold">
+                    Activate Tactic
+                  </button>
+                </div>
+              </div>
+              <div id="playerHandZone" class="flex gap-2.5 overflow-x-auto pb-1 min-h-[112px]"></div>
+            </div>
+          </div>
+
+          <!-- Right Sidebar: Live Battle Log & Quick Rules -->
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col justify-between space-y-3 max-h-[680px]">
+            <div class="flex-1 flex flex-col min-h-0">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span class="text-xs font-bold text-amber-300"><i class="fa-solid fa-scroll mr-1.5"></i>Battle Log</span>
+                <span class="text-[10px] text-slate-500">Live LSS Events</span>
+              </div>
+              <div id="practiceBattleLog" class="flex-1 overflow-y-auto space-y-1.5 pt-2 text-[11px] text-slate-300 pr-1"></div>
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[10px] text-slate-400 space-y-1 shrink-0">
+              <div class="font-bold text-slate-200">Quick Turn Guide:</div>
+              <div>• <strong>Play:</strong> Click a hand card, then click an empty slot (or <em>Play Front/Back</em>). Max 1 Building/Capital per turn.</div>
+              <div>• <strong>Fight:</strong> Click your prepared Front-Row (or Ranged) unit, then click an enemy target.</div>
+              <div>• <strong>Move:</strong> Click a prepared unit, then click an empty slot to move rows/columns.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Official Rulebook Modal -->
   <div id="rulebookModal" onclick="if(event.target===this) closeRulebookModal()" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
     <div class="bg-slate-900 border border-amber-500/30 rounded-2xl max-w-4xl w-full shadow-2xl max-h-[92vh] flex flex-col overflow-hidden animate-modal-panel">
@@ -314,7 +586,6 @@
 
       <!-- Rulebook Content Body -->
       <div id="rulebookBody" class="p-6 overflow-y-auto space-y-5 text-sm text-slate-200 leading-relaxed">
-
         <!-- Section 1: Overview & Play Field -->
         <section data-rb-section="overview" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
@@ -332,7 +603,7 @@
             </div>
             <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
               <div class="font-bold text-emerald-300 uppercase tracking-wider"><i class="fa-solid fa-droplet mr-1.5"></i>Resource Cap System</div>
-              <p class="text-slate-300">Players have a <strong>resource cap</strong> that limits how many cards they can maintain in play. Your cap is determined by your starting Leader or Capital, Buildings, and other in-game effects.</p>
+              <p class="text-slate-300">Players have a <strong>resource cap</strong> that limits how many cards they can maintain in play. Your cap is determined by their starting Leader or Capital, Buildings, and other in-game effects.</p>
               <p class="text-slate-400">Champions hold onto their resource cost while in play until they leave play or you gain more resources.</p>
             </div>
           </div>
@@ -345,7 +616,6 @@
             <h3>2. Card Types & Traits</h3>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <!-- Capitals -->
             <div class="p-4 rounded-xl bg-slate-900 border border-amber-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-amber-300 text-sm"><i class="fa-solid fa-landmark mr-1.5"></i>Capitals</span>
@@ -360,7 +630,6 @@
               </ul>
             </div>
 
-            <!-- Champions -->
             <div class="p-4 rounded-xl bg-slate-900 border border-rose-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-rose-300 text-sm"><i class="fa-solid fa-khanda mr-1.5"></i>Champions</span>
@@ -375,7 +644,6 @@
               </ul>
             </div>
 
-            <!-- Buildings -->
             <div class="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-emerald-300 text-sm"><i class="fa-solid fa-gopuram mr-1.5"></i>Buildings</span>
@@ -389,7 +657,6 @@
               </ul>
             </div>
 
-            <!-- Tactics -->
             <div class="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-cyan-300 text-sm"><i class="fa-solid fa-scroll mr-1.5"></i>Tactics</span>
@@ -547,7 +814,6 @@
             </div>
           </div>
         </section>
-
       </div>
     </div>
   </div>
@@ -910,6 +1176,7 @@
     /* Keyboard Escape Handler */
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        closePracticeModal();
         closeRulebookModal();
         closeModal();
         closeAIDeckModal();
@@ -1209,6 +1476,1186 @@
     function isStarterRoleCard(card) {
       return isCardLeader(card) || isCardCapital(card);
     }
+    function isCardBuilding(card) {
+      if (isCardCapital(card)) return false;
+      const typeLower = (card.cardType || '').toLowerCase();
+      return typeLower.includes('building') || typeLower.includes('structure') || typeLower.includes('monument') || typeLower.includes('relic');
+    }
+    function isCardTactic(card) {
+      const typeLower = (card.cardType || '').toLowerCase();
+      return typeLower.includes('tactic') || typeLower.includes('spell') || typeLower.includes('event');
+    }
+
+    /* ============================================================
+       AI PRACTICE ARENA (PLAYER VS ROBOT USING CHOSEN CARDS)
+    ============================================================ */
+    let practicePlayerCounts = {};
+    let practiceRobotCounts = {};
+    let practiceGame = null;
+    let robotTurnTimer = null;
+
+    function openPracticeModal() {
+      const modal = document.getElementById('practiceModal');
+      populatePracticeSetupLists();
+      showPracticeSetup();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closePracticeModal() {
+      if (robotTurnTimer) {
+        clearTimeout(robotTurnTimer);
+        robotTurnTimer = null;
+      }
+      const modal = document.getElementById('practiceModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    function showPracticeSetup() {
+      if (robotTurnTimer) {
+        clearTimeout(robotTurnTimer);
+        robotTurnTimer = null;
+      }
+      document.getElementById('practiceSetupView').classList.remove('hidden');
+      document.getElementById('practiceBoardView').classList.add('hidden');
+      document.getElementById('practiceBackToSetupBtn').classList.add('hidden');
+      populatePracticeSetupLists();
+    }
+    function loadSamplePracticeCardsIfEmpty() {
+      if (cards.length > 0 && !confirm('Add official LSS starter sample cards (Mohenjo-Daro, Sunzi, Irrigation System, Horse Sacrifice, Ashoka, Samurai Vanguard) to your collection?')) {
+        return;
+      }
+      const samples = [
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-001', name: 'Ashoka the Great', cardType: 'Leader',
+          nation: 'India', rarity: 'Leader', isToken: false, manaAction: 'add', manaValue: 4,
+          attack: '2', defense: '8', restriction: 'Leader',
+          ability: 'Play, Attack: Friendly Champions gain +1 Defense this turn.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Starting Leader for India decks.', image: '', owned: 1, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-012', name: 'Mohenjo-Daro', cardType: 'Capital',
+          nation: 'India', rarity: 'Rare', isToken: false, manaAction: 'add', manaValue: 5,
+          attack: '0', defense: '6', restriction: 'Back row only. Cannot move or attack.',
+          ability: 'Capital. Gains +1 Defense per Heritage Token.',
+          hasConditionalEvent: true, conditionTrigger: 'You play a Shudra or Vaisya (Threshold: 5)',
+          conditionEffect: 'Place 1 heritage token on Mohenjo-Daro. At 5 tokens, win Legend Victory.',
+          special: 'Provides +5 resources if starting Capital.', image: '', owned: 1, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-004', name: 'Kshatriya Blademaster', cardType: 'Champion - Kshatriya',
+          nation: 'India', rarity: 'Common', isToken: false, manaAction: 'spend', manaValue: 2,
+          attack: '3', defense: '2', restriction: '',
+          ability: 'Breach. Strong front-line warrior.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Synergizes with Horse Sacrifice.', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-007', name: 'Vaisya Silk Merchant', cardType: 'Champion - Vaisya',
+          nation: 'India', rarity: 'Common', isToken: false, manaAction: 'spend', manaValue: 1,
+          attack: '1', defense: '2', restriction: '',
+          ability: 'Play: Gain +1 resource cap while in play.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Triggers Mohenjo-Daro heritage condition.', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-009', name: 'Shudra Artisan', cardType: 'Champion - Shudra',
+          nation: 'India', rarity: 'Common', isToken: false, manaAction: 'spend', manaValue: 1,
+          attack: '1', defense: '3', restriction: 'Pacifist',
+          ability: 'Pacifist. Sturdy defender.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Triggers Mohenjo-Daro heritage condition.', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'IN-026', name: 'Horse Sacrifice', cardType: 'Tactic',
+          nation: 'India', rarity: 'Uncommon', isToken: false, manaAction: 'none', manaValue: 0,
+          attack: '', defense: '', restriction: '',
+          ability: 'One-time Tactic.',
+          hasConditionalEvent: true, conditionTrigger: 'It is your play phase.',
+          conditionEffect: 'Friendly Kshatriya get +1/+0 this turn and must attack.',
+          special: 'Discarded after resolving.', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'NEU-038', name: 'Irrigation System', cardType: 'Building',
+          nation: 'Universal', rarity: 'Common', isToken: false, manaAction: 'add', manaValue: 1,
+          attack: '0', defense: '1', restriction: 'Cannot move. Limit 1 building per turn.',
+          ability: 'Increases your resource cap by +1.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Neutral building playable in any faction.', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'NEU-041', name: 'Silk Caravan Post', cardType: 'Building',
+          nation: 'Universal', rarity: 'Uncommon', isToken: false, manaAction: 'add', manaValue: 2,
+          attack: '0', defense: '2', restriction: 'Cannot move.',
+          ability: 'Increases your resource cap by +2 to push toward Silk Victory.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Great for Silk Victory (10+ resources).', image: '', owned: 3, used: 0
+        },
+        {
+          id: crypto.randomUUID(), cardCode: 'NEU-044', name: 'Steppe Horse Archer', cardType: 'Champion - Archer',
+          nation: 'Universal', rarity: 'Common', isToken: false, manaAction: 'spend', manaValue: 2,
+          attack: '2', defense: '2', restriction: '',
+          ability: 'Ranged. Can strike enemy back row safely.',
+          hasConditionalEvent: false, conditionTrigger: '', conditionEffect: '',
+          special: 'Neutral ranged unit.', image: '', owned: 3, used: 0
+        }
+      ];
+      cards = [...samples, ...cards];
+      saveToStorage();
+      renderCards();
+      populatePracticeSetupLists();
+      quickFillPracticeDecks();
+    }
+
+    function populatePracticeSetupLists() {
+      const playerStarterSelect = document.getElementById('practicePlayerStarter');
+      const robotStarterSelect = document.getElementById('practiceRobotStarter');
+      const prevPlayerStarter = playerStarterSelect.value;
+      const prevRobotStarter = robotStarterSelect.value;
+
+      const playablePool = cards.filter(c => !c.isToken);
+      const starters = playablePool.filter(isStarterRoleCard);
+      const starterOptionsPool = starters.length > 0 ? starters : playablePool;
+
+      const buildStarterOptions = () => {
+        if (starterOptionsPool.length === 0) {
+          return `<option value="">No cards in collection yet</option>`;
+        }
+        return starterOptionsPool.map(c => {
+          const role = isCardCapital(c) ? 'Capital' : (isCardLeader(c) ? 'Leader' : c.cardType || 'Starter');
+          const resTxt = c.manaAction === 'add' ? `+${c.manaValue} Res` : (c.manaAction === 'spend' ? `Cost ${c.manaValue}` : '0 Res');
+          return `<option value="${c.id}">[${escapeHTML(c.cardCode || 'LSS')}] ${escapeHTML(c.name)} (${role} • ${escapeHTML(c.nation || 'Universal')} • ${resTxt})</option>`;
+        }).join('');
+      };
+
+      playerStarterSelect.innerHTML = buildStarterOptions();
+      robotStarterSelect.innerHTML = buildStarterOptions();
+      if (prevPlayerStarter && starterOptionsPool.some(c => c.id === prevPlayerStarter)) {
+        playerStarterSelect.value = prevPlayerStarter;
+      }
+      if (prevRobotStarter && starterOptionsPool.some(c => c.id === prevRobotStarter)) {
+        robotStarterSelect.value = prevRobotStarter;
+      } else if (starterOptionsPool.length > 1) {
+        robotStarterSelect.value = starterOptionsPool[1].id;
+      }
+
+      renderPracticePickerList('player');
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function renderPracticePickerList(side) {
+      const container = document.getElementById(side === 'player' ? 'practicePlayerCardList' : 'practiceRobotCardList');
+      const countsMap = side === 'player' ? practicePlayerCounts : practiceRobotCounts;
+      const robotMode = document.getElementById('practiceRobotMode').value;
+      const isLockedMirror = side === 'robot' && robotMode === 'mirror';
+
+      const deckableCards = cards.filter(c => !c.isToken);
+      if (deckableCards.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500">No cards yet. Click <strong>Load Demo LSS Cards</strong> above or add cards in the main vault!</div>`;
+        return;
+      }
+
+      container.innerHTML = deckableCards.map(c => {
+        const currentQty = isLockedMirror ? (practicePlayerCounts[c.id] || 0) : (countsMap[c.id] || 0);
+        const maxAllowed = isCardUnique(c) ? 1 : 3;
+        const statLine = isCardTactic(c)
+          ? 'Tactic (0 Res)'
+          : `${c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`} • ${c.attack || 0}/${c.defense || 0}`;
+        return `
+          <div class="px-3 py-2 flex items-center justify-between gap-2 text-xs ${currentQty > 0 ? 'bg-slate-800/45' : ''}">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-mono text-[10px] text-emerald-300">${escapeHTML(c.cardCode || '')}</span>
+                <span class="font-semibold text-slate-100 truncate">${escapeHTML(c.name)}</span>
+                <span class="text-[10px] text-slate-400">(${escapeHTML(c.nation || 'Universal')})</span>
+              </div>
+              <div class="text-[10px] text-slate-400 truncate">${escapeHTML(c.cardType || 'Card')} • ${statLine}</div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${isLockedMirror
+                ? `<span class="px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 font-bold">${currentQty}x (Mirrored)</span>`
+                : `<button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', -1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200">-</button>
+                   <span class="w-5 text-center font-bold ${currentQty > 0 ? 'text-cyan-300' : 'text-slate-500'}">${currentQty}</span>
+                   <button type="button" onclick="adjustPracticeCardCount('${side}', '${c.id}', 1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 font-bold text-slate-200" title="Max ${maxAllowed}">+</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function adjustPracticeCardCount(side, cardId, delta) {
+      const card = cards.find(c => c.id === cardId);
+      if (!card) return;
+      const maxAllowed = isCardUnique(card) ? 1 : 3;
+      const targetMap = side === 'player' ? practicePlayerCounts : practiceRobotCounts;
+      const nextVal = Math.max(0, Math.min(maxAllowed, (targetMap[cardId] || 0) + delta));
+      if (nextVal === 0) delete targetMap[cardId];
+      else targetMap[cardId] = nextVal;
+
+      if (side === 'player' && document.getElementById('practiceRobotMode').value === 'mirror') {
+        practiceRobotCounts = { ...practicePlayerCounts };
+      }
+      renderPracticePickerList('player');
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function handleRobotDeckModeChange() {
+      const mode = document.getElementById('practiceRobotMode').value;
+      if (mode === 'mirror') {
+        practiceRobotCounts = { ...practicePlayerCounts };
+        document.getElementById('practiceRobotStarter').value = document.getElementById('practicePlayerStarter').value;
+      } else if (mode === 'auto') {
+        autoBuildPracticeCounts('robot');
+      }
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function copyPlayerDeckToRobot() {
+      practiceRobotCounts = { ...practicePlayerCounts };
+      document.getElementById('practiceRobotStarter').value = document.getElementById('practicePlayerStarter').value;
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function clearPracticeSide(side) {
+      if (side === 'player') practicePlayerCounts = {};
+      else practiceRobotCounts = {};
+      renderPracticePickerList('player');
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function autoBuildPracticeCounts(side) {
+      const starterId = document.getElementById(side === 'player' ? 'practicePlayerStarter' : 'practiceRobotStarter').value;
+      const starter = cards.find(c => c.id === starterId);
+      const faction = starter ? (starter.nation || 'Universal') : 'Universal';
+      const targetMap = {};
+      let total = 0;
+
+      const eligible = cards.filter(c => {
+        if (c.isToken || c.id === starterId) return false;
+        const n = c.nation || 'Universal';
+        return faction === 'Universal' ? n === 'Universal' : (n === faction || n === 'Universal');
+      });
+      const pool = eligible.length >= 5 ? eligible : cards.filter(c => !c.isToken && c.id !== starterId);
+
+      for (const c of pool) {
+        if (total >= 15) break;
+        const cap = isCardUnique(c) || isStarterRoleCard(c) ? 1 : 3;
+        const qty = Math.min(cap, 15 - total);
+        if (qty > 0) {
+          targetMap[c.id] = qty;
+          total += qty;
+        }
+      }
+      if (side === 'player') practicePlayerCounts = targetMap;
+      else practiceRobotCounts = targetMap;
+    }
+
+    function quickFillPracticeDecks() {
+      if (cards.length === 0) {
+        loadSamplePracticeCardsIfEmpty();
+        return;
+      }
+      autoBuildPracticeCounts('player');
+      const robotMode = document.getElementById('practiceRobotMode').value;
+      if (robotMode === 'mirror') {
+        practiceRobotCounts = { ...practicePlayerCounts };
+        document.getElementById('practiceRobotStarter').value = document.getElementById('practicePlayerStarter').value;
+      } else {
+        autoBuildPracticeCounts('robot');
+      }
+      renderPracticePickerList('player');
+      renderPracticePickerList('robot');
+      updatePracticeSetupCounts();
+    }
+
+    function updatePracticeSetupCounts() {
+      const pCount = Object.values(practicePlayerCounts).reduce((a, b) => a + b, 0);
+      const rCount = Object.values(practiceRobotCounts).reduce((a, b) => a + b, 0);
+      document.getElementById('playerSetupCountBadge').textContent = `${pCount} cards`;
+      document.getElementById('robotSetupCountBadge').textContent = `${rCount} cards`;
+    }
+
+    function createCombatInstance(cardTemplate, owner, isStarter = false) {
+      const atk = parseStatNumber(cardTemplate.attack);
+      const def = Math.max(1, parseStatNumber(cardTemplate.defense) || (isStarter ? 6 : 2));
+      const resVal = Number(cardTemplate.manaValue) || 0;
+      const abilityAndRestr = `${cardTemplate.ability || ''} ${cardTemplate.restriction || ''} ${cardTemplate.special || ''}`.toLowerCase();
+      return {
+        uid: crypto.randomUUID(),
+        templateId: cardTemplate.id,
+        cardCode: cardTemplate.cardCode || '',
+        name: cardTemplate.name,
+        cardType: cardTemplate.cardType || 'Champion',
+        nation: cardTemplate.nation || 'Universal',
+        rarity: cardTemplate.rarity || 'Common',
+        manaAction: cardTemplate.manaAction || 'spend',
+        manaValue: resVal,
+        baseAtk: atk,
+        tempAtkBuff: 0,
+        maxDef: def,
+        currentDef: def,
+        ability: cardTemplate.ability || '',
+        restriction: cardTemplate.restriction || '',
+        hasConditionalEvent: Boolean(cardTemplate.hasConditionalEvent),
+        conditionTrigger: cardTemplate.conditionTrigger || '',
+        conditionEffect: cardTemplate.conditionEffect || '',
+        special: cardTemplate.special || '',
+        owner,
+        isStarter,
+        isLeader: isCardLeader(cardTemplate),
+        isCapital: isCardCapital(cardTemplate),
+        isBuilding: isCardBuilding(cardTemplate),
+        isTactic: isCardTactic(cardTemplate),
+        prepared: isStarter, // Starting Leader/Capital begins ready
+        hasAttackedThisTurn: false,
+        mustAttackThisTurn: false,
+        heritageTokens: 0,
+        keywords: {
+          breach: abilityAndRestr.includes('breach'),
+          ranged: abilityAndRestr.includes('ranged'),
+          pacifist: abilityAndRestr.includes('pacifist') || abilityAndRestr.includes('cannot attack'),
+          reincarnate: abilityAndRestr.includes('reincarnate'),
+          noMove: abilityAndRestr.includes('cannot move') || isCardCapital(cardTemplate) || isCardBuilding(cardTemplate)
+        }
+      };
+    }
+
+    function buildDeckArrayFromCounts(countsMap, fallbackStarter) {
+      const deck = [];
+      for (const [cardId, qty] of Object.entries(countsMap)) {
+        const tmpl = cards.find(c => c.id === cardId);
+        if (!tmpl || qty <= 0) continue;
+        for (let i = 0; i < qty; i++) {
+          deck.push(tmpl);
+        }
+      }
+      // If user left deck empty, auto-populate 15 cards so they can play immediately
+      if (deck.length === 0) {
+        const pool = cards.filter(c => !c.isToken && (!fallbackStarter || c.id !== fallbackStarter.id));
+        const source = pool.length > 0 ? pool : cards;
+        let idx = 0;
+        while (deck.length < 15 && source.length > 0) {
+          deck.push(source[idx % source.length]);
+          idx++;
+        }
+      }
+      // Shuffle deck
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    function startPracticeMatch() {
+      if (cards.length === 0) {
+        alert('Add at least 1 card (or click "Load Demo LSS Cards") before starting a practice match!');
+        return;
+      }
+      const pStarterId = document.getElementById('practicePlayerStarter').value;
+      const pStarterRow = document.getElementById('practicePlayerStarterRow').value;
+      const rMode = document.getElementById('practiceRobotMode').value;
+      if (rMode === 'mirror') {
+        practiceRobotCounts = { ...practicePlayerCounts };
+      }
+      const rStarterId = document.getElementById('practiceRobotStarter').value;
+
+      const pStarterTmpl = cards.find(c => c.id === pStarterId) || cards[0];
+      const rStarterTmpl = cards.find(c => c.id === rStarterId) || pStarterTmpl;
+
+      const pDeckTemplates = buildDeckArrayFromCounts(practicePlayerCounts, pStarterTmpl);
+      const rDeckTemplates = buildDeckArrayFromCounts(practiceRobotCounts, rStarterTmpl);
+
+      const pStarterUnit = createCombatInstance(pStarterTmpl, 'player', true);
+      const rStarterUnit = createCombatInstance(rStarterTmpl, 'robot', true);
+
+      const pCap = pStarterUnit.manaAction === 'add' ? Math.max(2, pStarterUnit.manaValue) : Math.max(3, pStarterUnit.manaValue || 4);
+      const rCap = rStarterUnit.manaAction === 'add' ? Math.max(2, rStarterUnit.manaValue) : Math.max(3, rStarterUnit.manaValue || 4);
+
+      const pStarterScore = pStarterUnit.manaValue || 0;
+      const rStarterScore = rStarterUnit.manaValue || 0;
+      const firstTurn = pStarterScore <= rStarterScore ? 'player' : 'robot';
+
+      practiceGame = {
+        round: 1,
+        turn: firstTurn,
+        phase: 'play', // Round 1 starts directly in Play phase after 4-card draw
+        winner: null,
+        winReason: '',
+        selectedHandUid: null,
+        selectedBoardUnit: null, // { row: 'front'|'back', slot: 0..4 }
+        logs: [],
+        player: {
+          name: 'You',
+          resourceCap: pCap,
+          usedResources: 0,
+          silkTokens: 0,
+          playedBuildingThisTurn: false,
+          deck: pDeckTemplates.map(t => createCombatInstance(t, 'player', false)),
+          hand: [],
+          discard: [],
+          front: [null, null, null, null, null],
+          back: [null, null, null, null, null]
+        },
+        robot: {
+          name: 'AI Robot',
+          resourceCap: rCap,
+          usedResources: 0,
+          silkTokens: 0,
+          playedBuildingThisTurn: false,
+          deck: rDeckTemplates.map(t => createCombatInstance(t, 'robot', false)),
+          hand: [],
+          discard: [],
+          front: [null, null, null, null, null],
+          back: [null, null, null, null, null]
+        }
+      };
+
+      // Place starting Leaders/Capitals
+      const actualPRow = pStarterUnit.isCapital ? 'back' : pStarterRow;
+      practiceGame.player[actualPRow][2] = pStarterUnit;
+
+      const actualRRow = rStarterUnit.isCapital ? 'back' : 'back';
+      practiceGame.robot[actualRRow][2] = rStarterUnit;
+
+      // Each player draws 4 starting cards
+      for (let i = 0; i < 4; i++) {
+        drawCardForSide('player', true);
+        drawCardForSide('robot', true);
+      }
+
+      document.getElementById('practiceSetupView').classList.add('hidden');
+      document.getElementById('practiceBoardView').classList.remove('hidden');
+      document.getElementById('practiceBackToSetupBtn').classList.remove('hidden');
+      document.getElementById('practiceWinnerBanner').classList.add('hidden');
+
+      addPracticeLog(`Match started! You deployed ${pStarterUnit.name} (${pCap} Res). AI Robot deployed ${rStarterUnit.name} (${rCap} Res).`);
+      addPracticeLog(`${firstTurn === 'player' ? 'You go' : 'AI Robot goes'} first (lower starter resource score)! Both players drew 4 cards.`);
+
+      renderPracticeBoard();
+
+      if (firstTurn === 'robot') {
+        scheduleRobotTurn();
+      }
+    }
+
+    function addPracticeLog(msg) {
+      if (!practiceGame) return;
+      practiceGame.logs.unshift(`[R${practiceGame.round}] ${msg}`);
+      if (practiceGame.logs.length > 45) practiceGame.logs.pop();
+    }
+
+    function drawCardForSide(sideKey, silent = false) {
+      const side = practiceGame[sideKey];
+      if (side.deck.length === 0) return null;
+      const drawn = side.deck.shift();
+      side.hand.push(drawn);
+      if (!silent) {
+        addPracticeLog(`${side.name} drew ${sideKey === 'player' ? drawn.name : 'a card'}.`);
+      }
+      return drawn;
+    }
+
+    function recalculateSideResources(sideKey) {
+      const side = practiceGame[sideKey];
+      let bonusCap = 0;
+      let spent = 0;
+      const allUnits = [...side.front, ...side.back].filter(Boolean);
+      for (const u of allUnits) {
+        if (u.isStarter) {
+          bonusCap += u.manaAction === 'add' ? Math.max(2, u.manaValue) : Math.max(3, u.manaValue || 4);
+        } else if (u.manaAction === 'add') {
+          bonusCap += u.manaValue;
+        } else if (u.manaAction === 'spend') {
+          spent += u.manaValue;
+        }
+      }
+      side.resourceCap = bonusCap;
+      side.usedResources = spent;
+    }
+
+    function checkLSSVictoryConditions() {
+      if (!practiceGame || practiceGame.winner) return true;
+
+      for (const sideKey of ['player', 'robot']) {
+        const oppKey = sideKey === 'player' ? 'robot' : 'player';
+        const side = practiceGame[sideKey];
+        const opp = practiceGame[oppKey];
+
+        // 1. Steel Victory: Opponent has no Leader or Capital remaining on board
+        const oppUnits = [...opp.front, ...opp.back].filter(Boolean);
+        const oppHasWinTarget = oppUnits.some(u => u.isStarter || u.isLeader);
+        if (!oppHasWinTarget) {
+          declarePracticeWinner(sideKey, `Steel Victory! ${opp.name}'s Leader/Capital was reduced to 0 Defense.`);
+          return true;
+        }
+
+        // 2. Legend Victory: Friendly Capital reached heritage threshold (default 5)
+        const sideUnits = [...side.front, ...side.back].filter(Boolean);
+        for (const u of sideUnits) {
+          if (u.isCapital) {
+            const threshMatch = `${u.conditionTrigger} ${u.conditionEffect} ${u.special}`.match(/threshold[:\s]*(\d+)/i);
+            const threshold = threshMatch ? parseInt(threshMatch[1], 10) : 5;
+            if (u.heritageTokens >= threshold) {
+              declarePracticeWinner(sideKey, `Legend Victory! ${u.name} reached ${u.heritageTokens}/${threshold} Heritage Tokens!`);
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function declarePracticeWinner(winnerKey, reason) {
+      practiceGame.winner = winnerKey;
+      practiceGame.winReason = reason;
+      addPracticeLog(`🏆 ${reason}`);
+      renderPracticeBoard();
+    }
+
+    function startTurnForSide(sideKey) {
+      if (!practiceGame || practiceGame.winner) return;
+      practiceGame.turn = sideKey;
+      practiceGame.phase = 'draw';
+      practiceGame.selectedHandUid = null;
+      practiceGame.selectedBoardUnit = null;
+
+      const side = practiceGame[sideKey];
+      side.playedBuildingThisTurn = false;
+
+      // Draw Phase: draw 1 card
+      drawCardForSide(sideKey, false);
+
+      // Prepare all units & reset turn flags
+      [...side.front, ...side.back].filter(Boolean).forEach(u => {
+        u.prepared = true;
+        u.hasAttackedThisTurn = false;
+        u.mustAttackThisTurn = false;
+        u.tempAtkBuff = 0;
+      });
+
+      recalculateSideResources(sideKey);
+      const availableRes = side.resourceCap - side.usedResources;
+
+      // Silk Victory token check during Draw Phase (10+ resources)
+      if (side.resourceCap >= 10 || availableRes >= 10) {
+        side.silkTokens += 1;
+        addPracticeLog(`${side.name} maintained 10+ resources in Draw Phase and gained a Silk Token (${side.silkTokens}/3)!`);
+      } else if (side.silkTokens > 0) {
+        side.silkTokens = 0;
+        addPracticeLog(`${side.name} dropped below 10 resources and lost all Silk Tokens.`);
+      }
+
+      practiceGame.phase = 'play';
+      renderPracticeBoard();
+
+      if (sideKey === 'robot') {
+        scheduleRobotTurn();
+      }
+    }
+
+    function endMovePhaseForSide(sideKey) {
+      if (!practiceGame || practiceGame.winner) return;
+      const side = practiceGame[sideKey];
+
+      // Heal all Champions and Buildings (Leaders & Capitals do NOT heal)
+      [...side.front, ...side.back].filter(Boolean).forEach(u => {
+        if (!u.isLeader && !u.isCapital) {
+          u.currentDef = u.maxDef;
+        }
+        u.tempAtkBuff = 0;
+        u.mustAttackThisTurn = false;
+      });
+
+      // Silk Victory win check at end of Move Phase
+      if (side.silkTokens >= 3) {
+        declarePracticeWinner(sideKey, `Silk Victory! ${side.name} held 3 Silk Tokens at the end of the Move Phase!`);
+        return;
+      }
+
+      if (sideKey === 'robot') {
+        practiceGame.round += 1;
+      }
+      const nextSide = sideKey === 'player' ? 'robot' : 'player';
+      startTurnForSide(nextSide);
+    }
+
+    function advancePlayerPhase() {
+      if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
+      practiceGame.selectedHandUid = null;
+      practiceGame.selectedBoardUnit = null;
+
+      if (practiceGame.phase === 'play') {
+        practiceGame.phase = 'fight';
+        addPracticeLog('You entered Fight Phase.');
+      } else if (practiceGame.phase === 'fight') {
+        practiceGame.phase = 'move';
+        addPracticeLog('You entered Move Phase.');
+      } else if (practiceGame.phase === 'move') {
+        addPracticeLog('You ended your turn.');
+        endMovePhaseForSide('player');
+        return;
+      }
+      renderPracticeBoard();
+    }
+
+    function selectHandCard(uid) {
+      if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
+      if (practiceGame.phase !== 'play') {
+        addPracticeLog('You can only play cards from hand during the Play Phase.');
+        renderPracticeBoard();
+        return;
+      }
+      practiceGame.selectedHandUid = practiceGame.selectedHandUid === uid ? null : uid;
+      practiceGame.selectedBoardUnit = null;
+      renderPracticeBoard();
+    }
+
+    function triggerCapitalHeritageOnPlay(sideKey, playedUnit) {
+      const side = practiceGame[sideKey];
+      const allFriendly = [...side.front, ...side.back].filter(Boolean);
+      const playedText = `${playedUnit.name} ${playedUnit.cardType}`.toLowerCase();
+
+      for (const u of allFriendly) {
+        if (u.isCapital && u.hasConditionalEvent) {
+          const trig = (u.conditionTrigger || '').toLowerCase();
+          const matchesSubtype = (trig.includes('shudra') && playedText.includes('shudra')) ||
+                                 (trig.includes('vaisya') && playedText.includes('vaisya')) ||
+                                 (trig.includes('champion') && !playedUnit.isBuilding && !playedUnit.isTactic) ||
+                                 (!trig.includes('shudra') && !trig.includes('vaisya') && !playedUnit.isBuilding && !playedUnit.isTactic);
+          if (matchesSubtype) {
+            u.heritageTokens += 1;
+            u.maxDef += 1;
+            u.currentDef += 1;
+            addPracticeLog(`✨ ${u.name} gained +1 Heritage Token (${u.heritageTokens} total, +1 DEF)!`);
+          }
+        }
+      }
+    }
+
+    function playCardFromHandToSlot(sideKey, handUid, targetRow, targetSlot) {
+      const side = practiceGame[sideKey];
+      const handIdx = side.hand.findIndex(c => c.uid === handUid);
+      if (handIdx === -1) return false;
+      const card = side.hand[handIdx];
+
+      if (card.isTactic) {
+        return activateTacticFromHand(sideKey, handUid);
+      }
+
+      if (card.isCapital || card.isBuilding) {
+        if (side.playedBuildingThisTurn) {
+          if (sideKey === 'player') addPracticeLog('Rule: You may only play 1 Building or Capital per turn.');
+          return false;
+        }
+        if (card.isCapital && targetRow !== 'back') {
+          if (sideKey === 'player') addPracticeLog('Rule: Capitals must be placed on the Back Row.');
+          return false;
+        }
+      }
+
+      if (side[targetRow][targetSlot] !== null) {
+        if (sideKey === 'player') addPracticeLog('That board slot is already occupied.');
+        return false;
+      }
+
+      recalculateSideResources(sideKey);
+      const availableRes = side.resourceCap - side.usedResources;
+      const cost = (!card.isCapital && !card.isLeader && card.manaAction === 'spend') ? card.manaValue : 0;
+
+      if (cost > availableRes) {
+        if (sideKey === 'player') addPracticeLog(`Not enough resources (${availableRes} available, needs ${cost}).`);
+        return false;
+      }
+
+      // Remove from hand & place on board
+      side.hand.splice(handIdx, 1);
+      if (card.isCapital || card.isBuilding) {
+        side.playedBuildingThisTurn = true;
+        card.prepared = true;
+      } else {
+        card.prepared = false; // Champions enter play unprepared
+      }
+
+      side[targetRow][targetSlot] = card;
+      recalculateSideResources(sideKey);
+      addPracticeLog(`${side.name} played ${card.name} to ${targetRow} row (Slot ${targetSlot + 1}).`);
+
+      triggerCapitalHeritageOnPlay(sideKey, card);
+      checkLSSVictoryConditions();
+      return true;
+    }
+
+    function activateTacticFromHand(sideKey, handUid) {
+      const side = practiceGame[sideKey];
+      const handIdx = side.hand.findIndex(c => c.uid === handUid);
+      if (handIdx === -1) return false;
+      const tactic = side.hand[handIdx];
+
+      side.hand.splice(handIdx, 1);
+      side.discard.push(tactic);
+
+      const effLower = `${tactic.conditionEffect} ${tactic.ability} ${tactic.special}`.toLowerCase();
+      let buffed = 0;
+      [...side.front, ...side.back].filter(Boolean).forEach(u => {
+        if (!u.isBuilding && !u.isCapital) {
+          const matchesKshatriya = effLower.includes('kshatriya') ? u.cardType.toLowerCase().includes('kshatriya') : true;
+          if (matchesKshatriya) {
+            u.tempAtkBuff += 1;
+            if (effLower.includes('must attack')) u.mustAttackThisTurn = true;
+            buffed++;
+          }
+        }
+      });
+
+      addPracticeLog(`⚡ ${side.name} activated Tactic "${tactic.name}"! (${buffed} friendly unit(s) gained +1 Strength this turn)`);
+      practiceGame.selectedHandUid = null;
+      renderPracticeBoard();
+      return true;
+    }
+
+    function playSelectedHandCard(row) {
+      if (!practiceGame || !practiceGame.selectedHandUid || practiceGame.turn !== 'player') return;
+      const side = practiceGame.player;
+      const freeSlot = side[row].findIndex(s => s === null);
+      if (freeSlot === -1) {
+        addPracticeLog(`Your ${row} row has no empty slots.`);
+        renderPracticeBoard();
+        return;
+      }
+      if (playCardFromHandToSlot('player', practiceGame.selectedHandUid, row, freeSlot)) {
+        practiceGame.selectedHandUid = null;
+      }
+      renderPracticeBoard();
+    }
+
+    function playSelectedTacticCard() {
+      if (!practiceGame || !practiceGame.selectedHandUid || practiceGame.turn !== 'player') return;
+      activateTacticFromHand('player', practiceGame.selectedHandUid);
+    }
+
+    function handleBoardSlotClick(ownerKey, row, slot) {
+      if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
+      const unit = practiceGame[ownerKey][row][slot];
+
+      // 1. Play Phase: deploy selected hand card to clicked empty player slot
+      if (practiceGame.phase === 'play' && ownerKey === 'player' && practiceGame.selectedHandUid && !unit) {
+        if (playCardFromHandToSlot('player', practiceGame.selectedHandUid, row, slot)) {
+          practiceGame.selectedHandUid = null;
+        }
+        renderPracticeBoard();
+        return;
+      }
+
+      // 2. Fight Phase: select player attacker OR attack clicked enemy target
+      if (practiceGame.phase === 'fight') {
+        if (ownerKey === 'player' && unit) {
+          if (!unit.prepared || unit.hasAttackedThisTurn || unit.keywords.pacifist || unit.isCapital || unit.isBuilding) {
+            addPracticeLog(`${unit.name} cannot attack right now.`);
+            renderPracticeBoard();
+            return;
+          }
+          const hasFrontUnits = practiceGame.player.front.some(Boolean);
+          if (row === 'back' && hasFrontUnits && !unit.keywords.ranged) {
+            addPracticeLog(`${unit.name} is on the Back Row and needs Ranged (or an empty Front Row) to attack.`);
+            renderPracticeBoard();
+            return;
+          }
+          practiceGame.selectedBoardUnit = { row, slot };
+          renderPracticeBoard();
+          return;
+        }
+
+        if (ownerKey === 'robot' && unit && practiceGame.selectedBoardUnit) {
+          executeAttack('player', practiceGame.selectedBoardUnit, { row, slot });
+          practiceGame.selectedBoardUnit = null;
+          renderPracticeBoard();
+          return;
+        }
+      }
+
+      // 3. Move Phase: select player unit OR move it to clicked empty player slot
+      if (practiceGame.phase === 'move' && ownerKey === 'player') {
+        if (unit) {
+          if (!unit.prepared || unit.keywords.noMove) {
+            addPracticeLog(`${unit.name} cannot move.`);
+            renderPracticeBoard();
+            return;
+          }
+          practiceGame.selectedBoardUnit = { row, slot };
+          renderPracticeBoard();
+          return;
+        }
+        if (!unit && practiceGame.selectedBoardUnit) {
+          const from = practiceGame.selectedBoardUnit;
+          const movingUnit = practiceGame.player[from.row][from.slot];
+          if (movingUnit) {
+            practiceGame.player[from.row][from.slot] = null;
+            practiceGame.player[row][slot] = movingUnit;
+            addPracticeLog(`You moved ${movingUnit.name} to ${row} row (Slot ${slot + 1}).`);
+          }
+          practiceGame.selectedBoardUnit = null;
+          renderPracticeBoard();
+        }
+      }
+    }
+
+    function executeAttack(attackerOwner, attackerPos, targetPos) {
+      const defenderOwner = attackerOwner === 'player' ? 'robot' : 'player';
+      const attSide = practiceGame[attackerOwner];
+      const defSide = practiceGame[defenderOwner];
+
+      const attacker = attSide[attackerPos.row][attackerPos.slot];
+      const target = defSide[targetPos.row][targetPos.slot];
+      if (!attacker || !target) return false;
+
+      const defFrontHasUnits = defSide.front.some(Boolean);
+      if (targetPos.row === 'back' && defFrontHasUnits) {
+        if (!attacker.keywords.ranged) {
+          if (attackerOwner === 'player') addPracticeLog('Rule: You must attack enemy Front Row targets first unless you have Ranged.');
+          return false;
+        }
+        if (target.isLeader || target.isCapital) {
+          if (attackerOwner === 'player') addPracticeLog('Rule: Ranged units cannot directly target an enemy Leader/Capital while their Front Row has units.');
+          return false;
+        }
+      }
+
+      const attDamage = attacker.baseAtk + attacker.tempAtkBuff;
+      const defDamage = target.baseAtk + target.tempAtkBuff;
+      const isRangedOverTwoRows = attacker.keywords.ranged && (attackerPos.row === 'back' || targetPos.row === 'back');
+
+      target.currentDef -= attDamage;
+      if (!isRangedOverTwoRows) {
+        attacker.currentDef -= defDamage;
+      }
+      attacker.hasAttackedThisTurn = true;
+
+      addPracticeLog(`⚔️ ${attSide.name}'s ${attacker.name} (${attDamage} STR) attacked ${defSide.name}'s ${target.name} (${target.currentDef}/${target.maxDef} DEF left).`);
+
+      // Breach keyword spillover if front-row target is destroyed
+      if (attacker.keywords.breach && targetPos.row === 'front' && target.currentDef <= 0) {
+        const behindUnit = defSide.back[targetPos.slot];
+        if (behindUnit) {
+          behindUnit.currentDef -= attDamage;
+          addPracticeLog(`💥 Breach! ${attacker.name} dealt ${attDamage} spillover damage to ${behindUnit.name}!`);
+        }
+      }
+
+      // Clean up destroyed units
+      for (const r of ['front', 'back']) {
+        for (let s = 0; s < 5; s++) {
+          const uDef = defSide[r][s];
+          if (uDef && uDef.currentDef <= 0) {
+            defSide[r][s] = null;
+            defSide.discard.push(uDef);
+            addPracticeLog(`💀 ${defSide.name}'s ${uDef.name} was destroyed!`);
+          }
+          const uAtt = attSide[r][s];
+          if (uAtt && uAtt.currentDef <= 0) {
+            attSide[r][s] = null;
+            attSide.discard.push(uAtt);
+            addPracticeLog(`💀 ${attSide.name}'s ${uAtt.name} was destroyed!`);
+          }
+        }
+      }
+
+      recalculateSideResources('player');
+      recalculateSideResources('robot');
+      checkLSSVictoryConditions();
+      return true;
+    }
+
+    function scheduleRobotTurn() {
+      if (!practiceGame || practiceGame.winner) return;
+      document.getElementById('robotThinkingBadge').classList.remove('hidden');
+      robotTurnTimer = setTimeout(() => {
+        runRobotTurnAI();
+      }, 750);
+    }
+
+    function runRobotTurnAI() {
+      if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
+      const difficulty = document.getElementById('practiceDifficulty').value;
+      const robot = practiceGame.robot;
+      const player = practiceGame.player;
+
+      // 1. PLAY PHASE: Play Tactics, 1 Building/Capital, and Champions within resource cap
+      practiceGame.phase = 'play';
+      const handSnapshot = [...robot.hand];
+      for (const card of handSnapshot) {
+        if (practiceGame.winner) break;
+        if (card.isTactic) {
+          const hasFriendlyWarrior = [...robot.front, ...robot.back].some(u => u && !u.isBuilding && !u.isCapital);
+          if (hasFriendlyWarrior) {
+            activateTacticFromHand('robot', card.uid);
+          }
+          continue;
+        }
+        const preferredRow = (card.isCapital || card.isBuilding || card.keywords.ranged || card.keywords.pacifist) ? 'back' : 'front';
+        const fallbackRow = preferredRow === 'front' ? 'back' : 'front';
+        let slot = robot[preferredRow].findIndex(s => s === null);
+        let chosenRow = preferredRow;
+        if (slot === -1) {
+          slot = robot[fallbackRow].findIndex(s => s === null);
+          chosenRow = fallbackRow;
+        }
+        if (slot !== -1) {
+          playCardFromHandToSlot('robot', card.uid, chosenRow, slot);
+        }
+      }
+
+      if (practiceGame.winner) {
+        document.getElementById('robotThinkingBadge').classList.add('hidden');
+        return;
+      }
+
+      // 2. FIGHT PHASE: Attack with all eligible Robot units
+      practiceGame.phase = 'fight';
+      for (const r of ['front', 'back']) {
+        for (let s = 0; s < 5; s++) {
+          if (practiceGame.winner) break;
+          const attacker = robot[r][s];
+          if (!attacker || !attacker.prepared || attacker.hasAttackedThisTurn || attacker.keywords.pacifist || attacker.isBuilding || attacker.isCapital) {
+            continue;
+          }
+          const robotFrontHasUnits = robot.front.some(Boolean);
+          if (r === 'back' && robotFrontHasUnits && !attacker.keywords.ranged) continue;
+
+          // Find legal targets
+          const playerFrontTargets = [];
+          const playerBackTargets = [];
+          for (let ts = 0; ts < 5; ts++) {
+            if (player.front[ts]) playerFrontTargets.push({ row: 'front', slot: ts, unit: player.front[ts] });
+            if (player.back[ts]) playerBackTargets.push({ row: 'back', slot: ts, unit: player.back[ts] });
+          }
+
+          let legalTargets = [];
+          if (playerFrontTargets.length > 0) {
+            legalTargets = [...playerFrontTargets];
+            if (attacker.keywords.ranged) {
+              legalTargets.push(...playerBackTargets.filter(t => !t.unit.isLeader && !t.unit.isCapital));
+            }
+          } else {
+            legalTargets = [...playerBackTargets];
+          }
+
+          if (legalTargets.length > 0) {
+            if (difficulty === 'tactical') {
+              // Prioritize enemy Leader/Capital, or targets Robot can destroy cleanly
+              legalTargets.sort((a, b) => {
+                const aScore = (a.unit.isLeader || a.unit.isCapital ? 100 : 0) + (a.unit.currentDef <= (attacker.baseAtk + attacker.tempAtkBuff) ? 30 : 0);
+                const bScore = (b.unit.isLeader || b.unit.isCapital ? 100 : 0) + (b.unit.currentDef <= (attacker.baseAtk + attacker.tempAtkBuff) ? 30 : 0);
+                return bScore - aScore;
+              });
+            }
+            const chosenTarget = legalTargets[0];
+            executeAttack('robot', { row: r, slot: s }, { row: chosenTarget.row, slot: chosenTarget.slot });
+          }
+        }
+      }
+
+      if (practiceGame.winner) {
+        document.getElementById('robotThinkingBadge').classList.add('hidden');
+        return;
+      }
+
+      // 3. MOVE PHASE: Advance back-row melee champions to front row if open
+      practiceGame.phase = 'move';
+      for (let s = 0; s < 5; s++) {
+        const backUnit = robot.back[s];
+        if (backUnit && backUnit.prepared && !backUnit.keywords.noMove && !backUnit.keywords.ranged && !backUnit.keywords.pacifist) {
+          const openFront = robot.front.findIndex(x => x === null);
+          if (openFront !== -1) {
+            robot.back[s] = null;
+            robot.front[openFront] = backUnit;
+            addPracticeLog(`AI Robot moved ${backUnit.name} up to the Front Row.`);
+          }
+        }
+      }
+
+      document.getElementById('robotThinkingBadge').classList.add('hidden');
+      endMovePhaseForSide('robot');
+    }
+
+    function renderPracticeBoard() {
+      if (!practiceGame) return;
+      const g = practiceGame;
+      const isPlayerTurn = g.turn === 'player' && !g.winner;
+
+      // Turn & Phase badges
+      const turnBadge = document.getElementById('turnIndicatorBadge');
+      turnBadge.textContent = g.winner ? 'MATCH OVER' : (g.turn === 'player' ? 'YOUR TURN' : 'AI ROBOT TURN');
+      turnBadge.className = g.turn === 'player'
+        ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white'
+        : 'px-3 py-1 rounded-full text-xs font-extrabold bg-fuchsia-600 text-white';
+
+      document.getElementById('roundNumberBadge').textContent = `Round ${g.round}`;
+      ['draw', 'play', 'fight', 'move'].forEach(p => {
+        const pill = document.getElementById(`phasePill-${p}`);
+        if (g.phase === p) {
+          pill.className = 'px-2.5 py-0.5 rounded bg-indigo-600 text-white font-bold';
+        } else {
+          pill.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400';
+        }
+      });
+
+      const advanceBtn = document.getElementById('advancePhaseBtn');
+      advanceBtn.disabled = !isPlayerTurn;
+      advanceBtn.classList.toggle('opacity-50', !isPlayerTurn);
+      if (g.phase === 'play') advanceBtn.innerHTML = 'To Fight Phase <i class="fa-solid fa-arrow-right ml-1"></i>';
+      else if (g.phase === 'fight') advanceBtn.innerHTML = 'To Move Phase <i class="fa-solid fa-arrow-right ml-1"></i>';
+      else advanceBtn.innerHTML = 'End Turn <i class="fa-solid fa-check ml-1"></i>';
+
+      // Action Hint
+      const hint = document.getElementById('practiceActionHint');
+      if (g.winner) {
+        hint.textContent = g.winReason;
+      } else if (g.turn !== 'player') {
+        hint.textContent = 'AI Robot is taking its turn...';
+      } else if (g.phase === 'play') {
+        hint.textContent = g.selectedHandUid ? 'Click an empty slot on your board to deploy!' : 'Play Phase: Click a card in your hand to play it.';
+      } else if (g.phase === 'fight') {
+        hint.textContent = g.selectedBoardUnit ? 'Now click an enemy card on Robot\'s board to attack!' : 'Fight Phase: Click your ready Front-Row (or Ranged) unit to attack.';
+      } else if (g.phase === 'move') {
+        hint.textContent = g.selectedBoardUnit ? 'Click an empty slot on your board to move there!' : 'Move Phase: Click a ready unit to reposition, or click End Turn.';
+      }
+
+      // HUD Stats
+      const pAvail = Math.max(0, g.player.resourceCap - g.player.usedResources);
+      const rAvail = Math.max(0, g.robot.resourceCap - g.robot.usedResources);
+      document.getElementById('playerHudStats').textContent =
+        `Res: ${pAvail}/${g.player.resourceCap} • Deck: ${g.player.deck.length} • Discard: ${g.player.discard.length} • Silk: ${g.player.silkTokens}/3`;
+      document.getElementById('robotHudStats').textContent =
+        `Res: ${rAvail}/${g.robot.resourceCap} • Hand: ${g.robot.hand.length} • Deck: ${g.robot.deck.length} • Silk: ${g.robot.silkTokens}/3`;
+
+      // Render 4 Board Rows
+      renderBoardRow('robotBackRow', 'robot', 'back');
+      renderBoardRow('robotFrontRow', 'robot', 'front');
+      renderBoardRow('playerFrontRow', 'player', 'front');
+      renderBoardRow('playerBackRow', 'player', 'back');
+
+      // Render Player Hand
+      const handZone = document.getElementById('playerHandZone');
+      const selectedHandCard = g.player.hand.find(c => c.uid === g.selectedHandUid);
+      const handControls = document.getElementById('selectedHandControls');
+      const tacticBtn = document.getElementById('playTacticBtn');
+
+      if (selectedHandCard && isPlayerTurn && g.phase === 'play') {
+        handControls.classList.remove('hidden');
+        tacticBtn.classList.toggle('hidden', !selectedHandCard.isTactic);
+      } else {
+        handControls.classList.add('hidden');
+      }
+
+      if (g.player.hand.length === 0) {
+        handZone.innerHTML = `<div class="flex-1 flex items-center justify-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">Your hand is empty.</div>`;
+      } else {
+        handZone.innerHTML = g.player.hand.map(c => {
+          const isSelected = g.selectedHandUid === c.uid;
+          const costLabel = c.isTactic ? 'Tactic (0)' : (c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`);
+          return `
+            <div onclick="selectHandCard('${c.uid}')" class="w-40 shrink-0 p-2.5 rounded-xl border cursor-pointer transition flex flex-col justify-between ${isSelected ? 'bg-indigo-950/80 border-cyan-400 ring-2 ring-cyan-400/50 -translate-y-1' : 'bg-slate-900 border-slate-700 hover:border-indigo-400'}">
+              <div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-sky-300">${costLabel}</span>
+                  <span class="text-[10px] text-amber-300">${escapeHTML(c.nation || 'Universal')}</span>
+                </div>
+                <div class="font-bold text-xs text-white truncate mt-1">${escapeHTML(c.name)}</div>
+                <div class="text-[10px] text-indigo-300 truncate">${escapeHTML(c.cardType || 'Card')}</div>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 truncate max-w-[78px]">${escapeHTML(c.ability || c.conditionEffect || '')}</span>
+                ${!c.isTactic ? `<span class="font-extrabold text-rose-300">${c.baseAtk}<span class="text-slate-500">/</span><span class="text-blue-300">${c.maxDef}</span></span>` : `<span class="text-cyan-300 font-bold">Effect</span>`}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Battle Log
+      document.getElementById('practiceBattleLog').innerHTML = g.logs.map(line =>
+        `<div class="p-1.5 rounded bg-slate-900/90 border border-slate-800/80 leading-snug">${escapeHTML(line)}</div>`
+      ).join('');
+
+      // Winner Banner
+      const winnerBanner = document.getElementById('practiceWinnerBanner');
+      if (g.winner) {
+        winnerBanner.classList.remove('hidden');
+        document.getElementById('practiceWinnerTitle').textContent = g.winner === 'player' ? '🏆 Victory! You Defeated the AI Robot!' : '🤖 AI Robot Wins This Practice Match!';
+        document.getElementById('practiceWinnerReason').textContent = g.winReason;
+      } else {
+        winnerBanner.classList.add('hidden');
+      }
+    }
+
+    function renderBoardRow(elementId, ownerKey, row) {
+      const container = document.getElementById(elementId);
+      const slots = practiceGame[ownerKey][row];
+      const isPlayerTurn = practiceGame.turn === 'player' && !practiceGame.winner;
+
+      container.innerHTML = slots.map((unit, slotIdx) => {
+        if (!unit) {
+          const canDropHere = isPlayerTurn && ownerKey === 'player' &&
+            ((practiceGame.phase === 'play' && practiceGame.selectedHandUid) ||
+             (practiceGame.phase === 'move' && practiceGame.selectedBoardUnit));
+          return `
+            <div onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
+              class="h-24 sm:h-28 rounded-xl border border-dashed flex flex-col items-center justify-center text-[10px] transition ${canDropHere ? 'border-emerald-400 bg-emerald-950/25 text-emerald-300 cursor-pointer animate-pulse-glow' : 'border-slate-800 bg-slate-950/50 text-slate-600'}">
+              <span>Slot ${slotIdx + 1}</span>
+              ${canDropHere ? `<span class="font-bold mt-0.5">+ Place Here</span>` : ''}
+            </div>
+          `;
+        }
+
+        const isSelectedAttackerOrMover = ownerKey === 'player' &&
+          practiceGame.selectedBoardUnit &&
+          practiceGame.selectedBoardUnit.row === row &&
+          practiceGame.selectedBoardUnit.slot === slotIdx;
+
+        const isTargetableEnemy = isPlayerTurn && ownerKey === 'robot' &&
+          practiceGame.phase === 'fight' && Boolean(practiceGame.selectedBoardUnit);
+
+        const totalAtk = unit.baseAtk + unit.tempAtkBuff;
+        const roleBadge = unit.isLeader ? '👑 Leader' : (unit.isCapital ? `🏛️ Capital (${unit.heritageTokens}★)` : (unit.isBuilding ? '🏗️ Bldg' : '⚔️ Unit'));
+
+        return `
+          <div onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
+            class="h-24 sm:h-28 p-2 rounded-xl border flex flex-col justify-between cursor-pointer transition relative ${
+              isSelectedAttackerOrMover ? 'bg-indigo-950/90 border-cyan-400 ring-2 ring-cyan-400/60 -translate-y-0.5' :
+              isTargetableEnemy ? 'bg-rose-950/40 border-rose-400/70 hover:bg-rose-900/50' :
+              unit.isLeader || unit.isCapital ? 'bg-amber-950/25 border-amber-500/45' :
+              'bg-slate-900 border-slate-700/90 hover:border-slate-500'
+            } ${!unit.prepared ? 'opacity-75' : ''}">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-950/80 text-amber-300 truncate">${roleBadge}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${unit.prepared && !unit.hasAttackedThisTurn ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'}">
+                ${!unit.prepared ? 'Zzz' : (unit.hasAttackedThisTurn ? 'Done' : 'Ready')}
+              </span>
+            </div>
+
+            <div class="min-w-0">
+              <div class="font-bold text-[11px] text-white truncate">${escapeHTML(unit.name)}</div>
+              <div class="text-[9px] text-slate-400 truncate">
+                ${unit.keywords.ranged ? '🏹Ranged ' : ''}${unit.keywords.breach ? '💥Breach ' : ''}${unit.keywords.pacifist ? '🛡️Pacifist' : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800/80 text-[11px] font-extrabold">
+              <span class="text-rose-400"><i class="fa-solid fa-khanda mr-0.5 text-[9px]"></i>${totalAtk}</span>
+              <span class="${unit.currentDef < unit.maxDef ? 'text-amber-300' : 'text-blue-400'}"><i class="fa-solid fa-shield-halved mr-0.5 text-[9px]"></i>${unit.currentDef}/${unit.maxDef}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     /* Reads Restriction, Ability, Conditional Event, and Special under LSS Rules */
     function analyzeCardTextForDeck(card, selectedNation, style, promptText) {
       let textScore = 0;

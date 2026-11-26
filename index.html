@@ -20,7 +20,7 @@
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
 
     /* ============================================================
-       SITE-WIDE & BATTLE ARENA KEYFRAME ANIMATIONS
+       SITE-WIDE, 3D CARD BACK & BATTLE ARENA KEYFRAME ANIMATIONS
     ============================================================ */
     @keyframes fadeSlideUp {
       0% { opacity: 0; transform: translateY(18px) scale(0.97); }
@@ -36,30 +36,67 @@
     }
     @keyframes gentleFloat {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      50% { transform: translateY(-5px); }
     }
     @keyframes ambientOrbDrift {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(28px, -20px) scale(1.06); }
-      66% { transform: translate(-22px, 16px) scale(0.96); }
+      33% { transform: translate(32px, -22px) scale(1.08); }
+      66% { transform: translate(-24px, 18px) scale(0.95); }
+    }
+    @keyframes emberRise {
+      0% { transform: translateY(105vh) translateX(0) scale(0.6); opacity: 0; }
+      15% { opacity: 0.75; }
+      85% { opacity: 0.65; }
+      100% { transform: translateY(-10vh) translateX(35px) scale(1.15); opacity: 0; }
     }
     @keyframes shimmerSweep {
-      0% { transform: translateX(-120%); }
-      100% { transform: translateX(220%); }
+      0% { transform: translateX(-130%) skewX(-18deg); }
+      100% { transform: translateX(240%) skewX(-18deg); }
+    }
+    @keyframes mandalaSlowSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes mandalaReverseSpin {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes goldFoilPulse {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(245, 196, 81, 0.35)); }
+      50% { filter: drop-shadow(0 0 14px rgba(253, 224, 71, 0.7)); }
     }
     @keyframes statPop {
       0% { transform: scale(1); }
-      45% { transform: scale(1.18); color: #34d399; }
+      45% { transform: scale(1.22); color: #34d399; }
       100% { transform: scale(1); }
     }
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
-      50% { box-shadow: 0 0 18px 3px rgba(16, 185, 129, 0.35); }
+      50% { box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.38); }
     }
     @keyframes card3DOrbit {
-      0% { transform: rotateX(8deg) rotateY(-18deg); }
-      50% { transform: rotateX(-6deg) rotateY(18deg); }
-      100% { transform: rotateX(8deg) rotateY(-18deg); }
+      0% { transform: rotateX(8deg) rotateY(-22deg); }
+      25% { transform: rotateX(-5deg) rotateY(22deg); }
+      50% { transform: rotateX(6deg) rotateY(180deg); }
+      75% { transform: rotateX(-6deg) rotateY(205deg); }
+      100% { transform: rotateX(8deg) rotateY(338deg); }
+    }
+    @keyframes barrelRollSpin {
+      0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); }
+      50% { transform: rotateX(18deg) rotateY(360deg) rotateZ(180deg) scale(1.08); }
+      100% { transform: rotateX(0deg) rotateY(720deg) rotateZ(360deg) scale(1); }
+    }
+    @keyframes toastSlideIn {
+      0% { opacity: 0; transform: translateY(24px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes burstParticle {
+      0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3) rotate(360deg); }
+    }
+    @keyframes goldenOverdriveGlow {
+      0%, 100% { box-shadow: inset 0 0 40px rgba(251, 191, 36, 0.14); }
+      50% { box-shadow: inset 0 0 75px rgba(245, 158, 11, 0.28); }
     }
 
     /* Practice Battle Animations */
@@ -103,8 +140,8 @@
       100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); transform: scale(1); }
     }
     @keyframes battleLinePulse {
-      0%, 100% { opacity: 0.55; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.04); box-shadow: 0 0 14px rgba(245, 158, 11, 0.35); }
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); box-shadow: 0 0 16px rgba(245, 158, 11, 0.42); }
     }
     @keyframes logSlideIn {
       0% { opacity: 0; transform: translateX(-10px); }
@@ -116,60 +153,27 @@
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    .animate-card-enter {
-      animation: fadeSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-modal-backdrop {
-      animation: modalBackdropIn 0.22s ease-out both;
-    }
-    .animate-modal-panel {
-      animation: modalPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .animate-tab-panel {
-      animation: fadeSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-float-slow {
-      animation: gentleFloat 3.4s ease-in-out infinite;
-    }
-    .animate-orb-1 {
-      animation: ambientOrbDrift 14s ease-in-out infinite;
-    }
-    .animate-orb-2 {
-      animation: ambientOrbDrift 18s ease-in-out infinite reverse;
-    }
-    .animate-stat-pop {
-      animation: statPop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .animate-pulse-glow {
-      animation: pulseGlow 1.9s infinite;
-    }
-    .animate-summon-pop {
-      animation: summonPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-move-slide {
-      animation: moveSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-attack-up {
-      animation: attackLungeUp 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-attack-down {
-      animation: attackLungeDown 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .animate-hit-shake {
-      animation: hitShake 0.48s ease-in-out both;
-    }
-    .animate-tactic-flash {
-      animation: tacticFlash 0.65s ease-out both;
-    }
-    .animate-battle-line {
-      animation: battleLinePulse 2.8s ease-in-out infinite;
-    }
-    .animate-log-in {
-      animation: logSlideIn 0.26s ease-out both;
-    }
-    .animate-victory {
-      animation: victoryCelebrate 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
+    .animate-card-enter { animation: fadeSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-modal-backdrop { animation: modalBackdropIn 0.22s ease-out both; }
+    .animate-modal-panel { animation: modalPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-tab-panel { animation: fadeSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-float-slow { animation: gentleFloat 3.4s ease-in-out infinite; }
+    .animate-orb-1 { animation: ambientOrbDrift 14s ease-in-out infinite; }
+    .animate-orb-2 { animation: ambientOrbDrift 18s ease-in-out infinite reverse; }
+    .animate-stat-pop { animation: statPop 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-pulse-glow { animation: pulseGlow 1.9s infinite; }
+    .animate-summon-pop { animation: summonPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-move-slide { animation: moveSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-attack-up { animation: attackLungeUp 0.52s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-attack-down { animation: attackLungeDown 0.52s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-hit-shake { animation: hitShake 0.48s ease-in-out both; }
+    .animate-tactic-flash { animation: tacticFlash 0.65s ease-out both; }
+    .animate-battle-line { animation: battleLinePulse 2.8s ease-in-out infinite; }
+    .animate-log-in { animation: logSlideIn 0.26s ease-out both; }
+    .animate-victory { animation: victoryCelebrate 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-toast-in { animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .golden-overdrive { animation: goldenOverdriveGlow 3s ease-in-out infinite; }
+
     .floating-dmg-badge {
       position: absolute;
       top: 4px;
@@ -183,24 +187,18 @@
       overflow: hidden;
       transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background-color 0.2s ease;
     }
-    .btn-animated:hover {
-      transform: translateY(-1.5px);
-    }
-    .btn-animated:active {
-      transform: translateY(0.5px) scale(0.97);
-    }
+    .btn-animated:hover { transform: translateY(-1.5px); }
+    .btn-animated:active { transform: translateY(0.5px) scale(0.97); }
     .btn-shimmer::after {
       content: '';
       position: absolute;
       inset: 0;
       width: 50%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
-      transform: translateX(-120%);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transform: translateX(-130%) skewX(-18deg);
       pointer-events: none;
     }
-    .btn-shimmer:hover::after {
-      animation: shimmerSweep 0.75s ease-in-out;
-    }
+    .btn-shimmer:hover::after { animation: shimmerSweep 0.75s ease-in-out; }
 
     /* Interactive 3D Tilt Hover on Vault Cards */
     .card-item {
@@ -227,52 +225,71 @@
       pointer-events: none;
       opacity: 0;
       z-index: 12;
-      background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, 0.16), rgba(99, 102, 241, 0.08) 35%, transparent 70%);
+      background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, 0.18), rgba(245, 196, 81, 0.09) 35%, transparent 70%);
       transition: opacity 0.25s ease;
     }
-    .card-item:hover .card-holo-glint {
-      opacity: 1;
-    }
+    .card-item:hover .card-holo-glint { opacity: 1; }
 
-    /* 3D Card Inspector Stage */
-    .stage-3d-perspective {
-      perspective: 1200px;
-    }
+    /* 3D Card Inspector Stage & Ornate Card Back */
+    .stage-3d-perspective { perspective: 1300px; }
     .card-3d-object {
       transform-style: preserve-3d;
-      transition: transform 0.14s ease-out;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: transform;
     }
-    .card-3d-object.auto-orbit {
-      animation: card3DOrbit 6.5s ease-in-out infinite;
-    }
+    .card-3d-object.auto-orbit { animation: card3DOrbit 9s ease-in-out infinite; }
+    .card-3d-object.barrel-roll { animation: barrelRollSpin 0.95s cubic-bezier(0.22, 1, 0.36, 1); }
     .card-3d-face {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
     .card-3d-back {
       transform: rotateY(180deg);
+      /* Ornate dark marbled slate card texture with gold flecks (isolated card only, no table background) */
+      background-color: #19181d;
+      background-image:
+        radial-gradient(ellipse at 25% 20%, rgba(212, 175, 55, 0.13) 0%, transparent 45%),
+        radial-gradient(ellipse at 78% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 18% 32%, rgba(250, 204, 21, 0.45) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 82% 28%, rgba(250, 204, 21, 0.4) 0 1.2px, transparent 1.8px),
+        radial-gradient(circle at 24% 78%, rgba(250, 204, 21, 0.35) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 75% 68%, rgba(250, 204, 21, 0.4) 0 1.2px, transparent 1.8px),
+        linear-gradient(145deg, #252229 0%, #16151a 48%, #1e1d24 100%);
+    }
+    .card-3d-foil-sheen {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 20%, rgba(255, 240, 180, 0.16) 46%, rgba(255, 255, 255, 0.24) 50%, rgba(255, 240, 180, 0.12) 54%, transparent 80%);
+      transform: translateX(-130%) skewX(-18deg);
+      animation: shimmerSweep 4.2s ease-in-out infinite;
+    }
+    .mandala-ring-outer {
+      transform-origin: center;
+      animation: mandalaSlowSpin 48s linear infinite;
+    }
+    .mandala-ring-inner {
+      transform-origin: center;
+      animation: mandalaReverseSpin 36s linear infinite;
+    }
+    .gold-foil-glow {
+      animation: goldFoilPulse 3.5s ease-in-out infinite;
     }
 
-    .stat-card {
-      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-    }
+    .stat-card { transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease; }
     .stat-card:hover {
       transform: translateY(-2px);
       border-color: rgba(99, 102, 241, 0.45);
       box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.85);
     }
-    .hand-card-animated {
-      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-    }
+    .hand-card-animated { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease; }
     .hand-card-animated:hover {
       transform: translateY(-6px) scale(1.02);
       box-shadow: 0 12px 24px -8px rgba(34, 211, 238, 0.28);
     }
-
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      header, .no-print, .ambient-bg, .card-holo-glint, #cardModal, #aiDeckModal, #rulebookModal, #practiceModal, #card3DModal, #lightbox { display: none !important; }
+      header, .no-print, .ambient-bg, .card-holo-glint, #cardModal, #aiDeckModal, #rulebookModal, #practiceModal, #card3DModal, #easterEggModal, #easterEggToastContainer, #lightbox { display: none !important; }
       main { max-width: 100% !important; padding: 0 !important; }
       #cardGrid {
         display: grid !important;
@@ -289,16 +306,9 @@
         break-inside: avoid;
         page-break-inside: avoid;
       }
-      .card-item * {
-        color: #0f172a !important;
-        border-color: #cbd5e1 !important;
-      }
-      .card-item .print-surface {
-        background: #f8fafc !important;
-      }
-      body.print-single-mode .card-item:not(.print-target) {
-        display: none !important;
-      }
+      .card-item * { color: #0f172a !important; border-color: #cbd5e1 !important; }
+      .card-item .print-surface { background: #f8fafc !important; }
+      body.print-single-mode .card-item:not(.print-target) { display: none !important; }
       body.print-single-mode #cardGrid {
         grid-template-columns: minmax(0, 440px) !important;
         justify-content: center !important;
@@ -307,20 +317,33 @@
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col relative overflow-x-hidden">
-  <!-- Ambient Animated Background Glow -->
-  <div class="ambient-bg pointer-events-none fixed inset-0 overflow-hidden z-0">
+  <!-- Ambient Animated Background Glow & Drifting Silk/Steel Embers -->
+  <div id="ambientLayer" class="ambient-bg pointer-events-none fixed inset-0 overflow-hidden z-0">
     <div class="animate-orb-1 absolute -top-24 -left-24 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl"></div>
     <div class="animate-orb-2 absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-600/10 blur-3xl"></div>
+    <div class="animate-orb-1 absolute bottom-0 left-1/3 w-80 h-80 rounded-full bg-amber-500/5 blur-3xl"></div>
   </div>
+
+  <!-- Particle Burst Layer for Easter Eggs & Celebrations -->
+  <div id="particleBurstLayer" class="pointer-events-none fixed inset-0 overflow-hidden z-[70]"></div>
+
+  <!-- Easter Egg Toast Notification Container -->
+  <div id="easterEggToastContainer" class="fixed bottom-4 right-4 z-[65] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 animate-float-slow">
+        <!-- Easter Egg #2 Trigger: Click Logo 7 Times -->
+        <div id="vaultLogoIcon" onclick="handleLogoEasterEggClick()" title="CustomCard Vault" class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 animate-float-slow cursor-pointer select-none transition-transform active:scale-90">
           <i class="fa-solid fa-layer-group text-white text-lg"></i>
         </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
+            <button id="easterEggHudBadge" onclick="openEasterEggModal()" title="Secret Easter Egg Codex (Type 'LSS' anytime)" class="hidden px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-500/30 transition">
+              <i class="fa-solid fa-egg mr-1"></i><span id="easterEggHudCount">0/10</span>
+            </button>
+          </div>
           <p class="text-xs text-slate-400">Legends of Steel & Silk • Card IDs, Factions, Rarity & AI Deck Builder</p>
         </div>
       </div>
@@ -353,6 +376,7 @@
       </div>
     </div>
   </header>
+
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 relative z-10">
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
       <div class="stat-card animate-card-enter bg-slate-900/90 border border-slate-800 rounded-xl p-4" style="animation-delay: 0ms">
@@ -372,10 +396,11 @@
         <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
       </div>
     </div>
+
     <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6 no-print">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-        <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search ID, name, faction, rarity, ability, condition..."
+        <input type="text" id="searchInput" oninput="handleSearchWithEasterEggs()" placeholder="Search ID, name, faction, rarity, ability, condition..."
           class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" />
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -423,7 +448,9 @@
         </select>
       </div>
     </div>
+
     <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+
     <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl no-print animate-card-enter">
       <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl animate-float-slow">
         <i class="fa-solid fa-wand-sparkles"></i>
@@ -436,6 +463,27 @@
     </div>
   </main>
 
+  <!-- Secret Easter Egg Codex Modal (#10) -->
+  <div id="easterEggModal" onclick="if(event.target===this) closeEasterEggModal()" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
+    <div class="bg-slate-900 border border-amber-500/40 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-modal-panel space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/25">
+            <i class="fa-solid fa-egg text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Secret Easter Egg Codex</h2>
+            <p class="text-xs text-amber-300">10 Hidden Secrets in Legends of Steel & Silk Vault • Unlocked: <span id="codexProgressText" class="font-bold">0/10</span></p>
+          </div>
+        </div>
+        <button onclick="closeEasterEggModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="easterEggCodexList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs"></div>
+    </div>
+  </div>
+
   <!-- Interactive 3D Card Model Inspector Modal -->
   <div id="card3DModal" onclick="if(event.target===this) close3DCardModal()" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
     <div class="bg-slate-900 border border-indigo-500/35 rounded-2xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl max-h-[94vh] overflow-y-auto animate-modal-panel space-y-5">
@@ -446,15 +494,15 @@
           </div>
           <div>
             <h2 id="modal3DTitle" class="text-base sm:text-lg font-bold text-white">3D Card Model View</h2>
-            <p class="text-xs text-indigo-300/80">Move cursor across the card or use sliders to inspect front, back & depth</p>
+            <p class="text-xs text-indigo-300/80">Move cursor across the card, flip to view the Dragon & Lotus card back, or spin 360°</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
           <button type="button" id="toggle3DOrbitBtn" onclick="toggle3DAutoOrbit()" class="btn-animated px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-300 border border-cyan-500/30">
             <i class="fa-solid fa-arrows-spin mr-1"></i> Auto-Orbit: Off
           </button>
-          <button type="button" onclick="flip3DCardFace()" class="btn-animated px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white">
-            <i class="fa-solid fa-rotate mr-1"></i> Flip Back
+          <button type="button" id="flip3DFaceBtn" onclick="flip3DCardFace()" class="btn-animated px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white shadow-md shadow-amber-500/20">
+            <i class="fa-solid fa-rotate mr-1"></i> Flip to Back
           </button>
           <button type="button" onclick="reset3DCardPose()" class="btn-animated px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700">
             Reset
@@ -464,18 +512,16 @@
           </button>
         </div>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
         <!-- 3D Stage -->
-        <div id="stage3DArea" onmousemove="handle3DStageMove(event)" onmouseleave="handle3DStageLeave()" class="stage-3d-perspective py-6 px-4 rounded-2xl bg-slate-950/90 border border-slate-800 flex flex-col items-center justify-center min-h-[380px] select-none">
-          <div id="card3DObject" class="card-3d-object w-64 sm:w-72 aspect-[3/4.2] relative">
+        <div id="stage3DArea" onmousemove="handle3DStageMove(event)" onmouseleave="handle3DStageLeave()" ondblclick="trigger3DBarrelRoll()" title="Move mouse to tilt • Double-click for 360° Barrel Roll" class="stage-3d-perspective py-6 px-4 rounded-2xl bg-slate-950/90 border border-slate-800 flex flex-col items-center justify-center min-h-[400px] select-none cursor-grab active:cursor-grabbing">
+          <div id="card3DObject" class="card-3d-object w-64 sm:w-72 aspect-[3/4.25] relative">
             <!-- Front Face -->
             <div id="card3DFront" class="card-3d-face absolute inset-0 rounded-2xl bg-slate-900 border-2 border-indigo-400/50 shadow-2xl overflow-hidden flex flex-col justify-between p-3.5"></div>
-            <!-- Back Face -->
-            <div id="card3DBack" class="card-3d-face card-3d-back absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/50 shadow-2xl p-4 flex flex-col justify-between"></div>
+            <!-- Back Face: Ornate Gold Dragon & Lotus Emblem Card Back (Isolated Card Only) -->
+            <div id="card3DBack" class="card-3d-face card-3d-back absolute inset-0 rounded-2xl border-2 border-[#d4af37]/80 shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden flex items-center justify-center"></div>
           </div>
         </div>
-
         <!-- 3D Angle & Card Details Controls -->
         <div class="space-y-4">
           <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
@@ -485,14 +531,13 @@
             </div>
             <div>
               <label class="flex justify-between text-slate-400 mb-1"><span>Tilt X (Pitch)</span><span id="val3DRotX">0°</span></label>
-              <input id="slider3DRotX" type="range" min="-35" max="35" value="0" oninput="update3DSliderPose()" class="w-full accent-indigo-500 cursor-pointer" />
+              <input id="slider3DRotX" type="range" min="-45" max="45" value="0" oninput="update3DSliderPose()" class="w-full accent-indigo-500 cursor-pointer" />
             </div>
             <div>
-              <label class="flex justify-between text-slate-400 mb-1"><span>Turn Y (Yaw)</span><span id="val3DRotY">0°</span></label>
-              <input id="slider3DRotY" type="range" min="-45" max="45" value="0" oninput="update3DSliderPose()" class="w-full accent-fuchsia-500 cursor-pointer" />
+              <label class="flex justify-between text-slate-400 mb-1"><span>Turn Y (Yaw — Full 360°)</span><span id="val3DRotY">0°</span></label>
+              <input id="slider3DRotY" type="range" min="-180" max="180" value="0" oninput="update3DSliderPose()" class="w-full accent-amber-500 cursor-pointer" />
             </div>
           </div>
-
           <div id="modal3DDetails" class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300"></div>
         </div>
       </div>
@@ -502,7 +547,6 @@
   <!-- AI Practice Arena Modal -->
   <div id="practiceModal" onclick="if(event.target===this) closePracticeModal()" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 z-50 animate-modal-backdrop">
     <div class="bg-slate-900 border border-cyan-500/35 rounded-2xl max-w-6xl w-full shadow-2xl max-h-[95vh] flex flex-col overflow-hidden animate-modal-panel">
-      <!-- Top Bar -->
       <div class="px-5 py-3.5 bg-gradient-to-r from-slate-950 via-cyan-950/35 to-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 animate-float-slow">
@@ -553,7 +597,6 @@
               </div>
               <span id="playerSetupCountBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300">0 cards</span>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block text-[11px] font-semibold text-amber-300 mb-1">Your Starting Leader / Capital</label>
@@ -567,7 +610,6 @@
                 </select>
               </div>
             </div>
-
             <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
               <span>Choose copies for your deck (0–3; Leaders max 1):</span>
               <button type="button" onclick="clearPracticeSide('player')" class="text-rose-400 hover:underline">Clear Your Deck</button>
@@ -587,7 +629,6 @@
               </div>
               <span id="robotSetupCountBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-fuchsia-500/20 text-fuchsia-300">0 cards</span>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block text-[11px] font-semibold text-fuchsia-300 mb-1">Robot Deck Mode</label>
@@ -602,7 +643,6 @@
                 <select id="practiceRobotStarter" class="w-full px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-fuchsia-500"></select>
               </div>
             </div>
-
             <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
               <span>Choose copies for Robot's deck (0–3; Leaders max 1):</span>
               <div class="flex items-center gap-3">
@@ -632,7 +672,6 @@
 
       <!-- STEP 2: LIVE PRACTICE BATTLEFIELD -->
       <div id="practiceBoardView" class="hidden flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 animate-tab-panel">
-        <!-- Victory Banner -->
         <div id="practiceWinnerBanner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-cyan-500/20 border border-amber-400/50 text-center space-y-2 animate-victory">
           <h3 id="practiceWinnerTitle" class="text-xl font-extrabold text-amber-300">Victory!</h3>
           <p id="practiceWinnerReason" class="text-xs text-slate-200"></p>
@@ -646,7 +685,6 @@
           </div>
         </div>
 
-        <!-- Turn & Phase Status Bar -->
         <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2.5 flex-wrap">
             <span id="turnIndicatorBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white transition-all duration-300">YOUR TURN</span>
@@ -658,7 +696,6 @@
               <span id="phasePill-move" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200">4. Move</span>
             </div>
           </div>
-
           <div class="flex items-center gap-2 flex-wrap">
             <span id="practiceActionHint" class="text-xs text-cyan-300 font-medium">Select a card in your hand to play, or advance phase.</span>
             <button id="advancePhaseBtn" onclick="advancePlayerPhase()" class="btn-animated btn-shimmer px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">
@@ -668,9 +705,7 @@
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-3">
-          <!-- Main 2x5 Board (3 columns wide on XL) -->
           <div class="xl:col-span-3 space-y-2.5">
-            <!-- ROBOT HUD -->
             <div class="px-3.5 py-2 rounded-xl bg-fuchsia-950/25 border border-fuchsia-500/30 flex flex-wrap items-center justify-between gap-2 text-xs">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-robot text-fuchsia-400"></i>
@@ -682,40 +717,35 @@
               </span>
             </div>
 
-            <!-- ROBOT BACK ROW -->
             <div class="space-y-1">
               <div class="text-[10px] font-bold uppercase tracking-wider text-fuchsia-300/70 px-1">Robot Back Row (Capitals / Support / Ranged)</div>
               <div id="robotBackRow" class="grid grid-cols-5 gap-2"></div>
             </div>
 
-            <!-- ROBOT FRONT ROW -->
             <div class="space-y-1">
               <div class="text-[10px] font-bold uppercase tracking-wider text-rose-300/80 px-1">Robot Front Row (Battle Line — Click Enemy Target in Fight Phase)</div>
               <div id="robotFrontRow" class="grid grid-cols-5 gap-2"></div>
             </div>
 
-            <!-- BATTLE LINE DIVIDER -->
+            <!-- BATTLE LINE DIVIDER (Easter Egg #5: Tap 5 Times) -->
             <div class="relative py-1 flex items-center justify-center">
               <div class="w-full border-t border-dashed border-amber-500/40"></div>
-              <span class="animate-battle-line px-3 py-0.5 rounded-full bg-slate-900 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 shrink-0 mx-2">
+              <span onclick="handleBattleLineEasterEggClick()" title="Battle Line" class="animate-battle-line px-3 py-0.5 rounded-full bg-slate-900 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 shrink-0 mx-2 cursor-pointer select-none">
                 <i class="fa-solid fa-swords mr-1"></i>Battle Line
               </span>
               <div class="w-full border-t border-dashed border-amber-500/40"></div>
             </div>
 
-            <!-- PLAYER FRONT ROW -->
             <div class="space-y-1">
               <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-300/80 px-1">Your Front Row (Click Slot to Deploy / Move • Click Unit to Attack / Move)</div>
               <div id="playerFrontRow" class="grid grid-cols-5 gap-2"></div>
             </div>
 
-            <!-- PLAYER BACK ROW -->
             <div class="space-y-1">
               <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-300/80 px-1">Your Back Row (Capitals / Buildings / Support)</div>
               <div id="playerBackRow" class="grid grid-cols-5 gap-2"></div>
             </div>
 
-            <!-- PLAYER HUD & HAND -->
             <div class="p-3 rounded-xl bg-slate-950 border border-indigo-500/35 space-y-2.5">
               <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2">
@@ -739,7 +769,6 @@
             </div>
           </div>
 
-          <!-- Right Sidebar: Live Battle Log & Quick Rules -->
           <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col justify-between space-y-3 max-h-[680px]">
             <div class="flex-1 flex flex-col min-h-0">
               <div class="flex items-center justify-between pb-2 border-b border-slate-800">
@@ -748,7 +777,6 @@
               </div>
               <div id="practiceBattleLog" class="flex-1 overflow-y-auto space-y-1.5 pt-2 text-[11px] text-slate-300 pr-1"></div>
             </div>
-
             <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[10px] text-slate-400 space-y-1 shrink-0">
               <div class="font-bold text-slate-200">Quick Turn Guide:</div>
               <div>• <strong>1 Leader Max:</strong> A deck can never have more than 1 Leader card.</div>
@@ -765,7 +793,6 @@
   <!-- Official Rulebook Modal -->
   <div id="rulebookModal" onclick="if(event.target===this) closeRulebookModal()" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
     <div class="bg-slate-900 border border-amber-500/30 rounded-2xl max-w-4xl w-full shadow-2xl max-h-[92vh] flex flex-col overflow-hidden animate-modal-panel">
-      <!-- Rulebook Header -->
       <div class="px-6 py-4 bg-gradient-to-r from-slate-950 via-amber-950/30 to-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
@@ -787,8 +814,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Navigation Tabs -->
       <div id="rulebookTabs" class="px-6 py-2.5 bg-slate-950/80 border-b border-slate-800 flex flex-wrap gap-1.5 shrink-0">
         <button onclick="selectRulebookTab('all')" data-rb-tab="all" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 text-white transition">
           <i class="fa-solid fa-layer-group mr-1"></i>All Sections
@@ -812,10 +837,7 @@
           <i class="fa-solid fa-scale-balanced mr-1"></i>Special & Multiplayer
         </button>
       </div>
-
-      <!-- Rulebook Content Body -->
       <div id="rulebookBody" class="p-6 overflow-y-auto space-y-5 text-sm text-slate-200 leading-relaxed">
-        <!-- Section 1: Overview & Play Field -->
         <section data-rb-section="overview" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
             <i class="fa-solid fa-chess-board"></i>
@@ -838,7 +860,6 @@
           </div>
         </section>
 
-        <!-- Section 2: Card Types -->
         <section data-rb-section="cards" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center gap-2 text-purple-400 font-bold text-base">
             <i class="fa-solid fa-id-card"></i>
@@ -858,7 +879,6 @@
                 <li><strong>Heritage Tokens:</strong> Meeting the Capital's Condition places 1 Heritage Token on it (<strong>+1 Defense</strong> each). Reaching its <strong>Threshold</strong> wins the game!</li>
               </ul>
             </div>
-
             <div class="p-4 rounded-xl bg-slate-900 border border-rose-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-rose-300 text-sm"><i class="fa-solid fa-khanda mr-1.5"></i>Champions</span>
@@ -872,7 +892,6 @@
                 <li>Subtypes (e.g., <em>Scholar, Kshatriya, Shudra, Vaisya</em>) trigger synergy abilities.</li>
               </ul>
             </div>
-
             <div class="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-emerald-300 text-sm"><i class="fa-solid fa-gopuram mr-1.5"></i>Buildings</span>
@@ -885,7 +904,6 @@
                 <li>Remain locked on the row where they are played and cannot move.</li>
               </ul>
             </div>
-
             <div class="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-cyan-300 text-sm"><i class="fa-solid fa-scroll mr-1.5"></i>Tactics</span>
@@ -900,7 +918,6 @@
           </div>
         </section>
 
-        <!-- Section 3: Setup & Turn Phases -->
         <section data-rb-section="gameplay" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-4">
           <div class="flex items-center gap-2 text-sky-400 font-bold text-base">
             <i class="fa-solid fa-rotate"></i>
@@ -916,7 +933,6 @@
               <li>After placing your starting Leader/Capital, each player <strong>draws 4 cards</strong>.</li>
             </ul>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             <div class="p-3.5 rounded-xl bg-slate-900 border border-indigo-500/30 space-y-1.5">
               <div class="font-extrabold text-indigo-300">Phase 1: DRAW</div>
@@ -954,7 +970,6 @@
           </div>
         </section>
 
-        <!-- Section 4: Victory Conditions -->
         <section data-rb-section="victory" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
             <i class="fa-solid fa-trophy"></i>
@@ -976,13 +991,11 @@
           </div>
         </section>
 
-        <!-- Section 5: Keywords & Board Positions -->
         <section data-rb-section="keywords" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-4">
           <div class="flex items-center gap-2 text-cyan-400 font-bold text-base">
             <i class="fa-solid fa-bolt"></i>
             <h3>5. Official Keywords & Board Positions</h3>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
             <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-indigo-300">Attack:</strong> Effect triggers when this card attacks.</div>
             <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-rose-300">Breach:</strong> If this destroys a front-row unit, it also deals its damage to the unit directly behind it on the back row.</div>
@@ -994,7 +1007,6 @@
             <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-fuchsia-300">Reincarnate:</strong> Can be played from the discard pile once (triggering its reincarnate effect), unless stated otherwise.</div>
             <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-cyan-300">Unique:</strong> Only 1 copy of this card may be included in a deck.</div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs pt-1">
             <div class="p-3 rounded-lg bg-indigo-950/25 border border-indigo-500/25">
               <div class="font-bold text-indigo-300">Adjacent</div>
@@ -1015,7 +1027,6 @@
           </div>
         </section>
 
-        <!-- Section 6: Additional & Multiplayer Rules -->
         <section data-rb-section="advanced" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
           <div class="flex items-center gap-2 text-fuchsia-400 font-bold text-base">
             <i class="fa-solid fa-scale-balanced"></i>
@@ -1165,7 +1176,6 @@
           <textarea id="ability" rows="2" placeholder="e.g., Play, Attack: Look at a random card in opponent's hand. Breach, Ranged..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
         </div>
-        <!-- Conditional Event Section -->
         <div class="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-3">
           <div class="flex items-center justify-between">
             <label for="hasConditionalEvent" class="flex items-center gap-2.5 text-sm font-semibold text-cyan-300 cursor-pointer select-none">
@@ -1217,6 +1227,7 @@
       </form>
     </div>
   </div>
+
   <!-- AI Deck Builder Modal -->
   <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5 animate-modal-panel">
@@ -1232,7 +1243,6 @@
         </div>
         <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <!-- Official LSS Rulebook Banner -->
       <div class="p-3 rounded-xl bg-slate-950/90 border border-fuchsia-500/30 text-xs text-slate-300 space-y-1.5">
         <div class="flex items-center justify-between gap-2">
           <div class="font-semibold text-fuchsia-300 flex items-center gap-1.5">
@@ -1248,9 +1258,6 @@
           <li><strong>Max 1 Leader Per Deck:</strong> A deck can never contain more than <strong>1 Leader</strong>.</li>
           <li><strong>Copy Limits:</strong> Max <strong>3 copies</strong> per card; max <strong>1 copy</strong> for <strong>Unique</strong> cards.</li>
         </ul>
-        <p class="text-[11px] text-cyan-300 pt-0.5">
-          <i class="fa-solid fa-trophy mr-1"></i> Evaluates <strong>Steel Victory</strong> (0 DEF on enemy Leader/Capital), <strong>Legend Victory</strong> (Capital heritage threshold), and <strong>Silk Victory</strong> (10+ resources / 3 Silk tokens), plus keywords (<em>Breach, Ranged, Pacifist, Reincarnate, Play, Attack, Death, Move</em>).
-        </p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
@@ -1347,13 +1354,16 @@
       </div>
     </div>
   </div>
+
   <!-- Lightbox -->
   <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out animate-modal-backdrop">
     <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain animate-modal-panel" />
   </div>
+
   <script>
     const STORAGE_KEY = 'customcard_vault_v3';
     const GEMINI_KEY_STORAGE = 'customcard_gemini_key_v1';
+    const EASTER_EGG_STORAGE = 'customcard_easter_eggs_v1';
     let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     let lastGeneratedDeck = [];
     let lastStarterCard = null;
@@ -1364,10 +1374,413 @@
     }
 
     /* ============================================================
-       INTERACTIVE 3D CARD INSPECTOR STATE & CONTROLS
+       AMBIENT FLOATING SILK & STEEL EMBERS
+    ============================================================ */
+    (function initAmbientEmbers() {
+      const layer = document.getElementById('ambientLayer');
+      if (!layer) return;
+      const colors = ['bg-amber-400/40', 'bg-indigo-400/35', 'bg-cyan-300/35', 'bg-rose-400/30'];
+      for (let i = 0; i < 16; i++) {
+        const ember = document.createElement('div');
+        const size = 2 + (i % 3);
+        const left = (i * 6.3 + 3) % 98;
+        const duration = 12 + (i % 9) * 2.1;
+        const delay = -(i * 1.7);
+        ember.className = `absolute rounded-full ${colors[i % colors.length]}`;
+        ember.style.width = `${size}px`;
+        ember.style.height = `${size}px`;
+        ember.style.left = `${left}%`;
+        ember.style.animation = `emberRise ${duration}s linear ${delay}s infinite`;
+        layer.appendChild(ember);
+      }
+    })();
+
+    /* ============================================================
+       10 HIDDEN EASTER EGGS SYSTEM
+    ============================================================ */
+    const EASTER_EGG_CATALOG = [
+      { id: 'konami', num: 1, title: 'Ancient Warlord Code', hint: 'Enter the classic Konami code (↑↑↓↓←→←→BA) anywhere.', icon: 'fa-crown' },
+      { id: 'logo7', num: 2, title: 'Vault Keeper’s Tap', hint: 'Tap the CustomCard Vault logo 7 times.', icon: 'fa-layer-group' },
+      { id: 'search_secret', num: 3, title: 'Whisper of the Silk Road', hint: 'Search "silk", "steel", "dragon", "ashoka", or "sunzi" in the search bar.', icon: 'fa-magnifying-glass' },
+      { id: 'barrel_roll', num: 4, title: '360° Celestial Spin', hint: 'Double-click the 3D Card Inspector stage (or turn Yaw past 175°).', icon: 'fa-cube' },
+      { id: 'battle_line', num: 5, title: 'Clash of Steel & Silk', hint: 'Tap the glowing "Battle Line" divider 5 times during AI Practice.', icon: 'fa-swords' },
+      { id: 'secret_forge', num: 6, title: 'Mythic Forgemaster', hint: 'Save a card with "Dragon" or "Lotus" in its name, or Secret rarity.', icon: 'fa-dragon' },
+      { id: 'rulebook_lore', num: 7, title: 'Keeper of the Three Paths', hint: 'Search "victory" or "heritage" inside the Official Rulebook.', icon: 'fa-book-open' },
+      { id: 'ai_unstoppable', num: 8, title: 'Grand Strategist’s Gambit', hint: 'Ask the AI Deck Agent for a "golden" or "unstoppable" deck.', icon: 'fa-wand-magic-sparkles' },
+      { id: 'night_owl', num: 9, title: 'Midnight Lantern Duelist', hint: 'Open the vault between 12 AM – 4 AM, or press Shift + M.', icon: 'fa-moon' },
+      { id: 'codex_lss', num: 10, title: 'The LSS Cipher', hint: 'Type the letters L - S - S on your keyboard anywhere outside a text box.', icon: 'fa-egg' }
+    ];
+
+    let unlockedEasterEggs = new Set(JSON.parse(localStorage.getItem(EASTER_EGG_STORAGE) || '[]'));
+
+    function spawnParticleBurst(count = 24, originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const layer = document.getElementById('particleBurstLayer');
+      if (!layer) return;
+      const palette = ['#fbbf24', '#38bdf8', '#f43f5e', '#34d399', '#c084fc', '#fde047'];
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+        const dist = 70 + Math.random() * 190;
+        const dx = `${Math.cos(angle) * dist}px`;
+        const dy = `${Math.sin(angle) * dist - 40}px`;
+        p.className = 'absolute w-2.5 h-2.5 rounded-sm';
+        p.style.left = `${originX}px`;
+        p.style.top = `${originY}px`;
+        p.style.backgroundColor = palette[i % palette.length];
+        p.style.boxShadow = `0 0 8px ${palette[i % palette.length]}`;
+        p.style.setProperty('--dx', dx);
+        p.style.setProperty('--dy', dy);
+        p.style.animation = `burstParticle ${0.85 + Math.random() * 0.45}s cubic-bezier(0.16, 1, 0.3, 1) forwards`;
+        layer.appendChild(p);
+        setTimeout(() => p.remove(), 1400);
+      }
+    }
+
+    function updateEasterEggHud() {
+      const badge = document.getElementById('easterEggHudBadge');
+      const countEl = document.getElementById('easterEggHudCount');
+      if (!badge || !countEl) return;
+      if (unlockedEasterEggs.size > 0) {
+        badge.classList.remove('hidden');
+        badge.classList.add('inline-flex', 'items-center');
+        countEl.textContent = `${unlockedEasterEggs.size}/10`;
+      }
+    }
+
+    function unlockEasterEgg(eggId, customMessage = null, burstX = null, burstY = null) {
+      const meta = EASTER_EGG_CATALOG.find(e => e.id === eggId);
+      if (!meta) return;
+      const isNew = !unlockedEasterEggs.has(eggId);
+      if (isNew) {
+        unlockedEasterEggs.add(eggId);
+        localStorage.setItem(EASTER_EGG_STORAGE, JSON.stringify([...unlockedEasterEggs]));
+      }
+      updateEasterEggHud();
+      spawnParticleBurst(isNew ? 32 : 16, burstX ?? window.innerWidth / 2, burstY ?? window.innerHeight / 2);
+
+      const container = document.getElementById('easterEggToastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto animate-toast-in p-3.5 rounded-2xl bg-slate-900/95 border border-amber-400/60 shadow-2xl shadow-amber-500/20 backdrop-blur-md flex items-start gap-3 text-xs';
+      toast.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 flex items-center justify-center shrink-0 font-bold">
+          <i class="fa-solid ${meta.icon}"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-extrabold text-amber-300 uppercase tracking-wider text-[10px]">${isNew ? `Easter Egg #${meta.num} Unlocked!` : `Secret #${meta.num} Re-Triggered!`}</span>
+            <span class="text-[10px] font-bold text-slate-400">${unlockedEasterEggs.size}/10</span>
+          </div>
+          <div class="font-bold text-white text-sm mt-0.5">${escapeHTML(meta.title)}</div>
+          <p class="text-slate-300 mt-0.5 leading-snug">${escapeHTML(customMessage || meta.hint)}</p>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 320);
+      }, 4600);
+    }
+
+    function openEasterEggModal() {
+      const modal = document.getElementById('easterEggModal');
+      document.getElementById('codexProgressText').textContent = `${unlockedEasterEggs.size}/10`;
+      const list = document.getElementById('easterEggCodexList');
+      list.innerHTML = EASTER_EGG_CATALOG.map(egg => {
+        const found = unlockedEasterEggs.has(egg.id);
+        return `
+          <div class="p-3 rounded-xl border ${found ? 'bg-amber-950/25 border-amber-400/50' : 'bg-slate-950/80 border-slate-800 opacity-75'} flex items-start gap-2.5">
+            <div class="w-7 h-7 rounded-lg ${found ? 'bg-amber-500/25 text-amber-300' : 'bg-slate-800 text-slate-500'} flex items-center justify-center shrink-0 mt-0.5">
+              <i class="fa-solid ${found ? egg.icon : 'fa-lock'}"></i>
+            </div>
+            <div>
+              <div class="font-bold ${found ? 'text-amber-200' : 'text-slate-400'}">#${egg.num} • ${found ? escapeHTML(egg.title) : '??? Secret'}</div>
+              <p class="text-[11px] text-slate-400 mt-0.5">${escapeHTML(egg.hint)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeEasterEggModal() {
+      const modal = document.getElementById('easterEggModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Easter Egg #1 (Konami Code), #9 (Shift+M / Midnight), #10 (Type LSS)
+    const konamiSeq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIdx = 0;
+    let typedBuffer = '';
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeEasterEggModal();
+        close3DCardModal();
+        closePracticeModal();
+        closeRulebookModal();
+        closeModal();
+        closeAIDeckModal();
+        closeLightbox();
+        return;
+      }
+      const keyLower = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (keyLower === konamiSeq[konamiIdx]) {
+        konamiIdx++;
+        if (konamiIdx === konamiSeq.length) {
+          konamiIdx = 0;
+          document.body.classList.toggle('golden-overdrive');
+          unlockEasterEgg('konami', 'Golden Overdrive activated! The Dragon & Lotus aura blesses your Vault.');
+        }
+      } else {
+        konamiIdx = keyLower === konamiSeq[0] ? 1 : 0;
+      }
+
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      const isTypingInInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+      if (!isTypingInInput && e.key.length === 1) {
+        if (e.shiftKey && e.key.toUpperCase() === 'M') {
+          unlockEasterEgg('night_owl', 'Midnight Lantern lit! May your Silk Tokens never run dry.');
+        }
+        typedBuffer = (typedBuffer + e.key.toLowerCase()).slice(-6);
+        if (typedBuffer.endsWith('lss')) {
+          typedBuffer = '';
+          unlockEasterEgg('codex_lss', 'You spoke the Sacred Initials! Opening the Secret Easter Egg Codex.');
+          openEasterEggModal();
+        }
+      }
+    });
+
+    // Check automatic Night-Owl hours (12 AM - 4 AM)
+    (function checkMidnightEasterEgg() {
+      const hr = new Date().getHours();
+      if (hr >= 0 && hr < 4 && !unlockedEasterEggs.has('night_owl')) {
+        setTimeout(() => unlockEasterEgg('night_owl', 'Night-Owl Duelist detected! Forging cards past midnight.'), 1200);
+      }
+      updateEasterEggHud();
+    })();
+
+    // Easter Egg #2: Click Logo 7 Times
+    let logoClickCount = 0;
+    let logoClickResetTimer = null;
+    function handleLogoEasterEggClick() {
+      logoClickCount++;
+      clearTimeout(logoClickResetTimer);
+      logoClickResetTimer = setTimeout(() => { logoClickCount = 0; }, 2200);
+      if (logoClickCount >= 7) {
+        logoClickCount = 0;
+        const rect = document.getElementById('vaultLogoIcon').getBoundingClientRect();
+        unlockEasterEgg('logo7', 'The Vault Keeper awakens! Silk & Steel sparks fly across your collection.', rect.left + 20, rect.top + 20);
+      }
+    }
+
+    // Easter Egg #3: Secret Search Bar Keywords
+    let lastSecretSearchWord = '';
+    function handleSearchWithEasterEggs() {
+      renderCards();
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const secretTriggers = {
+        silk: 'Silk Victory Whisper: Maintain 10+ resources in Draw phase for 3 turns to claim Silk supremacy!',
+        steel: 'Steel Victory Whisper: Strike straight at the enemy Leader or Capital to shatter their defense!',
+        dragon: 'Golden Dragon Awakening: The twin dragons on the card back guard your deck!',
+        ashoka: 'Edict of Ashoka: Peace through strength—and +1 Defense for friendly champions!',
+        sunzi: 'Art of War (Sunzi): "Know thy enemy and know thyself, and in a hundred battles you will never be in peril."'
+      };
+      if (secretTriggers[q] && lastSecretSearchWord !== q) {
+        lastSecretSearchWord = q;
+        unlockEasterEgg('search_secret', secretTriggers[q]);
+      } else if (!secretTriggers[q]) {
+        lastSecretSearchWord = '';
+      }
+    }
+
+    // Easter Egg #5: Battle Line 5x Tap
+    let battleLineClicks = 0;
+    let battleLineTimer = null;
+    function handleBattleLineEasterEggClick() {
+      battleLineClicks++;
+      clearTimeout(battleLineTimer);
+      battleLineTimer = setTimeout(() => { battleLineClicks = 0; }, 2200);
+      if (battleLineClicks >= 5) {
+        battleLineClicks = 0;
+        addPracticeLog('🔥 SECRET ROAR: "Where Steel clashes and Silk weaves, legends are born!"');
+        renderPracticeBoard();
+        unlockEasterEgg('battle_line', 'You shook the Battle Line! Both armies feel the tremor of ancient drums.');
+      }
+    }
+
+    /* ============================================================
+       INTERACTIVE 3D CARD INSPECTOR + ORNATE DRAGON & LOTUS BACK
     ============================================================ */
     let active3DCardId = null;
     let pose3D = { rotX: 0, rotY: 0, flipped: false, orbit: false };
+
+    function getOrnateDragonLotusCardBackSVG() {
+      // Pure isolated card back design matching the user's photo (gold filigree frame, corner medallions, golden dragon & lotus mandala)
+      return `
+        <div class="card-3d-foil-sheen"></div>
+        <svg viewBox="0 0 300 425" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lssGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fde68a" />
+              <stop offset="35%" stop-color="#d4af37" />
+              <stop offset="70%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#fef08a" />
+            </linearGradient>
+            <linearGradient id="lssDarkGold" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#92400e" />
+              <stop offset="50%" stop-color="#d97706" />
+              <stop offset="100%" stop-color="#fcd34d" />
+            </linearGradient>
+            <radialGradient id="lssCenterGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#3b2f1e" />
+              <stop offset="65%" stop-color="#221e24" />
+              <stop offset="100%" stop-color="#141317" />
+            </radialGradient>
+            <linearGradient id="lssLotusPetal" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#b91c1c" />
+              <stop offset="55%" stop-color="#ea580c" />
+              <stop offset="100%" stop-color="#fdba74" />
+            </linearGradient>
+            <linearGradient id="lssJadeLeaf" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#065f46" />
+              <stop offset="60%" stop-color="#10b981" />
+              <stop offset="100%" stop-color="#a7f3d0" />
+            </linearGradient>
+          </defs>
+
+          <!-- Subtle inner dark vignette -->
+          <rect x="6" y="6" width="288" height="413" rx="14" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.2" opacity="0.45" />
+
+          <!-- Outer Double Gold Frame -->
+          <rect x="14" y="14" width="272" height="397" rx="10" fill="none" stroke="url(#lssGoldGrad)" stroke-width="2.6" />
+          <rect x="20" y="20" width="260" height="385" rx="7" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.1" opacity="0.85" />
+
+          <!-- Four Traditional Corner Medallions & Filigree Scrolls -->
+          <!-- Top-Left Corner -->
+          <g transform="translate(14,14)">
+            <path d="M0,46 L0,10 Q0,0 10,0 L46,0 Q36,12 28,12 L16,12 Q12,12 12,16 L12,28 Q12,36 0,46 Z" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.8" />
+            <circle cx="17" cy="17" r="10.5" fill="#1f1c18" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+            <path d="M17,9 L17,25 M9,17 L25,17 M12,12 L22,12 M12,22 L22,22" stroke="url(#lssGoldGrad)" stroke-width="1.2" />
+            <path d="M30,8 Q38,8 38,16 Q38,22 32,22 Q28,22 28,18" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+            <path d="M8,30 Q8,38 16,38 Q22,38 22,32 Q22,28 18,28" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+          </g>
+
+          <!-- Top-Right Corner -->
+          <g transform="translate(286,14) scale(-1,1)">
+            <path d="M0,46 L0,10 Q0,0 10,0 L46,0 Q36,12 28,12 L16,12 Q12,12 12,16 L12,28 Q12,36 0,46 Z" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.8" />
+            <circle cx="17" cy="17" r="10.5" fill="#1f1c18" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+            <path d="M17,9 L17,25 M9,17 L25,17 M12,12 L22,12 M12,22 L22,22" stroke="url(#lssGoldGrad)" stroke-width="1.2" />
+            <path d="M30,8 Q38,8 38,16 Q38,22 32,22 Q28,22 28,18" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+            <path d="M8,30 Q8,38 16,38 Q22,38 22,32 Q22,28 18,28" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+          </g>
+
+          <!-- Bottom-Left Corner -->
+          <g transform="translate(14,411) scale(1,-1)">
+            <path d="M0,46 L0,10 Q0,0 10,0 L46,0 Q36,12 28,12 L16,12 Q12,12 12,16 L12,28 Q12,36 0,46 Z" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.8" />
+            <circle cx="17" cy="17" r="10.5" fill="#1f1c18" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+            <path d="M17,9 L17,25 M9,17 L25,17 M12,12 L22,12 M12,22 L22,22" stroke="url(#lssGoldGrad)" stroke-width="1.2" />
+            <path d="M30,8 Q38,8 38,16 Q38,22 32,22 Q28,22 28,18" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+            <path d="M8,30 Q8,38 16,38 Q22,38 22,32 Q22,28 18,28" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+          </g>
+
+          <!-- Bottom-Right Corner -->
+          <g transform="translate(286,411) scale(-1,-1)">
+            <path d="M0,46 L0,10 Q0,0 10,0 L46,0 Q36,12 28,12 L16,12 Q12,12 12,16 L12,28 Q12,36 0,46 Z" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.8" />
+            <circle cx="17" cy="17" r="10.5" fill="#1f1c18" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+            <path d="M17,9 L17,25 M9,17 L25,17 M12,12 L22,12 M12,22 L22,22" stroke="url(#lssGoldGrad)" stroke-width="1.2" />
+            <path d="M30,8 Q38,8 38,16 Q38,22 32,22 Q28,22 28,18" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+            <path d="M8,30 Q8,38 16,38 Q22,38 22,32 Q22,28 18,28" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.4" />
+          </g>
+
+          <!-- Side Midpoint Scroll Accents -->
+          <path d="M14,192 Q28,200 28,212.5 Q28,225 14,233" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+          <circle cx="20" cy="212.5" r="3" fill="url(#lssGoldGrad)" />
+          <path d="M286,192 Q272,200 272,212.5 Q272,225 286,233" fill="#18171c" stroke="url(#lssGoldGrad)" stroke-width="1.6" />
+          <circle cx="280" cy="212.5" r="3" fill="url(#lssGoldGrad)" />
+
+          <!-- CENTRAL CIRCULAR DRAGON, LOTUS & JADE MEDALLION -->
+          <g transform="translate(150,212.5)" class="gold-foil-glow">
+            <!-- Base Medallion Disc -->
+            <circle r="102" fill="url(#lssCenterGlow)" stroke="url(#lssGoldGrad)" stroke-width="3.2" />
+            <circle r="96" fill="none" stroke="url(#lssDarkGold)" stroke-width="1.2" />
+            <circle r="86" fill="none" stroke="url(#lssGoldGrad)" stroke-width="2.2" />
+
+            <!-- Outer Animated Scrollwork Band -->
+            <g class="mandala-ring-outer">
+              <circle r="91" fill="none" stroke="url(#lssGoldGrad)" stroke-width="3" stroke-dasharray="9 6 3 6" opacity="0.9" />
+              <circle r="81" fill="none" stroke="url(#lssJadeLeaf)" stroke-width="2" stroke-dasharray="14 8" opacity="0.7" />
+            </g>
+
+            <!-- Four Cardinal Coral-Orange Lotus Blossoms + Jade Foliage -->
+            <g class="mandala-ring-inner">
+              <!-- Top Lotus (0 deg) -->
+              <g transform="rotate(0) translate(0,-66)">
+                <path d="M-16,8 Q-22,-2 -10,-6 Q-4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M16,8 Q22,-2 10,-6 Q4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M-11,6 Q-14,-6 -5,-10 Q-2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M11,6 Q14,-6 5,-10 Q2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M0,7 Q-7,-5 0,-15 Q7,-5 0,7 Z" fill="url(#lssLotusPetal)" stroke="#fef08a" stroke-width="1" />
+              </g>
+              <!-- Right Lotus (90 deg) -->
+              <g transform="rotate(90) translate(0,-66)">
+                <path d="M-16,8 Q-22,-2 -10,-6 Q-4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M16,8 Q22,-2 10,-6 Q4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M-11,6 Q-14,-6 -5,-10 Q-2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M11,6 Q14,-6 5,-10 Q2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M0,7 Q-7,-5 0,-15 Q7,-5 0,7 Z" fill="url(#lssLotusPetal)" stroke="#fef08a" stroke-width="1" />
+              </g>
+              <!-- Bottom Lotus (180 deg) -->
+              <g transform="rotate(180) translate(0,-66)">
+                <path d="M-16,8 Q-22,-2 -10,-6 Q-4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M16,8 Q22,-2 10,-6 Q4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M-11,6 Q-14,-6 -5,-10 Q-2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M11,6 Q14,-6 5,-10 Q2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M0,7 Q-7,-5 0,-15 Q7,-5 0,7 Z" fill="url(#lssLotusPetal)" stroke="#fef08a" stroke-width="1" />
+              </g>
+              <!-- Left Lotus (270 deg) -->
+              <g transform="rotate(270) translate(0,-66)">
+                <path d="M-16,8 Q-22,-2 -10,-6 Q-4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M16,8 Q22,-2 10,-6 Q4,2 0,8 Z" fill="url(#lssJadeLeaf)" stroke="#064e3b" stroke-width="0.8" />
+                <path d="M-11,6 Q-14,-6 -5,-10 Q-2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M11,6 Q14,-6 5,-10 Q2,-2 0,6 Z" fill="url(#lssLotusPetal)" stroke="#fde68a" stroke-width="0.8" />
+                <path d="M0,7 Q-7,-5 0,-15 Q7,-5 0,7 Z" fill="url(#lssLotusPetal)" stroke="#fef08a" stroke-width="1" />
+              </g>
+
+              <!-- Four Diagonal Intertwined Golden Imperial Dragons -->
+              <g transform="rotate(45)">
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34 C-12,-24 8,-14 14,-28 C20,-42 36,-42 38,-26 C40,-10 22,-4 12,-12" fill="none" stroke="url(#lssGoldGrad)" stroke-width="4.5" stroke-linecap="round" />
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34" fill="none" stroke="#fef9c3" stroke-width="1.2" stroke-linecap="round" />
+                <circle cx="-18" cy="-47" r="2.2" fill="#dc2626" />
+              </g>
+              <g transform="rotate(135)">
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34 C-12,-24 8,-14 14,-28 C20,-42 36,-42 38,-26 C40,-10 22,-4 12,-12" fill="none" stroke="url(#lssGoldGrad)" stroke-width="4.5" stroke-linecap="round" />
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34" fill="none" stroke="#fef9c3" stroke-width="1.2" stroke-linecap="round" />
+                <circle cx="-18" cy="-47" r="2.2" fill="#dc2626" />
+              </g>
+              <g transform="rotate(225)">
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34 C-12,-24 8,-14 14,-28 C20,-42 36,-42 38,-26 C40,-10 22,-4 12,-12" fill="none" stroke="url(#lssGoldGrad)" stroke-width="4.5" stroke-linecap="round" />
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34" fill="none" stroke="#fef9c3" stroke-width="1.2" stroke-linecap="round" />
+                <circle cx="-18" cy="-47" r="2.2" fill="#dc2626" />
+              </g>
+              <g transform="rotate(315)">
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34 C-12,-24 8,-14 14,-28 C20,-42 36,-42 38,-26 C40,-10 22,-4 12,-12" fill="none" stroke="url(#lssGoldGrad)" stroke-width="4.5" stroke-linecap="round" />
+                <path d="M-8,-18 C-26,-24 -38,-44 -20,-54 C-8,-60 6,-46 -4,-34" fill="none" stroke="#fef9c3" stroke-width="1.2" stroke-linecap="round" />
+                <circle cx="-18" cy="-47" r="2.2" fill="#dc2626" />
+              </g>
+            </g>
+
+            <!-- Central Golden Sun/Pearl Rosette Core -->
+            <circle r="16" fill="#1c1917" stroke="url(#lssGoldGrad)" stroke-width="2.5" />
+            <circle r="10" fill="none" stroke="url(#lssGoldGrad)" stroke-width="1.5" stroke-dasharray="3 2.5" />
+            <circle r="4.5" fill="url(#lssGoldGrad)" />
+          </g>
+        </svg>
+      `;
+    }
 
     function open3DCardModal(cardId) {
       const card = cards.find(c => c.id === cardId);
@@ -1377,7 +1790,6 @@
       document.getElementById('modal3DTitle').textContent = `3D Card Model — ${card.name} ${card.cardCode ? `[${card.cardCode}]` : ''}`;
       render3DCardFaces(card);
       apply3DCardTransform();
-
       const details = document.getElementById('modal3DDetails');
       const left = Math.max(0, (card.owned || 0) - (card.used || 0));
       details.innerHTML = `
@@ -1392,7 +1804,6 @@
         ${card.hasConditionalEvent ? `<div><strong class="text-cyan-300">Conditional Event:</strong> ${escapeHTML(card.conditionTrigger || '')} → ${escapeHTML(card.conditionEffect || '')}</div>` : ''}
         ${card.special ? `<div><strong class="text-fuchsia-300">Special:</strong> ${escapeHTML(card.special)}</div>` : ''}
       `;
-
       const modal = document.getElementById('card3DModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -1410,21 +1821,21 @@
       const back = document.getElementById('card3DBack');
       const hasCombat = card.attack !== '' || card.defense !== '';
       const resText = card.manaAction === 'add' ? `+${card.manaValue} Res` : (card.manaAction === 'spend' ? `-${card.manaValue} Res` : '0 Res');
-
       front.innerHTML = `
-        <div class="flex items-center justify-between gap-1 border-b border-slate-800 pb-2">
+        <div class="card-3d-foil-sheen"></div>
+        <div class="flex items-center justify-between gap-1 border-b border-slate-800 pb-2 relative z-10">
           <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300">${escapeHTML(card.cardCode || 'LSS')}</span>
           <span class="text-[11px] font-bold text-white truncate">${escapeHTML(card.name)}</span>
           <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300">${resText}</span>
         </div>
-        <div class="my-2 flex-1 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center relative">
+        <div class="my-2 flex-1 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center relative z-10">
           ${card.image
             ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" class="w-full h-full object-cover" />`
             : `<div class="text-center p-3 text-slate-500"><i class="fa-solid fa-crown text-2xl text-amber-400/70 mb-1"></i><div class="text-[10px]">${escapeHTML(card.cardType || 'Card')}</div></div>`
           }
           <span class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900/90 text-amber-300 border border-amber-500/30">${escapeHTML(card.nation || 'Universal')}</span>
         </div>
-        <div class="space-y-1.5">
+        <div class="space-y-1.5 relative z-10">
           <div class="text-[11px] text-slate-300 line-clamp-2 bg-slate-950/80 p-2 rounded-lg border border-slate-800/80">
             ${escapeHTML(card.ability || card.conditionEffect || card.special || 'Ready for Legends of Steel & Silk battle.')}
           </div>
@@ -1436,27 +1847,14 @@
           ` : ''}
         </div>
       `;
-
-      back.innerHTML = `
-        <div class="flex items-center justify-between text-[10px] text-amber-300/80 font-semibold uppercase tracking-wider">
-          <span>Legends of Steel & Silk</span>
-          <span>${escapeHTML(card.rarity || 'Card')}</span>
-        </div>
-        <div class="my-auto text-center space-y-2 py-4 px-2 rounded-xl border border-amber-400/25 bg-slate-950/50">
-          <div class="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-300 text-xl">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <div class="text-sm font-extrabold text-white tracking-wide">${escapeHTML(card.name)}</div>
-          <div class="text-[11px] text-indigo-300">${escapeHTML(card.cardType || 'Card')}</div>
-          ${isCardLeader(card) ? `<div class="inline-block px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">MAX 1 LEADER PER DECK</div>` : ''}
-        </div>
-        <div class="text-center text-[10px] text-slate-400">CustomCard Vault • 3D Inspector</div>
-      `;
+      // Isolated Ornate Dragon & Lotus Card Back (only the card, no table background)
+      back.innerHTML = getOrnateDragonLotusCardBackSVG();
     }
 
     function apply3DCardTransform() {
       const obj = document.getElementById('card3DObject');
       const orbitBtn = document.getElementById('toggle3DOrbitBtn');
+      const flipBtn = document.getElementById('flip3DFaceBtn');
       if (pose3D.orbit) {
         obj.classList.add('auto-orbit');
         obj.style.transform = '';
@@ -1466,6 +1864,11 @@
         const flipY = pose3D.flipped ? 180 : 0;
         obj.style.transform = `rotateX(${pose3D.rotX}deg) rotateY(${pose3D.rotY + flipY}deg)`;
         orbitBtn.innerHTML = `<i class="fa-solid fa-arrows-spin mr-1"></i> Auto-Orbit: Off`;
+      }
+      if (flipBtn) {
+        flipBtn.innerHTML = pose3D.flipped
+          ? `<i class="fa-solid fa-rotate mr-1"></i> Flip to Front`
+          : `<i class="fa-solid fa-rotate mr-1"></i> Flip to Back`;
       }
       document.getElementById('slider3DRotX').value = Math.round(pose3D.rotX);
       document.getElementById('slider3DRotY').value = Math.round(pose3D.rotY);
@@ -1480,8 +1883,8 @@
       const rect = area.getBoundingClientRect();
       const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      pose3D.rotY = nx * 36;
-      pose3D.rotX = -ny * 26;
+      pose3D.rotY = nx * 38;
+      pose3D.rotX = -ny * 28;
       apply3DCardTransform();
     }
 
@@ -1497,6 +1900,20 @@
       pose3D.rotX = parseFloat(document.getElementById('slider3DRotX').value) || 0;
       pose3D.rotY = parseFloat(document.getElementById('slider3DRotY').value) || 0;
       apply3DCardTransform();
+      if (Math.abs(pose3D.rotY) >= 175) {
+        trigger3DBarrelRoll();
+      }
+    }
+
+    // Easter Egg #4: Double-Click 3D Stage or Spin 180° for Barrel Roll
+    function trigger3DBarrelRoll() {
+      const obj = document.getElementById('card3DObject');
+      if (!obj) return;
+      obj.classList.remove('barrel-roll');
+      void obj.offsetWidth;
+      obj.classList.add('barrel-roll');
+      setTimeout(() => obj.classList.remove('barrel-roll'), 980);
+      unlockEasterEgg('barrel_roll', 'Do a Barrel Roll! Your card spun 720° through the Silk & Steel ether.');
     }
 
     function flip3DCardFace() {
@@ -1540,6 +1957,10 @@
     }
     function filterRulebookSections() {
       const query = (document.getElementById('rulebookSearch').value || '').toLowerCase().trim();
+      // Easter Egg #7: Search victory or heritage in Rulebook
+      if (query === 'victory' || query === 'heritage') {
+        unlockEasterEgg('rulebook_lore', 'Keeper of the Three Paths: Steel, Legend, and Silk await your command!');
+      }
       document.querySelectorAll('.rb-section').forEach(section => {
         const secKey = section.getAttribute('data-rb-section');
         const matchesTab = activeRulebookTab === 'all' || secKey === activeRulebookTab;
@@ -1555,32 +1976,10 @@
       });
     }
 
-    /* Keyboard Escape Handler */
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        close3DCardModal();
-        closePracticeModal();
-        closeRulebookModal();
-        closeModal();
-        closeAIDeckModal();
-        closeLightbox();
-      }
-    });
-
     function generateCardCode(nation = 'Universal', excludeId = null) {
-      const prefixMap = {
-        Universal: 'NEU',
-        Japan: 'JP',
-        India: 'IN',
-        China: 'CN',
-        Other: 'OTH'
-      };
+      const prefixMap = { Universal: 'NEU', Japan: 'JP', India: 'IN', China: 'CN', Other: 'OTH' };
       const prefix = prefixMap[nation] || 'LSS';
-      const existingCodes = new Set(
-        cards
-          .filter(c => c.id !== excludeId && c.cardCode)
-          .map(c => c.cardCode.toUpperCase())
-      );
+      const existingCodes = new Set(cards.filter(c => c.id !== excludeId && c.cardCode).map(c => c.cardCode.toUpperCase()));
       let num = cards.length + 1;
       let candidate = `${prefix}-${String(num).padStart(3, '0')}`;
       while (existingCodes.has(candidate)) {
@@ -1594,7 +1993,7 @@
       const excludeId = document.getElementById('cardId').value || null;
       document.getElementById('cardCode').value = generateCardCode(nation, excludeId);
     }
-    // Backfill cardCode for any older saved cards
+
     let needsMigrationSave = false;
     cards = cards.map((c, idx) => {
       if (c.cardCode) return c;
@@ -1606,9 +2005,8 @@
     if (needsMigrationSave) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
     }
-    function saveGeminiKey(val) {
-      localStorage.setItem(GEMINI_KEY_STORAGE, val.trim());
-    }
+
+    function saveGeminiKey(val) { localStorage.setItem(GEMINI_KEY_STORAGE, val.trim()); }
     function toggleGeminiKeyInput() {
       const checked = document.getElementById('useGeminiToggle').checked;
       document.getElementById('geminiKeyBox').classList.toggle('hidden', !checked);
@@ -1787,13 +2185,16 @@
       const hasConditionalEvent = document.getElementById('hasConditionalEvent').checked;
       const conditionTrigger = hasConditionalEvent ? document.getElementById('conditionTrigger').value.trim() : '';
       const conditionEffect = hasConditionalEvent ? document.getElementById('conditionEffect').value.trim() : '';
+      const cardName = document.getElementById('name').value.trim();
+      const rarityVal = document.getElementById('rarity').value;
+
       const cardObj = {
         id: id || crypto.randomUUID(),
         cardCode,
-        name: document.getElementById('name').value.trim(),
+        name: cardName,
         cardType: document.getElementById('cardType').value.trim(),
         nation,
-        rarity: document.getElementById('rarity').value,
+        rarity: rarityVal,
         isToken: document.getElementById('isToken').checked,
         manaAction: document.getElementById('manaAction').value,
         manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
@@ -1820,6 +2221,12 @@
       triggerStatPop('statUnique');
       triggerStatPop('statOwned');
       triggerStatPop('statLeft');
+
+      // Easter Egg #6: Forging a Dragon, Lotus, or Secret rarity card
+      const nameLower = cardName.toLowerCase();
+      if (rarityVal === 'Secret' || nameLower.includes('dragon') || nameLower.includes('lotus')) {
+        unlockEasterEgg('secret_forge', `You forged "${cardName}"—an artifact worthy of the Golden Dragon & Lotus medallion!`);
+      }
     }
     function deleteCard(id) {
       if (confirm('Delete this card?')) {
@@ -1832,18 +2239,15 @@
       const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
       return Number.isNaN(num) ? 0 : num;
     }
+
     /* Legends of Steel and Silk Card Role Helpers */
     function isCardUnique(card) {
       const rarityLower = (card.rarity || '').toLowerCase();
       const restrLower = (card.restriction || '').toLowerCase();
       const specialLower = (card.special || '').toLowerCase();
       const abilityLower = (card.ability || '').toLowerCase();
-      return rarityLower === 'unique' ||
-             restrLower.includes('unique') ||
-             restrLower.includes('1 per deck') ||
-             restrLower.includes('limit 1') ||
-             abilityLower.includes('unique') ||
-             specialLower.includes('unique');
+      return rarityLower === 'unique' || restrLower.includes('unique') || restrLower.includes('1 per deck') ||
+             restrLower.includes('limit 1') || abilityLower.includes('unique') || specialLower.includes('unique');
     }
     function isCardCapital(card) {
       const typeLower = (card.cardType || '').toLowerCase();
@@ -1856,9 +2260,7 @@
       const typeLower = (card.cardType || '').toLowerCase();
       return rarityLower === 'leader' || typeLower.includes('leader');
     }
-    function isStarterRoleCard(card) {
-      return isCardLeader(card) || isCardCapital(card);
-    }
+    function isStarterRoleCard(card) { return isCardLeader(card) || isCardCapital(card); }
     function isCardBuilding(card) {
       if (isCardCapital(card)) return false;
       const typeLower = (card.cardType || '').toLowerCase();
@@ -1876,23 +2278,18 @@
     let practiceRobotCounts = {};
     let practiceGame = null;
     let robotTurnTimers = [];
-
     function clearRobotTimers() {
       robotTurnTimers.forEach(t => clearTimeout(t));
       robotTurnTimers = [];
     }
-
     function countLeadersInCountsMap(countsMap) {
       let total = 0;
       for (const [cardId, qty] of Object.entries(countsMap)) {
         const c = cards.find(item => item.id === cardId);
-        if (c && isCardLeader(c)) {
-          total += qty;
-        }
+        if (c && isCardLeader(c)) total += qty;
       }
       return total;
     }
-
     function enforceMaxOneLeaderOnCountsMap(countsMap) {
       let seenLeader = false;
       for (const [cardId, qty] of Object.entries(countsMap)) {
@@ -1907,7 +2304,6 @@
         }
       }
     }
-
     function openPracticeModal() {
       const modal = document.getElementById('practiceModal');
       populatePracticeSetupLists();
@@ -2014,70 +2410,51 @@
       populatePracticeSetupLists();
       quickFillPracticeDecks();
     }
-
     function populatePracticeSetupLists() {
       const playerStarterSelect = document.getElementById('practicePlayerStarter');
       const robotStarterSelect = document.getElementById('practiceRobotStarter');
       const prevPlayerStarter = playerStarterSelect.value;
       const prevRobotStarter = robotStarterSelect.value;
-
       const playablePool = cards.filter(c => !c.isToken);
       const starters = playablePool.filter(isStarterRoleCard);
       const starterOptionsPool = starters.length > 0 ? starters : playablePool;
-
       const buildStarterOptions = () => {
-        if (starterOptionsPool.length === 0) {
-          return `<option value="">No cards in collection yet</option>`;
-        }
+        if (starterOptionsPool.length === 0) return `<option value="">No cards in collection yet</option>`;
         return starterOptionsPool.map(c => {
           const role = isCardCapital(c) ? 'Capital' : (isCardLeader(c) ? 'Leader' : c.cardType || 'Starter');
           const resTxt = c.manaAction === 'add' ? `+${c.manaValue} Res` : (c.manaAction === 'spend' ? `Cost ${c.manaValue}` : '0 Res');
           return `<option value="${c.id}">[${escapeHTML(c.cardCode || 'LSS')}] ${escapeHTML(c.name)} (${role} • ${escapeHTML(c.nation || 'Universal')} • ${resTxt})</option>`;
         }).join('');
       };
-
       playerStarterSelect.innerHTML = buildStarterOptions();
       robotStarterSelect.innerHTML = buildStarterOptions();
-      if (prevPlayerStarter && starterOptionsPool.some(c => c.id === prevPlayerStarter)) {
-        playerStarterSelect.value = prevPlayerStarter;
-      }
-      if (prevRobotStarter && starterOptionsPool.some(c => c.id === prevRobotStarter)) {
-        robotStarterSelect.value = prevRobotStarter;
-      } else if (starterOptionsPool.length > 1) {
-        robotStarterSelect.value = starterOptionsPool[1].id;
-      }
-
+      if (prevPlayerStarter && starterOptionsPool.some(c => c.id === prevPlayerStarter)) playerStarterSelect.value = prevPlayerStarter;
+      if (prevRobotStarter && starterOptionsPool.some(c => c.id === prevRobotStarter)) robotStarterSelect.value = prevRobotStarter;
+      else if (starterOptionsPool.length > 1) robotStarterSelect.value = starterOptionsPool[1].id;
       enforceMaxOneLeaderOnCountsMap(practicePlayerCounts);
       enforceMaxOneLeaderOnCountsMap(practiceRobotCounts);
-
       renderPracticePickerList('player');
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function renderPracticePickerList(side) {
       const container = document.getElementById(side === 'player' ? 'practicePlayerCardList' : 'practiceRobotCardList');
       const countsMap = side === 'player' ? practicePlayerCounts : practiceRobotCounts;
       const robotMode = document.getElementById('practiceRobotMode').value;
       const isLockedMirror = side === 'robot' && robotMode === 'mirror';
-
       const deckableCards = cards.filter(c => !c.isToken);
       if (deckableCards.length === 0) {
         container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500">No cards yet. Click <strong>Load Demo LSS Cards</strong> above or add cards in the main vault!</div>`;
         return;
       }
-
       const activeCounts = isLockedMirror ? practicePlayerCounts : countsMap;
       const currentLeaders = countLeadersInCountsMap(activeCounts);
-
       container.innerHTML = deckableCards.map(c => {
         const currentQty = activeCounts[c.id] || 0;
         const leaderCard = isCardLeader(c);
         const maxAllowed = (leaderCard || isCardUnique(c)) ? 1 : 3;
         const leaderBlocked = leaderCard && currentQty === 0 && currentLeaders >= 1;
-        const statLine = isCardTactic(c)
-          ? 'Tactic (0 Res)'
-          : `${c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`} • ${c.attack || 0}/${c.defense || 0}`;
+        const statLine = isCardTactic(c) ? 'Tactic (0 Res)' : `${c.manaAction === 'add' ? `+${c.manaValue} Res` : `${c.manaValue || 0} Res`} • ${c.attack || 0}/${c.defense || 0}`;
         return `
           <div class="px-3 py-2 flex items-center justify-between gap-2 text-xs transition-colors ${currentQty > 0 ? 'bg-slate-800/45' : ''}">
             <div class="min-w-0">
@@ -2101,25 +2478,20 @@
         `;
       }).join('');
     }
-
     function adjustPracticeCardCount(side, cardId, delta) {
       const card = cards.find(c => c.id === cardId);
       if (!card) return;
       const leaderCard = isCardLeader(card);
       const maxAllowed = (leaderCard || isCardUnique(card)) ? 1 : 3;
       const targetMap = side === 'player' ? practicePlayerCounts : practiceRobotCounts;
-
       if (delta > 0 && leaderCard && countLeadersInCountsMap(targetMap) >= 1 && !(targetMap[cardId] > 0)) {
         alert('Rule: A deck can have at most 1 Leader (never more than 1 Leader).');
         return;
       }
-
       const nextVal = Math.max(0, Math.min(maxAllowed, (targetMap[cardId] || 0) + delta));
       if (nextVal === 0) delete targetMap[cardId];
       else targetMap[cardId] = nextVal;
-
       enforceMaxOneLeaderOnCountsMap(targetMap);
-
       if (side === 'player' && document.getElementById('practiceRobotMode').value === 'mirror') {
         practiceRobotCounts = { ...practicePlayerCounts };
       }
@@ -2127,7 +2499,6 @@
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function handleRobotDeckModeChange() {
       const mode = document.getElementById('practiceRobotMode').value;
       if (mode === 'mirror') {
@@ -2140,7 +2511,6 @@
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function copyPlayerDeckToRobot() {
       practiceRobotCounts = { ...practicePlayerCounts };
       enforceMaxOneLeaderOnCountsMap(practiceRobotCounts);
@@ -2148,7 +2518,6 @@
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function clearPracticeSide(side) {
       if (side === 'player') practicePlayerCounts = {};
       else practiceRobotCounts = {};
@@ -2156,7 +2525,6 @@
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function autoBuildPracticeCounts(side) {
       const starterId = document.getElementById(side === 'player' ? 'practicePlayerStarter' : 'practiceRobotStarter').value;
       const starter = cards.find(c => c.id === starterId);
@@ -2164,14 +2532,12 @@
       const targetMap = {};
       let total = 0;
       let leadersAdded = 0;
-
       const eligible = cards.filter(c => {
         if (c.isToken || c.id === starterId) return false;
         const n = c.nation || 'Universal';
         return faction === 'Universal' ? n === 'Universal' : (n === faction || n === 'Universal');
       });
       const pool = eligible.length >= 5 ? eligible : cards.filter(c => !c.isToken && c.id !== starterId);
-
       for (const c of pool) {
         if (total >= 15) break;
         const leaderCard = isCardLeader(c);
@@ -2187,7 +2553,6 @@
       if (side === 'player') practicePlayerCounts = targetMap;
       else practiceRobotCounts = targetMap;
     }
-
     function quickFillPracticeDecks() {
       if (cards.length === 0) {
         loadSamplePracticeCardsIfEmpty();
@@ -2207,7 +2572,6 @@
       renderPracticePickerList('robot');
       updatePracticeSetupCounts();
     }
-
     function updatePracticeSetupCounts() {
       const pCount = Object.values(practicePlayerCounts).reduce((a, b) => a + b, 0);
       const rCount = Object.values(practiceRobotCounts).reduce((a, b) => a + b, 0);
@@ -2216,7 +2580,6 @@
       document.getElementById('playerSetupCountBadge').textContent = `${pCount} cards • ${pLeaders}/1 Leader`;
       document.getElementById('robotSetupCountBadge').textContent = `${rCount} cards • ${rLeaders}/1 Leader`;
     }
-
     function createCombatInstance(cardTemplate, owner, isStarter = false) {
       const atk = parseStatNumber(cardTemplate.attack);
       const def = Math.max(1, parseStatNumber(cardTemplate.defense) || (isStarter ? 6 : 2));
@@ -2261,7 +2624,6 @@
         }
       };
     }
-
     function buildDeckArrayFromCounts(countsMap, fallbackStarter) {
       const deck = [];
       let leadersInDeck = 0;
@@ -2297,7 +2659,6 @@
       }
       return deck;
     }
-
     function triggerSlotAnimation(ownerKey, row, slot, animClass, floatingText = null, floatingColor = 'text-rose-300') {
       requestAnimationFrame(() => {
         const el = document.getElementById(`pslot-${ownerKey}-${row}-${slot}`);
@@ -2305,7 +2666,6 @@
         el.classList.remove('animate-summon-pop', 'animate-move-slide', 'animate-attack-up', 'animate-attack-down', 'animate-hit-shake', 'animate-tactic-flash');
         void el.offsetWidth;
         el.classList.add(animClass);
-
         if (floatingText) {
           const badge = document.createElement('div');
           badge.className = `floating-dmg-badge px-2 py-0.5 rounded-full bg-slate-950/95 border border-rose-500/60 text-xs font-extrabold shadow-lg ${floatingColor}`;
@@ -2315,7 +2675,6 @@
         }
       });
     }
-
     function startPracticeMatch() {
       if (cards.length === 0) {
         alert('Add at least 1 card (or click "Load Demo LSS Cards") before starting a practice match!');
@@ -2325,30 +2684,21 @@
       const pStarterId = document.getElementById('practicePlayerStarter').value;
       const pStarterRow = document.getElementById('practicePlayerStarterRow').value;
       const rMode = document.getElementById('practiceRobotMode').value;
-      if (rMode === 'mirror') {
-        practiceRobotCounts = { ...practicePlayerCounts };
-      }
+      if (rMode === 'mirror') practiceRobotCounts = { ...practicePlayerCounts };
       enforceMaxOneLeaderOnCountsMap(practicePlayerCounts);
       enforceMaxOneLeaderOnCountsMap(practiceRobotCounts);
-
       const rStarterId = document.getElementById('practiceRobotStarter').value;
-
       const pStarterTmpl = cards.find(c => c.id === pStarterId) || cards[0];
       const rStarterTmpl = cards.find(c => c.id === rStarterId) || pStarterTmpl;
-
       const pDeckTemplates = buildDeckArrayFromCounts(practicePlayerCounts, pStarterTmpl);
       const rDeckTemplates = buildDeckArrayFromCounts(practiceRobotCounts, rStarterTmpl);
-
       const pStarterUnit = createCombatInstance(pStarterTmpl, 'player', true);
       const rStarterUnit = createCombatInstance(rStarterTmpl, 'robot', true);
-
       const pCap = pStarterUnit.manaAction === 'add' ? Math.max(2, pStarterUnit.manaValue) : Math.max(3, pStarterUnit.manaValue || 4);
       const rCap = rStarterUnit.manaAction === 'add' ? Math.max(2, rStarterUnit.manaValue) : Math.max(3, rStarterUnit.manaValue || 4);
-
       const pStarterScore = pStarterUnit.manaValue || 0;
       const rStarterScore = rStarterUnit.manaValue || 0;
       const firstTurn = pStarterScore <= rStarterScore ? 'player' : 'robot';
-
       practiceGame = {
         round: 1,
         turn: firstTurn,
@@ -2359,110 +2709,74 @@
         selectedBoardUnit: null,
         logs: [],
         player: {
-          name: 'You',
-          resourceCap: pCap,
-          usedResources: 0,
-          silkTokens: 0,
-          playedBuildingThisTurn: false,
-          deck: pDeckTemplates.map(t => createCombatInstance(t, 'player', false)),
-          hand: [],
-          discard: [],
-          front: [null, null, null, null, null],
-          back: [null, null, null, null, null]
+          name: 'You', resourceCap: pCap, usedResources: 0, silkTokens: 0, playedBuildingThisTurn: false,
+          deck: pDeckTemplates.map(t => createCombatInstance(t, 'player', false)), hand: [], discard: [],
+          front: [null, null, null, null, null], back: [null, null, null, null, null]
         },
         robot: {
-          name: 'AI Robot',
-          resourceCap: rCap,
-          usedResources: 0,
-          silkTokens: 0,
-          playedBuildingThisTurn: false,
-          deck: rDeckTemplates.map(t => createCombatInstance(t, 'robot', false)),
-          hand: [],
-          discard: [],
-          front: [null, null, null, null, null],
-          back: [null, null, null, null, null]
+          name: 'AI Robot', resourceCap: rCap, usedResources: 0, silkTokens: 0, playedBuildingThisTurn: false,
+          deck: rDeckTemplates.map(t => createCombatInstance(t, 'robot', false)), hand: [], discard: [],
+          front: [null, null, null, null, null], back: [null, null, null, null, null]
         }
       };
-
       const actualPRow = pStarterUnit.isCapital ? 'back' : pStarterRow;
       practiceGame.player[actualPRow][2] = pStarterUnit;
-
       const actualRRow = 'back';
       practiceGame.robot[actualRRow][2] = rStarterUnit;
-
       for (let i = 0; i < 4; i++) {
         drawCardForSide('player', true);
         drawCardForSide('robot', true);
       }
-
       document.getElementById('practiceSetupView').classList.add('hidden');
       document.getElementById('practiceBoardView').classList.remove('hidden');
       document.getElementById('practiceBackToSetupBtn').classList.remove('hidden');
       document.getElementById('practiceWinnerBanner').classList.add('hidden');
-
       addPracticeLog(`Match started! Rule reminder: A deck can have at most 1 Leader (never more than 1).`);
       addPracticeLog(`You deployed ${pStarterUnit.name} (${pCap} Res). AI Robot deployed ${rStarterUnit.name} (${rCap} Res).`);
       addPracticeLog(`${firstTurn === 'player' ? 'You go' : 'AI Robot goes'} first (lower starter resource score)! Both players drew 4 cards.`);
-
       renderPracticeBoard();
       triggerSlotAnimation('player', actualPRow, 2, 'animate-summon-pop');
       triggerSlotAnimation('robot', actualRRow, 2, 'animate-summon-pop');
-
-      if (firstTurn === 'robot') {
-        scheduleRobotTurn();
-      }
+      if (firstTurn === 'robot') scheduleRobotTurn();
     }
-
     function addPracticeLog(msg) {
       if (!practiceGame) return;
       practiceGame.logs.unshift(`[R${practiceGame.round}] ${msg}`);
       if (practiceGame.logs.length > 45) practiceGame.logs.pop();
     }
-
     function drawCardForSide(sideKey, silent = false) {
       const side = practiceGame[sideKey];
       if (side.deck.length === 0) return null;
       const drawn = side.deck.shift();
       side.hand.push(drawn);
-      if (!silent) {
-        addPracticeLog(`${side.name} drew ${sideKey === 'player' ? drawn.name : 'a card'}.`);
-      }
+      if (!silent) addPracticeLog(`${side.name} drew ${sideKey === 'player' ? drawn.name : 'a card'}.`);
       return drawn;
     }
-
     function recalculateSideResources(sideKey) {
       const side = practiceGame[sideKey];
       let bonusCap = 0;
       let spent = 0;
       const allUnits = [...side.front, ...side.back].filter(Boolean);
       for (const u of allUnits) {
-        if (u.isStarter) {
-          bonusCap += u.manaAction === 'add' ? Math.max(2, u.manaValue) : Math.max(3, u.manaValue || 4);
-        } else if (u.manaAction === 'add') {
-          bonusCap += u.manaValue;
-        } else if (u.manaAction === 'spend') {
-          spent += u.manaValue;
-        }
+        if (u.isStarter) bonusCap += u.manaAction === 'add' ? Math.max(2, u.manaValue) : Math.max(3, u.manaValue || 4);
+        else if (u.manaAction === 'add') bonusCap += u.manaValue;
+        else if (u.manaAction === 'spend') spent += u.manaValue;
       }
       side.resourceCap = bonusCap;
       side.usedResources = spent;
     }
-
     function checkLSSVictoryConditions() {
       if (!practiceGame || practiceGame.winner) return true;
-
       for (const sideKey of ['player', 'robot']) {
         const oppKey = sideKey === 'player' ? 'robot' : 'player';
         const side = practiceGame[sideKey];
         const opp = practiceGame[oppKey];
-
         const oppUnits = [...opp.front, ...opp.back].filter(Boolean);
         const oppHasWinTarget = oppUnits.some(u => u.isStarter || u.isLeader);
         if (!oppHasWinTarget) {
           declarePracticeWinner(sideKey, `Steel Victory! ${opp.name}'s Leader/Capital was reduced to 0 Defense.`);
           return true;
         }
-
         const sideUnits = [...side.front, ...side.back].filter(Boolean);
         for (const u of sideUnits) {
           if (u.isCapital) {
@@ -2477,37 +2791,31 @@
       }
       return false;
     }
-
     function declarePracticeWinner(winnerKey, reason) {
       clearRobotTimers();
       practiceGame.winner = winnerKey;
       practiceGame.winReason = reason;
       addPracticeLog(`🏆 ${reason}`);
+      spawnParticleBurst(36);
       renderPracticeBoard();
     }
-
     function startTurnForSide(sideKey) {
       if (!practiceGame || practiceGame.winner) return;
       practiceGame.turn = sideKey;
       practiceGame.phase = 'draw';
       practiceGame.selectedHandUid = null;
       practiceGame.selectedBoardUnit = null;
-
       const side = practiceGame[sideKey];
       side.playedBuildingThisTurn = false;
-
       drawCardForSide(sideKey, false);
-
       [...side.front, ...side.back].filter(Boolean).forEach(u => {
         u.prepared = true;
         u.hasAttackedThisTurn = false;
         u.mustAttackThisTurn = false;
         u.tempAtkBuff = 0;
       });
-
       recalculateSideResources(sideKey);
       const availableRes = side.resourceCap - side.usedResources;
-
       if (side.resourceCap >= 10 || availableRes >= 10) {
         side.silkTokens += 1;
         addPracticeLog(`${side.name} maintained 10+ resources in Draw Phase and gained a Silk Token (${side.silkTokens}/3)!`);
@@ -2515,44 +2823,30 @@
         side.silkTokens = 0;
         addPracticeLog(`${side.name} dropped below 10 resources and lost all Silk Tokens.`);
       }
-
       practiceGame.phase = 'play';
       renderPracticeBoard();
-
-      if (sideKey === 'robot') {
-        scheduleRobotTurn();
-      }
+      if (sideKey === 'robot') scheduleRobotTurn();
     }
-
     function endMovePhaseForSide(sideKey) {
       if (!practiceGame || practiceGame.winner) return;
       const side = practiceGame[sideKey];
-
       [...side.front, ...side.back].filter(Boolean).forEach(u => {
-        if (!u.isLeader && !u.isCapital) {
-          u.currentDef = u.maxDef;
-        }
+        if (!u.isLeader && !u.isCapital) u.currentDef = u.maxDef;
         u.tempAtkBuff = 0;
         u.mustAttackThisTurn = false;
       });
-
       if (side.silkTokens >= 3) {
         declarePracticeWinner(sideKey, `Silk Victory! ${side.name} held 3 Silk Tokens at the end of the Move Phase!`);
         return;
       }
-
-      if (sideKey === 'robot') {
-        practiceGame.round += 1;
-      }
+      if (sideKey === 'robot') practiceGame.round += 1;
       const nextSide = sideKey === 'player' ? 'robot' : 'player';
       startTurnForSide(nextSide);
     }
-
     function advancePlayerPhase() {
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
       practiceGame.selectedHandUid = null;
       practiceGame.selectedBoardUnit = null;
-
       if (practiceGame.phase === 'play') {
         practiceGame.phase = 'fight';
         addPracticeLog('You entered Fight Phase.');
@@ -2566,7 +2860,6 @@
       }
       renderPracticeBoard();
     }
-
     function selectHandCard(uid) {
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
       if (practiceGame.phase !== 'play') {
@@ -2578,11 +2871,9 @@
       practiceGame.selectedBoardUnit = null;
       renderPracticeBoard();
     }
-
     function triggerCapitalHeritageOnPlay(sideKey, playedUnit) {
       const side = practiceGame[sideKey];
       const playedText = `${playedUnit.name} ${playedUnit.cardType}`.toLowerCase();
-
       for (const r of ['front', 'back']) {
         for (let s = 0; s < 5; s++) {
           const u = side[r][s];
@@ -2603,17 +2894,12 @@
         }
       }
     }
-
     function playCardFromHandToSlot(sideKey, handUid, targetRow, targetSlot) {
       const side = practiceGame[sideKey];
       const handIdx = side.hand.findIndex(c => c.uid === handUid);
       if (handIdx === -1) return false;
       const card = side.hand[handIdx];
-
-      if (card.isTactic) {
-        return activateTacticFromHand(sideKey, handUid);
-      }
-
+      if (card.isTactic) return activateTacticFromHand(sideKey, handUid);
       if (card.isLeader) {
         const existingLeaders = [...side.front, ...side.back, ...side.hand, ...side.discard].filter(u => u && u.uid !== card.uid && u.isLeader);
         if (existingLeaders.length >= 1) {
@@ -2621,7 +2907,6 @@
           return false;
         }
       }
-
       if (card.isCapital || card.isBuilding) {
         if (side.playedBuildingThisTurn) {
           if (sideKey === 'player') addPracticeLog('Rule: You may only play 1 Building or Capital per turn.');
@@ -2632,21 +2917,17 @@
           return false;
         }
       }
-
       if (side[targetRow][targetSlot] !== null) {
         if (sideKey === 'player') addPracticeLog('That board slot is already occupied.');
         return false;
       }
-
       recalculateSideResources(sideKey);
       const availableRes = side.resourceCap - side.usedResources;
       const cost = (!card.isCapital && !card.isLeader && card.manaAction === 'spend') ? card.manaValue : 0;
-
       if (cost > availableRes) {
         if (sideKey === 'player') addPracticeLog(`Not enough resources (${availableRes} available, needs ${cost}).`);
         return false;
       }
-
       side.hand.splice(handIdx, 1);
       if (card.isCapital || card.isBuilding) {
         side.playedBuildingThisTurn = true;
@@ -2654,28 +2935,22 @@
       } else {
         card.prepared = false;
       }
-
       side[targetRow][targetSlot] = card;
       recalculateSideResources(sideKey);
       addPracticeLog(`${side.name} played ${card.name} to ${targetRow} row (Slot ${targetSlot + 1}).`);
-
       renderPracticeBoard();
       triggerSlotAnimation(sideKey, targetRow, targetSlot, 'animate-summon-pop');
-
       triggerCapitalHeritageOnPlay(sideKey, card);
       checkLSSVictoryConditions();
       return true;
     }
-
     function activateTacticFromHand(sideKey, handUid) {
       const side = practiceGame[sideKey];
       const handIdx = side.hand.findIndex(c => c.uid === handUid);
       if (handIdx === -1) return false;
       const tactic = side.hand[handIdx];
-
       side.hand.splice(handIdx, 1);
       side.discard.push(tactic);
-
       const effLower = `${tactic.conditionEffect} ${tactic.ability} ${tactic.special}`.toLowerCase();
       let buffed = 0;
       const buffedCoords = [];
@@ -2693,7 +2968,6 @@
           }
         }
       }
-
       addPracticeLog(`⚡ ${side.name} activated Tactic "${tactic.name}"! (${buffed} friendly unit(s) gained +1 Strength this turn)`);
       practiceGame.selectedHandUid = null;
       renderPracticeBoard();
@@ -2702,7 +2976,6 @@
       });
       return true;
     }
-
     function playSelectedHandCard(row) {
       if (!practiceGame || !practiceGame.selectedHandUid || practiceGame.turn !== 'player') return;
       const side = practiceGame.player;
@@ -2717,16 +2990,13 @@
       }
       renderPracticeBoard();
     }
-
     function playSelectedTacticCard() {
       if (!practiceGame || !practiceGame.selectedHandUid || practiceGame.turn !== 'player') return;
       activateTacticFromHand('player', practiceGame.selectedHandUid);
     }
-
     function handleBoardSlotClick(ownerKey, row, slot) {
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'player') return;
       const unit = practiceGame[ownerKey][row][slot];
-
       if (practiceGame.phase === 'play' && ownerKey === 'player' && practiceGame.selectedHandUid && !unit) {
         if (playCardFromHandToSlot('player', practiceGame.selectedHandUid, row, slot)) {
           practiceGame.selectedHandUid = null;
@@ -2734,7 +3004,6 @@
         renderPracticeBoard();
         return;
       }
-
       if (practiceGame.phase === 'fight') {
         if (ownerKey === 'player' && unit) {
           if (!unit.prepared || unit.hasAttackedThisTurn || unit.keywords.pacifist || unit.isCapital || unit.isBuilding) {
@@ -2752,7 +3021,6 @@
           renderPracticeBoard();
           return;
         }
-
         if (ownerKey === 'robot' && unit && practiceGame.selectedBoardUnit) {
           const attPos = { ...practiceGame.selectedBoardUnit };
           practiceGame.selectedBoardUnit = null;
@@ -2760,7 +3028,6 @@
           return;
         }
       }
-
       if (practiceGame.phase === 'move' && ownerKey === 'player') {
         if (unit) {
           if (!unit.prepared || unit.keywords.noMove) {
@@ -2786,16 +3053,13 @@
         }
       }
     }
-
     function executeAttack(attackerOwner, attackerPos, targetPos) {
       const defenderOwner = attackerOwner === 'player' ? 'robot' : 'player';
       const attSide = practiceGame[attackerOwner];
       const defSide = practiceGame[defenderOwner];
-
       const attacker = attSide[attackerPos.row][attackerPos.slot];
       const target = defSide[targetPos.row][targetPos.slot];
       if (!attacker || !target) return false;
-
       const defFrontHasUnits = defSide.front.some(Boolean);
       if (targetPos.row === 'back' && defFrontHasUnits) {
         if (!attacker.keywords.ranged) {
@@ -2809,37 +3073,23 @@
           return false;
         }
       }
-
       const attDamage = attacker.baseAtk + attacker.tempAtkBuff;
       const defDamage = target.baseAtk + target.tempAtkBuff;
       const isRangedOverTwoRows = attacker.keywords.ranged && (attackerPos.row === 'back' || targetPos.row === 'back');
-
       renderPracticeBoard();
       triggerSlotAnimation(
-        attackerOwner,
-        attackerPos.row,
-        attackerPos.slot,
+        attackerOwner, attackerPos.row, attackerPos.slot,
         attackerOwner === 'player' ? 'animate-attack-up' : 'animate-attack-down',
-        !isRangedOverTwoRows && defDamage > 0 ? `-${defDamage} ⚔️` : null,
-        'text-amber-300'
+        !isRangedOverTwoRows && defDamage > 0 ? `-${defDamage} ⚔️` : null, 'text-amber-300'
       );
       triggerSlotAnimation(
-        defenderOwner,
-        targetPos.row,
-        targetPos.slot,
-        'animate-hit-shake',
-        `-${attDamage} 💥`,
-        'text-rose-300'
+        defenderOwner, targetPos.row, targetPos.slot,
+        'animate-hit-shake', `-${attDamage} 💥`, 'text-rose-300'
       );
-
       target.currentDef -= attDamage;
-      if (!isRangedOverTwoRows) {
-        attacker.currentDef -= defDamage;
-      }
+      if (!isRangedOverTwoRows) attacker.currentDef -= defDamage;
       attacker.hasAttackedThisTurn = true;
-
       addPracticeLog(`⚔️ ${attSide.name}'s ${attacker.name} (${attDamage} STR) attacked ${defSide.name}'s ${target.name} (${Math.max(0, target.currentDef)}/${target.maxDef} DEF left).`);
-
       if (attacker.keywords.breach && targetPos.row === 'front' && target.currentDef <= 0) {
         const behindUnit = defSide.back[targetPos.slot];
         if (behindUnit) {
@@ -2848,7 +3098,6 @@
           triggerSlotAnimation(defenderOwner, 'back', targetPos.slot, 'animate-hit-shake', `BREACH -${attDamage} 💥`, 'text-orange-300');
         }
       }
-
       const cleanupTimer = setTimeout(() => {
         if (!practiceGame) return;
         for (const r of ['front', 'back']) {
@@ -2869,35 +3118,26 @@
         }
         recalculateSideResources('player');
         recalculateSideResources('robot');
-        if (!checkLSSVictoryConditions()) {
-          renderPracticeBoard();
-        }
+        if (!checkLSSVictoryConditions()) renderPracticeBoard();
       }, 460);
       robotTurnTimers.push(cleanupTimer);
       return true;
     }
-
     function scheduleRobotTurn() {
       if (!practiceGame || practiceGame.winner) return;
       document.getElementById('robotThinkingBadge').classList.remove('hidden');
-      const t = setTimeout(() => {
-        runRobotTurnAIAnimated();
-      }, 650);
+      const t = setTimeout(() => { runRobotTurnAIAnimated(); }, 650);
       robotTurnTimers.push(t);
     }
-
     function runRobotTurnAIAnimated() {
       if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
       const difficulty = document.getElementById('practiceDifficulty').value;
       const robot = practiceGame.robot;
       const player = practiceGame.player;
-
       practiceGame.phase = 'play';
       renderPracticeBoard();
-
       const handSnapshot = [...robot.hand];
       let delay = 250;
-
       for (const card of handSnapshot) {
         const playTimer = setTimeout(() => {
           if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
@@ -2907,9 +3147,7 @@
           }
           if (card.isTactic) {
             const hasFriendlyWarrior = [...robot.front, ...robot.back].some(u => u && !u.isBuilding && !u.isCapital);
-            if (hasFriendlyWarrior) {
-              activateTacticFromHand('robot', card.uid);
-            }
+            if (hasFriendlyWarrior) activateTacticFromHand('robot', card.uid);
             return;
           }
           const preferredRow = (card.isCapital || card.isBuilding || card.keywords.ranged || card.keywords.pacifist) ? 'back' : 'front';
@@ -2920,19 +3158,15 @@
             slot = robot[fallbackRow].findIndex(s => s === null);
             chosenRow = fallbackRow;
           }
-          if (slot !== -1) {
-            playCardFromHandToSlot('robot', card.uid, chosenRow, slot);
-          }
+          if (slot !== -1) playCardFromHandToSlot('robot', card.uid, chosenRow, slot);
         }, delay);
         robotTurnTimers.push(playTimer);
         delay += 420;
       }
-
       const fightPhaseTimer = setTimeout(() => {
         if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
         practiceGame.phase = 'fight';
         renderPracticeBoard();
-
         const potentialAttackers = [];
         for (const r of ['front', 'back']) {
           for (let s = 0; s < 5; s++) {
@@ -2942,7 +3176,6 @@
             }
           }
         }
-
         let fightDelay = 200;
         for (const attRef of potentialAttackers) {
           const singleAttackTimer = setTimeout(() => {
@@ -2958,14 +3191,12 @@
             if (!attPos || attPos.unit.hasAttackedThisTurn) return;
             const robotFrontHasUnits = robot.front.some(Boolean);
             if (attPos.row === 'back' && robotFrontHasUnits && !attPos.unit.keywords.ranged) return;
-
             const playerFrontTargets = [];
             const playerBackTargets = [];
             for (let ts = 0; ts < 5; ts++) {
               if (player.front[ts]) playerFrontTargets.push({ row: 'front', slot: ts, unit: player.front[ts] });
               if (player.back[ts]) playerBackTargets.push({ row: 'back', slot: ts, unit: player.back[ts] });
             }
-
             let legalTargets = [];
             if (playerFrontTargets.length > 0) {
               legalTargets = [...playerFrontTargets];
@@ -2975,7 +3206,6 @@
             } else {
               legalTargets = [...playerBackTargets];
             }
-
             if (legalTargets.length > 0) {
               if (difficulty === 'tactical') {
                 legalTargets.sort((a, b) => {
@@ -2991,7 +3221,6 @@
           robotTurnTimers.push(singleAttackTimer);
           fightDelay += 720;
         }
-
         const moveAndEndTimer = setTimeout(() => {
           if (!practiceGame || practiceGame.winner || practiceGame.turn !== 'robot') return;
           practiceGame.phase = 'move';
@@ -3013,75 +3242,53 @@
         }, fightDelay + 250);
         robotTurnTimers.push(moveAndEndTimer);
       }, delay + 150);
-
       robotTurnTimers.push(fightPhaseTimer);
     }
-
     function renderPracticeBoard() {
       if (!practiceGame) return;
       const g = practiceGame;
       const isPlayerTurn = g.turn === 'player' && !g.winner;
-
       const turnBadge = document.getElementById('turnIndicatorBadge');
       turnBadge.textContent = g.winner ? 'MATCH OVER' : (g.turn === 'player' ? 'YOUR TURN' : 'AI ROBOT TURN');
       turnBadge.className = g.turn === 'player'
         ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white shadow-md shadow-emerald-500/20 transition-all duration-300'
         : 'px-3 py-1 rounded-full text-xs font-extrabold bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/20 transition-all duration-300';
-
       document.getElementById('roundNumberBadge').textContent = `Round ${g.round}`;
       ['draw', 'play', 'fight', 'move'].forEach(p => {
         const pill = document.getElementById(`phasePill-${p}`);
-        if (g.phase === p) {
-          pill.className = 'px-2.5 py-0.5 rounded bg-indigo-600 text-white font-bold scale-105 shadow-sm transition-all duration-200';
-        } else {
-          pill.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200';
-        }
+        if (g.phase === p) pill.className = 'px-2.5 py-0.5 rounded bg-indigo-600 text-white font-bold scale-105 shadow-sm transition-all duration-200';
+        else pill.className = 'px-2 py-0.5 rounded bg-slate-800 text-slate-400 transition-all duration-200';
       });
-
       const advanceBtn = document.getElementById('advancePhaseBtn');
       advanceBtn.disabled = !isPlayerTurn;
       advanceBtn.classList.toggle('opacity-50', !isPlayerTurn);
       if (g.phase === 'play') advanceBtn.innerHTML = 'To Fight Phase <i class="fa-solid fa-arrow-right ml-1"></i>';
       else if (g.phase === 'fight') advanceBtn.innerHTML = 'To Move Phase <i class="fa-solid fa-arrow-right ml-1"></i>';
       else advanceBtn.innerHTML = 'End Turn <i class="fa-solid fa-check ml-1"></i>';
-
       const hint = document.getElementById('practiceActionHint');
-      if (g.winner) {
-        hint.textContent = g.winReason;
-      } else if (g.turn !== 'player') {
-        hint.textContent = 'AI Robot is taking its turn...';
-      } else if (g.phase === 'play') {
-        hint.textContent = g.selectedHandUid ? 'Click an empty slot on your board to deploy!' : 'Play Phase: Click a card in your hand to play it.';
-      } else if (g.phase === 'fight') {
-        hint.textContent = g.selectedBoardUnit ? 'Now click an enemy card on Robot\'s board to attack!' : 'Fight Phase: Click your ready Front-Row (or Ranged) unit to attack.';
-      } else if (g.phase === 'move') {
-        hint.textContent = g.selectedBoardUnit ? 'Click an empty slot on your board to move there!' : 'Move Phase: Click a ready unit to reposition, or click End Turn.';
-      }
-
+      if (g.winner) hint.textContent = g.winReason;
+      else if (g.turn !== 'player') hint.textContent = 'AI Robot is taking its turn...';
+      else if (g.phase === 'play') hint.textContent = g.selectedHandUid ? 'Click an empty slot on your board to deploy!' : 'Play Phase: Click a card in your hand to play it.';
+      else if (g.phase === 'fight') hint.textContent = g.selectedBoardUnit ? 'Now click an enemy card on Robot\'s board to attack!' : 'Fight Phase: Click your ready Front-Row (or Ranged) unit to attack.';
+      else if (g.phase === 'move') hint.textContent = g.selectedBoardUnit ? 'Click an empty slot on your board to move there!' : 'Move Phase: Click a ready unit to reposition, or click End Turn.';
       const pAvail = Math.max(0, g.player.resourceCap - g.player.usedResources);
       const rAvail = Math.max(0, g.robot.resourceCap - g.robot.usedResources);
-      document.getElementById('playerHudStats').textContent =
-        `Res: ${pAvail}/${g.player.resourceCap} • Deck: ${g.player.deck.length} • Discard: ${g.player.discard.length} • Silk: ${g.player.silkTokens}/3`;
-      document.getElementById('robotHudStats').textContent =
-        `Res: ${rAvail}/${g.robot.resourceCap} • Hand: ${g.robot.hand.length} • Deck: ${g.robot.deck.length} • Silk: ${g.robot.silkTokens}/3`;
-
+      document.getElementById('playerHudStats').textContent = `Res: ${pAvail}/${g.player.resourceCap} • Deck: ${g.player.deck.length} • Discard: ${g.player.discard.length} • Silk: ${g.player.silkTokens}/3`;
+      document.getElementById('robotHudStats').textContent = `Res: ${rAvail}/${g.robot.resourceCap} • Hand: ${g.robot.hand.length} • Deck: ${g.robot.deck.length} • Silk: ${g.robot.silkTokens}/3`;
       renderBoardRow('robotBackRow', 'robot', 'back');
       renderBoardRow('robotFrontRow', 'robot', 'front');
       renderBoardRow('playerFrontRow', 'player', 'front');
       renderBoardRow('playerBackRow', 'player', 'back');
-
       const handZone = document.getElementById('playerHandZone');
       const selectedHandCard = g.player.hand.find(c => c.uid === g.selectedHandUid);
       const handControls = document.getElementById('selectedHandControls');
       const tacticBtn = document.getElementById('playTacticBtn');
-
       if (selectedHandCard && isPlayerTurn && g.phase === 'play') {
         handControls.classList.remove('hidden');
         tacticBtn.classList.toggle('hidden', !selectedHandCard.isTactic);
       } else {
         handControls.classList.add('hidden');
       }
-
       if (g.player.hand.length === 0) {
         handZone.innerHTML = `<div class="flex-1 flex items-center justify-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl">Your hand is empty.</div>`;
       } else {
@@ -3106,11 +3313,9 @@
           `;
         }).join('');
       }
-
       document.getElementById('practiceBattleLog').innerHTML = g.logs.map((line, i) =>
         `<div class="${i === 0 ? 'animate-log-in border-cyan-500/30 bg-slate-900' : 'border-slate-800/80 bg-slate-900/75'} p-1.5 rounded border leading-snug">${escapeHTML(line)}</div>`
       ).join('');
-
       const winnerBanner = document.getElementById('practiceWinnerBanner');
       if (g.winner) {
         winnerBanner.classList.remove('hidden');
@@ -3120,12 +3325,10 @@
         winnerBanner.classList.add('hidden');
       }
     }
-
     function renderBoardRow(elementId, ownerKey, row) {
       const container = document.getElementById(elementId);
       const slots = practiceGame[ownerKey][row];
       const isPlayerTurn = practiceGame.turn === 'player' && !practiceGame.winner;
-
       container.innerHTML = slots.map((unit, slotIdx) => {
         const slotDomId = `pslot-${ownerKey}-${row}-${slotIdx}`;
         if (!unit) {
@@ -3140,18 +3343,14 @@
             </div>
           `;
         }
-
         const isSelectedAttackerOrMover = ownerKey === 'player' &&
           practiceGame.selectedBoardUnit &&
           practiceGame.selectedBoardUnit.row === row &&
           practiceGame.selectedBoardUnit.slot === slotIdx;
-
         const isTargetableEnemy = isPlayerTurn && ownerKey === 'robot' &&
           practiceGame.phase === 'fight' && Boolean(practiceGame.selectedBoardUnit);
-
         const totalAtk = unit.baseAtk + unit.tempAtkBuff;
         const roleBadge = unit.isLeader ? '👑 Leader' : (unit.isCapital ? `🏛️ Capital (${unit.heritageTokens}★)` : (unit.isBuilding ? '🏗️ Bldg' : '⚔️ Unit'));
-
         return `
           <div id="${slotDomId}" onclick="handleBoardSlotClick('${ownerKey}', '${row}', ${slotIdx})"
             class="h-24 sm:h-28 p-2 rounded-xl border flex flex-col justify-between cursor-pointer transition-all duration-200 relative ${
@@ -3166,14 +3365,12 @@
                 ${!unit.prepared ? 'Zzz' : (unit.hasAttackedThisTurn ? 'Done' : 'Ready')}
               </span>
             </div>
-
             <div class="min-w-0">
               <div class="font-bold text-[11px] text-white truncate">${escapeHTML(unit.name)}</div>
               <div class="text-[9px] text-slate-400 truncate">
                 ${unit.keywords.ranged ? '🏹Ranged ' : ''}${unit.keywords.breach ? '💥Breach ' : ''}${unit.keywords.pacifist ? '🛡️Pacifist' : ''}
               </div>
             </div>
-
             <div class="flex items-center justify-between pt-1 border-t border-slate-800/80 text-[11px] font-extrabold">
               <span class="text-rose-400"><i class="fa-solid fa-khanda mr-0.5 text-[9px]"></i>${totalAtk}</span>
               <span class="${unit.currentDef < unit.maxDef ? 'text-amber-300' : 'text-blue-400'}"><i class="fa-solid fa-shield-halved mr-0.5 text-[9px]"></i>${Math.max(0, unit.currentDef)}/${unit.maxDef}</span>
@@ -3206,9 +3403,7 @@
             reasons.push('Pacifist/defensive restriction fits Control');
           }
         }
-        if (rLower.includes('back row')) {
-          reasons.push('Back row placement');
-        }
+        if (rLower.includes('back row')) reasons.push('Back row placement');
       }
       const aggroTerms = ['attack', 'atk', 'strength', 'damage', 'strike', 'breach', 'ranged', 'must attack', 'steel'];
       const controlTerms = ['defense', 'def', 'heal', 'restore', 'guard', 'pacifist', 'back row', 'adjacent', 'behind', 'beside'];
@@ -3270,10 +3465,7 @@
         else if (restrictionText) reasons.push(`Restriction: ${restrictionText.slice(0, 60)}${restrictionText.length > 60 ? '…' : ''}`);
         else reasons.push('Faction & resource curve fit');
       }
-      return {
-        textScore,
-        reason: reasons.slice(0, 2).join(' • ')
-      };
+      return { textScore, reason: reasons.slice(0, 2).join(' • ') };
     }
     function scoreCardForDeck(card, selectedNation, style, promptText) {
       let score = 50;
@@ -3312,6 +3504,7 @@
       score += Math.random() * 4;
       return score;
     }
+
     async function generateAIDeck() {
       if (cards.length === 0) {
         alert('Add some cards to your collection first so the AI Deck Builder can build an LSS deck!');
@@ -3322,486 +3515,375 @@
       const style = document.getElementById('aiStyle').value;
       const tokenMode = document.getElementById('aiTokenMode').value;
       const requestedSize = parseInt(document.getElementById('aiDeckSize').value) || 15;
-      const deckSize = Math.max(15, requestedSize);
-      document.getElementById('aiDeckSize').value = deckSize;
-      const maxCopies = Math.min(3, Math.max(1, parseInt(document.getElementById('aiMaxCopies').value) || 3));
+      const targetSize = Math.max(15, requestedSize);
+      document.getElementById('aiDeckSize').value = targetSize;
+      const requestedCopies = parseInt(document.getElementById('aiMaxCopies').value) || 3;
+      const maxCopies = Math.min(3, Math.max(1, requestedCopies));
       document.getElementById('aiMaxCopies').value = maxCopies;
       const promptText = document.getElementById('aiPrompt').value.trim();
+
+      // Easter Egg #8: AI Deck Builder "golden" or "unstoppable" prompt
+      const promptLower = promptText.toLowerCase();
+      if (promptLower.includes('golden') || promptLower.includes('unstoppable') || promptLower.includes('exodia')) {
+        unlockEasterEgg('ai_unstoppable', 'Grand Strategist’s Gambit! Forging a legendary Steel & Silk warband.');
+      }
+
       const useGemini = document.getElementById('useGeminiToggle').checked;
-      const geminiKey = document.getElementById('geminiApiKey').value.trim();
-      let tokenFiltered = cards.filter(c => {
-        if (tokenMode === 'only') return Boolean(c.isToken);
-        if (tokenMode === 'exclude') return !c.isToken;
-        return true;
-      });
-      if (tokenFiltered.length === 0) {
-        tokenFiltered = [...cards];
-      }
-      let activeNation = nationSetting;
-      if (nationSetting === 'Auto') {
-        const nonUniversalNations = [...new Set(
-          tokenFiltered
-            .map(c => c.nation || 'Universal')
-            .filter(n => n !== 'Universal')
-        )];
-        if (nonUniversalNations.length === 0) {
-          activeNation = 'Universal';
-        } else {
-          nonUniversalNations.sort((a, b) => {
-            const aCards = tokenFiltered.filter(c => (c.nation || 'Universal') === a);
-            const bCards = tokenFiltered.filter(c => (c.nation || 'Universal') === b);
-            const aHasStarter = aCards.some(isStarterRoleCard) ? 100 : 0;
-            const bHasStarter = bCards.some(isStarterRoleCard) ? 100 : 0;
-            const aStock = aCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-            const bStock = bCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-            return (bHasStarter + bStock) - (aHasStarter + aStock);
-          });
-          activeNation = nonUniversalNations[0];
-        }
-      }
-      const nationLegalPool = tokenFiltered.filter(c => {
-        const n = c.nation || 'Universal';
-        if (activeNation === 'Universal') return n === 'Universal';
-        return n === activeNation || n === 'Universal';
-      });
-      const leadersPool = nationLegalPool
-        .filter(isCardLeader)
-        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-      const capitalsPool = nationLegalPool
-        .filter(isCardCapital)
-        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-      let starterCard = null;
-      let starterRoleLabel = 'Leader';
-      if (starterPref === 'capital') {
-        starterCard = capitalsPool.find(c => Math.max(0, c.owned - c.used) > 0) || capitalsPool[0] || leadersPool[0] || null;
-        starterRoleLabel = starterCard && isCardLeader(starterCard) ? 'Leader (fallback)' : 'Capital';
-      } else if (starterPref === 'leader') {
-        starterCard = leadersPool.find(c => Math.max(0, c.owned - c.used) > 0) || leadersPool[0] || capitalsPool[0] || null;
-        starterRoleLabel = starterCard && isCardCapital(starterCard) ? 'Capital (fallback)' : 'Leader';
-      } else {
-        if (style === 'mana' && capitalsPool.length > 0) {
-          starterCard = capitalsPool.find(c => Math.max(0, c.owned - c.used) > 0) || capitalsPool[0];
-          starterRoleLabel = 'Capital';
-        } else {
-          starterCard = leadersPool.find(c => Math.max(0, c.owned - c.used) > 0) || leadersPool[0] || capitalsPool[0] || null;
-          starterRoleLabel = starterCard && isCardCapital(starterCard) ? 'Capital' : 'Leader';
-        }
-      }
-      lastStarterCard = starterCard ? { card: starterCard, role: starterRoleLabel } : null;
-      const starterIsCapital = starterCard ? isCardCapital(starterCard) : false;
-      const oppositeRolePool = starterIsCapital ? leadersPool : capitalsPool;
-      const chosenOppositeInDeck = oppositeRolePool.find(c => {
-        if (starterCard && c.id === starterCard.id) return false;
-        const cNation = c.nation || 'Universal';
-        const sNation = starterCard ? (starterCard.nation || 'Universal') : activeNation;
-        return sNation === 'Universal' || cNation === 'Universal' || cNation === sNation;
-      });
-      const mainDeckPool = nationLegalPool
-        .filter(c => {
-          if (starterCard && c.id === starterCard.id) return false;
-          if (isStarterRoleCard(c)) {
-            return chosenOppositeInDeck && c.id === chosenOppositeInDeck.id;
-          }
+      const apiKey = document.getElementById('geminiApiKey').value.trim();
+      const btn = document.getElementById('generateDeckBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Building LSS Deck...';
+      try {
+        let tokenFilteredPool = cards.filter(c => {
+          if (tokenMode === 'exclude') return !c.isToken;
+          if (tokenMode === 'only') return Boolean(c.isToken);
           return true;
-        })
-        .sort((a, b) => {
-          const aOpp = chosenOppositeInDeck && a.id === chosenOppositeInDeck.id ? 1 : 0;
-          const bOpp = chosenOppositeInDeck && b.id === chosenOppositeInDeck.id ? 1 : 0;
-          if (aOpp !== bOpp) return bOpp - aOpp;
-          return scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText);
         });
-      const pickedMap = new Map();
-      let totalPicked = 0;
-      let leadersInMainDeck = 0;
-      const warnings = [];
-      if (!starterCard) {
-        warnings.push(`Missing Starting Leader or Capital: No Leader or Capital card found for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`}. Add a card with Rarity "Leader" or Type "Capital" to begin play.`);
-      }
-      const getCardCap = (card) => {
-        if (isCardLeader(card)) return leadersInMainDeck >= 1 ? 0 : 1;
-        if (isCardUnique(card)) return 1;
-        if (isStarterRoleCard(card)) return 1;
-        return Math.min(3, maxCopies);
-      };
-      for (const card of mainDeckPool) {
-        if (totalPicked >= deckSize) break;
-        const left = Math.max(0, card.owned - card.used);
-        if (left <= 0) continue;
-        const cap = getCardCap(card);
-        const addCount = Math.min(cap, left, deckSize - totalPicked);
-        if (addCount > 0) {
-          const textEval = analyzeCardTextForDeck(card, activeNation, style, promptText);
-          if (isCardLeader(card)) leadersInMainDeck += addCount;
-          const rolePrefix = isStarterRoleCard(card) ? `Matching ${isCardCapital(card) ? 'Capital' : 'Leader'} (max 1 in deck) • ` : '';
-          pickedMap.set(card.id, { card, count: addCount, fromStock: true, reason: `${rolePrefix}${textEval.reason}` });
-          totalPicked += addCount;
+        if (tokenFilteredPool.length === 0) tokenFilteredPool = [...cards];
+        let selectedNation = nationSetting;
+        if (selectedNation === 'Auto') {
+          const factionTotals = {};
+          tokenFilteredPool.forEach(c => {
+            const n = c.nation || 'Universal';
+            if (n !== 'Universal') {
+              const avail = Math.max(1, c.owned - c.used);
+              factionTotals[n] = (factionTotals[n] || 0) + avail;
+            }
+          });
+          const bestFaction = Object.entries(factionTotals).sort((a, b) => b[1] - a[1])[0];
+          selectedNation = bestFaction ? bestFaction[0] : 'Universal';
         }
-      }
-      if (totalPicked < deckSize) {
-        for (const card of mainDeckPool) {
-          if (totalPicked >= deckSize) break;
-          const existing = pickedMap.get(card.id);
-          const currentCount = existing ? existing.count : 0;
-          const cap = getCardCap(card);
-          const extraNeeded = Math.min(cap - currentCount, deckSize - totalPicked);
-          if (extraNeeded > 0) {
-            const textEval = analyzeCardTextForDeck(card, activeNation, style, promptText);
-            if (isCardLeader(card)) leadersInMainDeck += extraNeeded;
-            pickedMap.set(card.id, {
-              card,
-              count: currentCount + extraNeeded,
-              fromStock: existing ? existing.fromStock : false,
-              reason: existing ? existing.reason : textEval.reason
-            });
-            totalPicked += extraNeeded;
+        const factionLegalPool = tokenFilteredPool.filter(c => {
+          const n = c.nation || 'Universal';
+          return selectedNation === 'Universal' ? n === 'Universal' : (n === selectedNation || n === 'Universal');
+        });
+        const starterCandidates = factionLegalPool
+          .filter(c => isStarterRoleCard(c))
+          .filter(c => {
+            if (starterPref === 'leader') return isCardLeader(c);
+            if (starterPref === 'capital') return isCardCapital(c);
+            return true;
+          })
+          .sort((a, b) => scoreCardForDeck(b, selectedNation, style, promptText) - scoreCardForDeck(a, selectedNation, style, promptText));
+        lastStarterCard = starterCandidates[0] || null;
+        const starterIsLeader = lastStarterCard && isCardLeader(lastStarterCard);
+        const starterIsCapital = lastStarterCard && isCardCapital(lastStarterCard);
+        const scored = factionLegalPool
+          .filter(c => !lastStarterCard || c.id !== lastStarterCard.id)
+          .filter(c => {
+            if (starterIsLeader && isCardLeader(c)) return false;
+            if (starterIsCapital && isCardCapital(c)) return false;
+            return true;
+          })
+          .map(c => {
+            const textEval = analyzeCardTextForDeck(c, selectedNation, style, promptText);
+            return { card: c, score: scoreCardForDeck(c, selectedNation, style, promptText), reason: textEval.reason };
+          })
+          .sort((a, b) => b.score - a.score);
+        const deck = [];
+        let remaining = targetSize;
+        let inDeckLeadersUsed = 0;
+        let inDeckCapitalsUsed = 0;
+        for (const item of scored) {
+          if (remaining <= 0) break;
+          const uniqueCard = isCardUnique(item.card);
+          const leaderCard = isCardLeader(item.card);
+          const capitalCard = isCardCapital(item.card);
+          if (leaderCard && (starterIsLeader || inDeckLeadersUsed >= 1)) continue;
+          if (capitalCard && (starterIsCapital || inDeckCapitalsUsed >= 1)) continue;
+          const roleCap = (uniqueCard || leaderCard || capitalCard) ? 1 : maxCopies;
+          const left = Math.max(0, item.card.owned - item.card.used);
+          const allowed = left > 0 ? Math.min(left, roleCap, remaining) : 0;
+          if (allowed > 0) {
+            deck.push({ card: item.card, count: allowed, reason: item.reason });
+            remaining -= allowed;
+            if (leaderCard) inDeckLeadersUsed += allowed;
+            if (capitalCard) inDeckCapitalsUsed += allowed;
           }
         }
-      }
-      if (totalPicked < 15) {
-        warnings.push(`LSS 15-Card Main Deck Minimum: Only ${totalPicked} legal card(s) could be placed in the main deck for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`} (Max 1 Leader, Unique cards max 1, standard cards max 3, starting Leader/Capital is separate).`);
-      }
-      lastGeneratedDeck = [...pickedMap.values()];
-      document.getElementById('aiDeckResult').classList.remove('hidden');
-      const nationTitle = activeNation === 'Universal' ? 'Neutral / Universal' : `${activeNation} + Universal`;
-      document.getElementById('generatedDeckTitle').textContent =
-        `${nationTitle} — ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
-      document.getElementById('generatedDeckSummary').textContent =
-        `${totalPicked} main-deck cards (excl. starter) • Max 1 Leader • Max 3 copies (Unique: 1)`;
-      const starterBanner = document.getElementById('aiStarterBanner');
-      if (starterCard) {
-        starterBanner.classList.remove('hidden');
-        const starterEval = analyzeCardTextForDeck(starterCard, activeNation, style, promptText);
-        starterBanner.innerHTML = `<div class="font-bold text-amber-300"><i class="fa-solid fa-crown mr-1.5"></i>Starting ${starterRoleLabel} In Play (Not in 15-card deck): ${starterCard.cardCode ? `[${escapeHTML(starterCard.cardCode)}] ` : ''}${escapeHTML(starterCard.name)} (${escapeHTML(starterCard.nation || 'Universal')})</div><div class="text-[11px] text-amber-100/85 mt-0.5">${escapeHTML(starterEval.reason)}</div>`;
-      } else {
-        starterBanner.classList.add('hidden');
-      }
-      const warningBox = document.getElementById('aiRuleWarnings');
-      if (warnings.length > 0) {
-        warningBox.classList.remove('hidden');
-        warningBox.innerHTML = warnings.map(w => `<div><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>${escapeHTML(w)}</div>`).join('');
-      } else {
-        warningBox.classList.add('hidden');
-        warningBox.innerHTML = '';
-      }
-      const strategyBox = document.getElementById('aiStrategyNote');
-      strategyBox.classList.remove('hidden');
-      strategyBox.innerHTML = `<i class="fa-solid fa-book mr-1.5 text-fuchsia-400"></i> <strong>LSS Rule & Card-Text Engine:</strong> Built a ${totalPicked}-card ${nationTitle} main deck (enforcing <strong>max 1 Leader</strong>) around starting ${starterCard ? escapeHTML(starterCard.name) : 'card'}, checking Restrictions, Abilities, Conditional Events, and Special mechanics for Steel, Legend, and Silk win paths.`;
-      renderGeneratedDeckList();
-      if (useGemini && geminiKey) {
-        strategyBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5 text-fuchsia-400"></i> Asking Gemini to analyze your LSS deck under Legends of Steel and Silk rules...`;
-        try {
-          const compactDeck = lastGeneratedDeck.map(item => ({
-            cardCode: item.card.cardCode || '',
-            name: item.card.name,
-            count: item.count,
-            faction: item.card.nation,
-            type: item.card.cardType,
-            rarity: item.card.rarity,
-            isUnique: isCardUnique(item.card),
-            isCapital: isCardCapital(item.card),
-            isLeader: isCardLeader(item.card),
-            isToken: Boolean(item.card.isToken),
-            resource: `${item.card.manaAction}:${item.card.manaValue}`,
-            strength: item.card.attack,
-            defense: item.card.defense,
-            restriction: item.card.restriction,
-            ability: item.card.ability,
-            conditionalEvent: item.card.hasConditionalEvent
-              ? { trigger: item.card.conditionTrigger, effect: item.card.conditionEffect }
-              : null,
-            special: item.card.special
-          }));
-          const payload = {
-            starterInPlay: starterCard ? {
-              cardCode: starterCard.cardCode || '',
-              name: starterCard.name,
-              role: starterRoleLabel,
-              faction: starterCard.nation,
-              resource: `${starterCard.manaAction}:${starterCard.manaValue}`,
-              strength: starterCard.attack,
-              defense: starterCard.defense,
-              restriction: starterCard.restriction,
-              ability: starterCard.ability,
-              conditionalEvent: starterCard.hasConditionalEvent
-                ? { trigger: starterCard.conditionTrigger, effect: starterCard.conditionEffect }
-                : null,
-              special: starterCard.special
-            } : null,
-            mainDeck: compactDeck
-          };
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`, {
+        if (remaining > 0) {
+          for (const item of scored) {
+            if (remaining <= 0) break;
+            const uniqueCard = isCardUnique(item.card);
+            const leaderCard = isCardLeader(item.card);
+            const capitalCard = isCardCapital(item.card);
+            if (leaderCard && (starterIsLeader || inDeckLeadersUsed >= 1)) continue;
+            if (capitalCard && (starterIsCapital || inDeckCapitalsUsed >= 1)) continue;
+            const roleCap = (uniqueCard || leaderCard || capitalCard) ? 1 : maxCopies;
+            const existing = deck.find(d => d.card.id === item.card.id);
+            const already = existing ? existing.count : 0;
+            const canAdd = Math.min(roleCap - already, remaining);
+            if (canAdd > 0) {
+              if (existing) existing.count += canAdd;
+              else deck.push({ card: item.card, count: canAdd, reason: item.reason });
+              remaining -= canAdd;
+              if (leaderCard) inDeckLeadersUsed += canAdd;
+              if (capitalCard) inDeckCapitalsUsed += canAdd;
+            }
+          }
+        }
+        const totalCards = deck.reduce((sum, d) => sum + d.count, 0);
+        const totalLeadersOverall = (starterIsLeader ? 1 : 0) + deck.reduce((sum, d) => sum + (isCardLeader(d.card) ? d.count : 0), 0);
+        const warnings = [];
+        if (requestedSize < 15) warnings.push('LSS Rulebook enforces a minimum main deck size of 15 cards (adjusted from your input).');
+        if (requestedCopies > 3) warnings.push('LSS Rulebook caps standard cards at 3 copies per deck (adjusted to 3 max).');
+        if (totalCards < 15) warnings.push(`Your ${selectedNation} + Universal pool only had enough legal copies for ${totalCards}/15 main deck cards. Add more ${selectedNation} or Neutral/Universal cards to reach the 15-card LSS minimum!`);
+        if (!lastStarterCard) warnings.push(`No ${selectedNation} Leader or Capital found in your collection yet. Add a ${selectedNation} Leader or Capital to start in play!`);
+        if (totalLeadersOverall > 1) warnings.push('LSS Rulebook enforces a strict limit of at most 1 Leader per deck.');
+        let strategyNote = '';
+        if (useGemini && apiKey) {
+          const starterSummary = lastStarterCard ? `[${lastStarterCard.cardCode || ''}] ${lastStarterCard.name} (${lastStarterCard.cardType})` : 'None';
+          const deckBrief = deck.map(d => `${d.count}x [${d.card.cardCode || 'NO-ID'}] ${d.card.name} (${d.card.nation || 'Universal'}, ${d.card.cardType})`).join('\n');
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{
                 parts: [{
-                  text: `You are a deck coach for the tabletop card game "Legends of Steel and Silk" (LSS). Official LSS rules: (1) Main deck is at least 15 cards, excluding the starting Leader or Capital; (2) Only 1 faction + Neutral/Universal cards; (3) Max 3 copies of any card, max 1 copy of Unique cards, and strictly AT MOST 1 LEADER per deck (never more than 1 Leader); (4) If starting with a Leader, at most 1 matching-faction Capital in deck (0 Leaders in deck); if starting with a Capital, at most 1 matching-faction Leader in deck (0 Capitals in deck); (5) Four turn phases (Draw, Play, Fight, Move), front/back row positions (Adjacent, In front of, Behind, Beside), keywords (Attack, Breach, Death, Move, Pacifist, Play, Ranged, Reincarnate, Unique), and three win conditions: Steel Victory (0 defense on enemy Leader/Capital), Legend Victory (Heritage tokens >= Capital threshold), Silk Victory (10+ resources in Draw phase, 3+ Silk tokens at end of Move phase). Read every card's restriction, ability, conditionalEvent, and special text in ${JSON.stringify(payload)}. Player goal/note: "${promptText || style}". Write a concise 3-4 sentence strategy explanation referencing specific cards, abilities, conditions, or win paths.`
+                  text: `You are an expert deck builder for the collectible card game "Legends of Steel and Silk" (LSS). Key LSS rules: 2-row board (Front/Back row), 15+ card main deck + 1 starting Leader or Capital, single Faction + Neutral/Universal only, max 1 Leader per deck, max 3 copies (1 for Unique), max 1 Building/Capital played per turn, 3 win conditions (Steel Victory: 0 DEF on enemy Leader/Capital; Legend Victory: Capital heritage token threshold; Silk Victory: 10+ resources in Draw phase for 3 turns).\nFaction: ${selectedNation} + Universal. Starting Card: ${starterSummary}. Playstyle: ${style}. User goal: ${promptText || 'Best synergy'}.\nDeck:\n${deckBrief}\n\nWrite a concise 3-sentence strategy guide explaining how this deck wins under LSS rules (Steel, Legend, or Silk Victory), key row placements, and card synergies.`
                 }]
               }]
             })
           });
-          const data = await resp.json();
-          const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (aiText) {
-            strategyBox.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-fuchsia-400"></i> <strong>Gemini LSS Coach:</strong> ${escapeHTML(aiText)}`;
-          }
-        } catch (err) {
-          strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing LSS rule-engine deck build instead.`;
+          const data = await res.json();
+          strategyNote = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         }
+        lastGeneratedDeck = deck;
+        renderGeneratedDeck(deck, selectedNation, style, strategyNote, warnings, lastStarterCard);
+      } catch (err) {
+        alert('Error generating deck: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-sparkles"></i> Build LSS Deck Now';
       }
     }
-    function renderGeneratedDeckList() {
-      const container = document.getElementById('generatedDeckCards');
-      container.innerHTML = lastGeneratedDeck.map(({ card, count, reason }, idx) => {
-        const left = Math.max(0, card.owned - card.used);
-        const shortage = count > left;
-        const uniqueFlag = isCardUnique(card);
-        const leaderFlag = isCardLeader(card);
-        const capitalFlag = isCardCapital(card);
-        return `
-          <div style="animation-delay: ${Math.min(idx * 35, 350)}ms" class="animate-card-enter p-3 flex items-start justify-between gap-3 text-xs">
-            <div class="min-w-0 space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${count}x</span>
-                ${card.cardCode ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] font-bold text-emerald-300">${escapeHTML(card.cardCode)}</span>` : ''}
-                <span class="font-bold text-white text-sm">${escapeHTML(card.name)}</span>
-                ${leaderFlag ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold"><i class="fa-solid fa-crown mr-0.5"></i>LEADER (1 MAX)</span>` : ''}
-                ${capitalFlag ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-200 text-[10px] font-semibold"><i class="fa-solid fa-landmark mr-0.5"></i>CAPITAL</span>` : ''}
-                ${uniqueFlag ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-semibold">UNIQUE (1 MAX)</span>` : ''}
-                ${card.isToken ? `<span class="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[10px] font-semibold">TOKEN</span>` : ''}
-                ${card.hasConditionalEvent ? `<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-semibold"><i class="fa-solid fa-bolt mr-0.5"></i>CONDITION</span>` : ''}
-                <span class="text-slate-400">${escapeHTML(card.nation || 'Universal')} • ${escapeHTML(card.rarity || 'None')}</span>
+    function renderGeneratedDeck(deck, selectedNation, style, strategyNote, warnings = [], starterCard = null) {
+      const resultBox = document.getElementById('aiDeckResult');
+      const totalCards = deck.reduce((sum, d) => sum + d.count, 0);
+      const totalLeaders = (starterCard && isCardLeader(starterCard) ? 1 : 0) + deck.reduce((sum, d) => sum + (isCardLeader(d.card) ? d.count : 0), 0);
+      const styleNames = { balanced: 'Balanced / Multi-Win', aggro: 'Steel Victory (Aggro)', control: 'Defense / Control', mana: 'Silk / Resource Engine' };
+      document.getElementById('generatedDeckTitle').textContent = `${selectedNation} + Universal (${styleNames[style]})`;
+      document.getElementById('generatedDeckSummary').textContent = `Main Deck: ${totalCards} cards (LSS Min: 15) • ${deck.length} unique • Leaders: ${totalLeaders}/1 Max`;
+      const starterBanner = document.getElementById('aiStarterBanner');
+      if (starterCard) {
+        const starterRole = isCardCapital(starterCard) ? 'Starting Capital (Legend / Resource Path)' : 'Starting Leader (Steel / Tempo Path)';
+        starterBanner.innerHTML = `<i class="fa-solid fa-crown text-amber-400 mr-1.5"></i><strong>${starterRole}:</strong> <span class="font-mono text-emerald-300">[${escapeHTML(starterCard.cardCode || '')}]</span> <strong>${escapeHTML(starterCard.name)}</strong> (${escapeHTML(starterCard.nation || 'Universal')} • ${starterCard.manaAction === 'add' ? `+${starterCard.manaValue} Res` : `Cost ${starterCard.manaValue}`})`;
+        starterBanner.classList.remove('hidden');
+      } else {
+        starterBanner.classList.add('hidden');
+      }
+      const warnBox = document.getElementById('aiRuleWarnings');
+      if (warnings.length > 0) {
+        warnBox.innerHTML = warnings.map(w => `<div><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>${escapeHTML(w)}</div>`).join('');
+        warnBox.classList.remove('hidden');
+      } else {
+        warnBox.classList.add('hidden');
+      }
+      const noteBox = document.getElementById('aiStrategyNote');
+      if (strategyNote) {
+        noteBox.innerHTML = `<strong class="text-violet-300"><i class="fa-solid fa-brain mr-1"></i> AI Strategy:</strong> ${escapeHTML(strategyNote)}`;
+        noteBox.classList.remove('hidden');
+      } else {
+        noteBox.classList.add('hidden');
+      }
+      const listEl = document.getElementById('generatedDeckCards');
+      if (deck.length === 0) {
+        listEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No matching cards found for that filter.</div>`;
+      } else {
+        listEl.innerHTML = deck.map(d => {
+          const left = Math.max(0, d.card.owned - d.card.used);
+          const shortBadge = d.count > left ? `<span class="text-[10px] text-rose-400 ml-1">(need ${d.count - left} more)</span>` : '';
+          const tokenTag = d.card.isToken ? `<span class="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[10px] font-bold">TOKEN</span>` : '';
+          const roleTag = isCardUnique(d.card) ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-bold">UNIQUE (1 MAX)</span>` : (isCardLeader(d.card) ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">LEADER (1 MAX)</span>` : '');
+          const condBadge = d.card.hasConditionalEvent ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-semibold">Condition</span>` : '';
+          return `
+            <div class="p-3 flex items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="px-2 py-0.5 rounded bg-fuchsia-600/20 text-fuchsia-300 font-bold shrink-0">${d.count}x</span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300">${escapeHTML(d.card.cardCode || '')}</span>
+                    <span class="font-semibold text-white truncate">${escapeHTML(d.card.name)}</span>
+                    ${roleTag}
+                    ${tokenTag}
+                    ${condBadge}
+                    ${shortBadge}
+                  </div>
+                  <div class="text-[11px] text-slate-400 truncate">${escapeHTML(d.card.nation || 'Universal')} • ${escapeHTML(d.card.cardType)} • ${escapeHTML(d.reason)}</div>
+                </div>
               </div>
-              ${reason ? `<p class="text-[11px] text-fuchsia-300/90"><i class="fa-solid fa-sparkles mr-1 text-[10px]"></i>${escapeHTML(reason)}</p>` : ''}
-              ${card.restriction ? `<p class="text-[11px] text-orange-300"><i class="fa-solid fa-ban mr-1"></i>Restriction: ${escapeHTML(card.restriction)}</p>` : ''}
+              <span class="text-[11px] text-slate-400 shrink-0">${left} left</span>
             </div>
-            <div class="text-right shrink-0">
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${shortage ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">
-                ${left} in stock left
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
+      resultBox.classList.remove('hidden');
     }
     function copyDeckList() {
       if (!lastGeneratedDeck.length && !lastStarterCard) return;
       const lines = [];
       if (lastStarterCard) {
-        const sc = lastStarterCard.card;
-        lines.push(`Starter (${lastStarterCard.role}): ${sc.cardCode ? `[${sc.cardCode}] ` : ''}${sc.name} [${sc.nation || 'Universal'}]`);
+        lines.push(`STARTER: [${lastStarterCard.cardCode || 'NO-ID'}] ${lastStarterCard.name} (${lastStarterCard.nation || 'Universal'} - ${lastStarterCard.cardType})`);
       }
-      lastGeneratedDeck.forEach(({ card, count }) => {
-        lines.push(`${count}x ${card.cardCode ? `[${card.cardCode}] ` : ''}${card.name}${card.isToken ? ' [Token]' : ''} [${card.nation || 'Universal'} | ${card.rarity || 'None'}]`);
+      lastGeneratedDeck.forEach(d => {
+        lines.push(`${d.count}x [${d.card.cardCode || 'NO-ID'}] ${d.card.name} (${d.card.nation || 'Universal'} - ${d.card.rarity}${d.card.isToken ? ' - Token' : ''})`);
       });
       navigator.clipboard.writeText(lines.join('\n'));
-      alert('LSS deck list copied to clipboard!');
+      alert('Deck list copied to clipboard!');
     }
     function applyDeckToUsedStock() {
-      if (!lastGeneratedDeck.length && !lastStarterCard) return;
-      const addMap = new Map();
-      if (lastStarterCard) {
-        addMap.set(lastStarterCard.card.id, (addMap.get(lastStarterCard.card.id) || 0) + 1);
-      }
-      lastGeneratedDeck.forEach(({ card, count }) => {
-        addMap.set(card.id, (addMap.get(card.id) || 0) + count);
-      });
+      if (!lastGeneratedDeck.length) return;
+      const deckMap = new Map(lastGeneratedDeck.map(d => [d.card.id, d.count]));
       cards = cards.map(c => {
-        const addUsed = addMap.get(c.id) || 0;
-        if (!addUsed) return c;
-        const newUsed = Math.min(c.owned, c.used + addUsed);
-        return { ...c, used: newUsed };
+        if (!deckMap.has(c.id)) return c;
+        const addUsed = deckMap.get(c.id);
+        return { ...c, used: Math.min(c.owned, c.used + addUsed) };
       });
       saveToStorage();
       renderCards();
-      renderGeneratedDeckList();
-      triggerStatPop('statUsed');
-      triggerStatPop('statLeft');
-      alert('Updated "Used" counts on your cards (capped at Total Owned).');
+      closeAIDeckModal();
     }
-    /* Export & Print Functions */
+
     function getFilteredCards() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
       const nationFilter = document.getElementById('filterNation').value;
       const rarityFilter = document.getElementById('filterRarity').value;
       const tokenFilter = document.getElementById('filterToken').value;
-      const stockFilter = document.getElementById('filterStock').value;
       const typeFilter = document.getElementById('filterType').value;
       const manaFilter = document.getElementById('filterMana').value;
       const conditionFilter = document.getElementById('filterCondition').value;
+      const stockFilter = document.getElementById('filterStock').value;
       return cards.filter(c => {
         const left = Math.max(0, c.owned - c.used);
-        const matchesQuery = (c.cardCode && c.cardCode.toLowerCase().includes(query)) ||
-                             c.name.toLowerCase().includes(query) ||
-                             (c.nation && c.nation.toLowerCase().includes(query)) ||
-                             (c.rarity && c.rarity.toLowerCase().includes(query)) ||
-                             (c.cardType && c.cardType.toLowerCase().includes(query)) ||
-                             (c.isToken && 'token'.includes(query)) ||
-                             (c.hasConditionalEvent && 'conditional event'.includes(query)) ||
-                             (c.conditionTrigger && c.conditionTrigger.toLowerCase().includes(query)) ||
-                             (c.conditionEffect && c.conditionEffect.toLowerCase().includes(query)) ||
-                             (c.restriction && c.restriction.toLowerCase().includes(query)) ||
-                             (c.ability && c.ability.toLowerCase().includes(query)) ||
-                             (c.special && c.special.toLowerCase().includes(query));
+        const matchesSearch = !search ||
+          (c.cardCode || '').toLowerCase().includes(search) ||
+          c.name.toLowerCase().includes(search) ||
+          (c.cardType || '').toLowerCase().includes(search) ||
+          (c.nation || 'Universal').toLowerCase().includes(search) ||
+          (c.rarity || '').toLowerCase().includes(search) ||
+          (c.restriction || '').toLowerCase().includes(search) ||
+          (c.ability || '').toLowerCase().includes(search) ||
+          (c.conditionTrigger || '').toLowerCase().includes(search) ||
+          (c.conditionEffect || '').toLowerCase().includes(search) ||
+          (c.special || '').toLowerCase().includes(search) ||
+          (c.isToken && 'token'.includes(search));
         const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
         const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
         const matchesToken = tokenFilter === 'all' ||
-                             (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
-                             (tokenFilter === 'non_tokens' && !c.isToken);
-        const matchesStock = stockFilter === 'all' ||
-                             (stockFilter === 'available' && left > 0) ||
-                             (stockFilter === 'none_left' && left === 0);
+          (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
+          (tokenFilter === 'non_tokens' && !c.isToken);
         const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
         const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
         const matchesCondition = conditionFilter === 'all' ||
-                                 (conditionFilter === 'has_condition' && Boolean(c.hasConditionalEvent)) ||
-                                 (conditionFilter === 'no_condition' && !c.hasConditionalEvent);
-        return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana && matchesCondition;
+          (conditionFilter === 'has_condition' && Boolean(c.hasConditionalEvent)) ||
+          (conditionFilter === 'no_condition' && !c.hasConditionalEvent);
+        const matchesStock = stockFilter === 'all' ||
+          (stockFilter === 'available' && left > 0) ||
+          (stockFilter === 'none_left' && left === 0);
+        return matchesSearch && matchesNation && matchesRarity && matchesToken && matchesType && matchesMana && matchesCondition && matchesStock;
       });
     }
     function printCards(singleCardId = null) {
-      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
-      if (!targetCards.length) {
-        alert('No cards available to print or save as PDF.');
+      if (cards.length === 0) {
+        alert('Create at least one card before printing or saving as PDF.');
         return;
       }
-      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
       if (singleCardId) {
         document.body.classList.add('print-single-mode');
-        const targetEl = document.getElementById(`card-${singleCardId}`);
+        const targetEl = document.querySelector(`[data-card-id="${singleCardId}"]`);
         if (targetEl) targetEl.classList.add('print-target');
-      } else {
-        document.body.classList.remove('print-single-mode');
       }
       window.print();
-      document.body.classList.remove('print-single-mode');
-      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
+      setTimeout(() => {
+        document.body.classList.remove('print-single-mode');
+        document.querySelectorAll('.print-target').forEach(el => el.classList.remove('print-target'));
+      }, 400);
     }
-    function exportToExcel(singleCardId = null) {
-      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
-      if (!targetCards.length) {
-        alert('No cards available to export to Excel.');
+    function exportToExcel() {
+      const visibleCards = getFilteredCards();
+      if (visibleCards.length === 0) {
+        alert('No cards to export to Excel.');
         return;
       }
       if (typeof XLSX === 'undefined') {
-        alert('Excel export library failed to load. Check your internet connection and reload.');
+        alert('Excel library is still loading. Please check your internet connection and try again.');
         return;
       }
-      const rows = targetCards.map(c => {
-        const left = Math.max(0, (c.owned || 0) - (c.used || 0));
-        const manaText = (!c.manaAction || c.manaAction === 'none')
-          ? 'None'
-          : `${c.manaAction === 'add' ? '+' : '-'}${c.manaValue || 0}`;
+      const rows = visibleCards.map(c => {
+        const left = Math.max(0, c.owned - c.used);
+        const manaText = c.manaAction === 'spend'
+          ? `Cost -${c.manaValue}`
+          : c.manaAction === 'add'
+            ? `Bonus +${c.manaValue}`
+            : 'None';
         return {
           'Card ID': c.cardCode || '',
-          'Card Name': c.name || '',
-          'Type': c.cardType || '',
-          'Faction': c.nation || 'Universal',
+          'Card Name': c.name,
+          'Faction / Nation': c.nation || 'Universal',
           'Rarity': c.rarity || 'None',
-          'Is Token': c.isToken ? 'Yes' : 'No',
-          'Resource': manaText,
+          'Token Card': c.isToken ? 'Yes' : 'No',
+          'Type / Subtype': c.cardType || '',
+          'Resource Effect': manaText,
           'Attack / Strength': c.attack || '',
           'Defense': c.defense || '',
-          'Restriction': c.restriction || '',
-          'Ability': c.ability || '',
+          'Card Restriction': c.restriction || '',
+          'Description of Ability': c.ability || '',
+          'Has Conditional Event': c.hasConditionalEvent ? 'Yes' : 'No',
           'Condition / Trigger': c.hasConditionalEvent ? (c.conditionTrigger || '') : '',
-          'Conditional Effect': c.hasConditionalEvent ? (c.conditionEffect || '') : '',
+          'Condition Effect': c.hasConditionalEvent ? (c.conditionEffect || '') : '',
           'Special': c.special || '',
-          'Total Owned': c.owned || 0,
-          'Used / In Deck': c.used || 0,
+          'Total Owned': c.owned,
+          'Used / In Deck': c.used,
           'Available Left': left,
-          'Image URL': (c.image && c.image.startsWith('http')) ? c.image : (c.image ? '[Embedded Photo]' : '')
+          'Picture URL': c.image && c.image.startsWith('http') ? c.image : (c.image ? 'Uploaded Image' : '')
         };
       });
       const worksheet = XLSX.utils.json_to_sheet(rows);
       worksheet['!cols'] = [
-        { wch: 14 }, { wch: 24 }, { wch: 18 }, { wch: 13 }, { wch: 13 }, { wch: 10 },
-        { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 24 }, { wch: 36 },
-        { wch: 28 }, { wch: 32 }, { wch: 28 }, { wch: 12 }, { wch: 14 },
-        { wch: 14 }, { wch: 24 }
+        { wch: 12 }, { wch: 24 }, { wch: 16 }, { wch: 13 }, { wch: 11 },
+        { wch: 18 }, { wch: 15 }, { wch: 14 }, { wch: 12 }, { wch: 26 },
+        { wch: 36 }, { wch: 18 }, { wch: 28 }, { wch: 32 }, { wch: 28 },
+        { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 28 }
       ];
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Cards');
-      const safeName = singleCardId
-        ? `${(targetCards[0].cardCode || targetCards[0].name || 'card').replace(/[^a-z0-9-_]/gi, '_')}.xlsx`
-        : `lss-cards-${new Date().toISOString().slice(0, 10)}.xlsx`;
-      XLSX.writeFile(workbook, safeName);
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Card Inventory');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `custom-cards-${dateStr}.xlsx`);
     }
-    function exportData() {
-      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `lss-cards-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+    function handleCardTiltMove(event, cardEl) {
+      const rect = cardEl.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -6.5;
+      const rotateY = ((x - centerX) / centerX) * 6.5;
+      const gx = ((x / rect.width) * 100).toFixed(1) + '%';
+      const gy = ((y / rect.height) * 100).toFixed(1) + '%';
+      cardEl.style.setProperty('--rx', `${rotateX.toFixed(2)}deg`);
+      cardEl.style.setProperty('--ry', `${rotateY.toFixed(2)}deg`);
+      cardEl.style.setProperty('--gx', gx);
+      cardEl.style.setProperty('--gy', gy);
     }
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
-            cards = imported;
-            saveToStorage();
-            renderCards();
-          }
-        } catch {
-          alert('Invalid JSON backup file.');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
+    function handleCardTiltLeave(cardEl) {
+      cardEl.style.setProperty('--rx', '0deg');
+      cardEl.style.setProperty('--ry', '0deg');
+      cardEl.style.setProperty('--gx', '50%');
+      cardEl.style.setProperty('--gy', '50%');
     }
-    function updateTypeDropdown() {
-      const select = document.getElementById('filterType');
-      const currentVal = select.value;
-      const types = [...new Set(cards.map(c => c.cardType).filter(Boolean))].sort();
-      select.innerHTML = `<option value="all">All Card Types</option>` +
-        types.map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
-      if (types.includes(currentVal)) select.value = currentVal;
-    }
-    function renderManaBadge(card) {
-      if (!card.manaAction || card.manaAction === 'none') return '';
-      if (card.manaAction === 'add') {
-        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0" title="Resource Bonus">
-                  <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>+${card.manaValue} Res
-                </span>`;
-      }
-      return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-500/40 shrink-0" title="Resource Cost">
-                <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>-${card.manaValue} Res
-              </span>`;
-    }
-
-    /* Pointer 3D Tilt Handlers for Cards in Grid */
-    function handleCardPointerMove(e, el) {
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      const ry = (x - 0.5) * 14;
-      const rx = (0.5 - y) * 12;
-      el.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
-      el.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
-      el.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
-      el.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
-    }
-    function handleCardPointerLeave(el) {
-      el.style.setProperty('--rx', '0deg');
-      el.style.setProperty('--ry', '0deg');
-      el.style.setProperty('--gx', '50%');
-      el.style.setProperty('--gy', '50%');
-    }
-
     function renderCards() {
-      updateTypeDropdown();
+      const typeFilter = document.getElementById('filterType').value;
       const grid = document.getElementById('cardGrid');
       const empty = document.getElementById('emptyState');
+      const uniqueTypes = [...new Set(cards.map(c => c.cardType).filter(Boolean))];
+      const typeSelect = document.getElementById('filterType');
+      typeSelect.innerHTML = `<option value="all">All Card Types</option>` +
+        uniqueTypes.map(t => `<option value="${escapeHTML(t)}" ${typeFilter === t ? 'selected' : ''}>${escapeHTML(t)}</option>`).join('');
+      const totalUnique = cards.length;
       const totalOwned = cards.reduce((sum, c) => sum + c.owned, 0);
       const totalUsed = cards.reduce((sum, c) => sum + c.used, 0);
       const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-      document.getElementById('statUnique').textContent = cards.length;
+      document.getElementById('statUnique').textContent = totalUnique;
       document.getElementById('statOwned').textContent = totalOwned;
       document.getElementById('statUsed').textContent = totalUsed;
       document.getElementById('statLeft').textContent = totalLeft;
@@ -3812,145 +3894,186 @@
         return;
       }
       empty.classList.add('hidden');
-      grid.innerHTML = filtered.map((card, idx) => {
-        const left = Math.max(0, card.owned - card.used);
-        const hasCombatStats = card.attack !== '' || card.defense !== '';
-        const nationLabel = card.nation || 'Universal';
-        const rarityLabel = card.rarity || 'None';
+      grid.innerHTML = filtered.map((c, idx) => {
+        const left = Math.max(0, c.owned - c.used);
+        const hasCombatStats = c.attack !== '' || c.defense !== '';
+        const nationLabel = c.nation || 'Universal';
+        const rarityLabel = c.rarity || 'None';
+        const rarityClass = `rarity-${rarityLabel.replace(/\s+/g, '')}`;
+        const codeLabel = c.cardCode || 'LSS-000';
         const animDelay = Math.min(idx * 45, 450);
+        let manaBadge = '';
+        if (c.manaAction === 'spend') {
+          manaBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30">
+            <i class="fa-solid fa-droplet mr-1"></i>-${c.manaValue} Res
+          </span>`;
+        } else if (c.manaAction === 'add') {
+          manaBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+            <i class="fa-solid fa-plus mr-0.5"></i>${c.manaValue} Res
+          </span>`;
+        }
+        const tokenBadge = c.isToken
+          ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/20 text-teal-300 border border-teal-400/40">
+               <i class="fa-solid fa-coins mr-1"></i>Token
+             </span>`
+          : '';
         return `
-          <div id="card-${card.id}" style="animation-delay: ${animDelay}ms" onmousemove="handleCardPointerMove(event, this)" onmouseleave="handleCardPointerLeave(this)" class="card-item animate-card-enter bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between relative">
+          <div data-card-id="${c.id}"
+            onmousemove="handleCardTiltMove(event, this)"
+            onmouseleave="handleCardTiltLeave(this)"
+            style="animation-delay: ${animDelay}ms"
+            class="card-item animate-card-enter bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between transition shadow-sm relative">
             <div class="card-holo-glint"></div>
-            <div class="px-4 py-3 bg-slate-950/70 print-surface border-b border-slate-800 flex items-center justify-between gap-2">
-              <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                  ${card.cardCode ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] font-bold text-emerald-300 shrink-0">${escapeHTML(card.cardCode)}</span>` : ''}
-                  <h3 onclick="open3DCardModal('${card.id}')" title="Click for 3D Card Model View" class="font-bold text-base text-white hover:text-indigo-300 cursor-pointer truncate transition">${escapeHTML(card.name)}</h3>
-                </div>
-                <p class="text-[11px] font-medium text-indigo-400 uppercase tracking-wider truncate mt-0.5">${escapeHTML(card.cardType || 'Card')}</p>
-              </div>
-              ${renderManaBadge(card)}
-            </div>
-            <div onclick="open3DCardModal('${card.id}')" title="Click to open interactive 3D Card Model View" class="relative aspect-[4/3] bg-slate-950 print-surface flex items-center justify-center overflow-hidden group border-b border-slate-800 cursor-pointer">
-              ${card.image
-                ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" />`
-                : `<div class="text-center p-4 text-slate-600 group-hover:text-indigo-400 transition">
-                     <i class="fa-solid fa-cube text-3xl mb-1.5"></i>
-                     <p class="text-xs">Click for 3D Model View</p>
-                   </div>`
-              }
-              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[72%]">
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 print-surface text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                  <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
-                </span>
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md print-surface rarity-${escapeHTML(rarityLabel)}">
-                  <i class="fa-solid ${rarityLabel === 'Leader' ? 'fa-crown' : 'fa-gem'} mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
-                </span>
-                ${card.isToken ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-950/90 print-surface text-teal-300 border border-teal-400/40 backdrop-blur-md">
-                    <i class="fa-solid fa-coins mr-1 text-[10px]"></i>Token
+            <div>
+              ${c.image ? `
+                <div onclick="openLightbox('${c.image}')" class="relative h-48 bg-slate-950 overflow-hidden cursor-zoom-in group">
+                  <img src="${c.image}" alt="${escapeHTML(c.name)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80"></div>
+                  <div class="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 no-print">
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-extrabold bg-slate-950/90 text-emerald-300 border border-emerald-500/40 backdrop-blur-sm">
+                      ${escapeHTML(codeLabel)}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-950/85 text-amber-300 border border-amber-500/30 backdrop-blur-sm">
+                      <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border backdrop-blur-sm ${rarityClass}">
+                      ${escapeHTML(rarityLabel)}
+                    </span>
+                    ${tokenBadge}
+                  </div>
+                  <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full text-xs font-bold backdrop-blur-md no-print ${left > 0 ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950/85 text-rose-300 border border-rose-500/40'}">
+                    ${left} left
                   </span>
-                ` : ''}
-                ${card.hasConditionalEvent ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-950/90 print-surface text-cyan-300 border border-cyan-400/40 backdrop-blur-md">
-                    <i class="fa-solid fa-bolt mr-1 text-[10px]"></i>Condition
+                </div>
+              ` : `
+                <div class="px-4 pt-3.5 flex flex-wrap justify-between items-center gap-1.5">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-extrabold bg-slate-950 text-emerald-300 border border-emerald-500/40">
+                      ${escapeHTML(codeLabel)}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-950 text-amber-300 border border-amber-500/30">
+                      <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${rarityClass}">
+                      ${escapeHTML(rarityLabel)}
+                    </span>
+                    ${tokenBadge}
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${left > 0 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'}">
+                    ${left} left
                   </span>
+                </div>
+              `}
+              <div class="p-4 ${c.image ? 'pt-2' : 'pt-2.5'} space-y-2.5">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 class="font-bold text-base text-white leading-snug">${escapeHTML(c.name)}</h3>
+                    <span class="text-xs font-medium text-indigo-400">${escapeHTML(c.cardType)}</span>
+                  </div>
+                  <div class="shrink-0">${manaBadge}</div>
+                </div>
+                ${hasCombatStats ? `
+                  <div class="grid grid-cols-2 gap-2 pt-0.5">
+                    <div class="print-surface px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between">
+                      <span class="text-[11px] text-rose-400 font-medium"><i class="fa-solid fa-khanda mr-1"></i>STR</span>
+                      <span class="text-sm font-bold text-slate-100">${escapeHTML(c.attack || '0')}</span>
+                    </div>
+                    <div class="print-surface px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between">
+                      <span class="text-[11px] text-blue-400 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i>DEF</span>
+                      <span class="text-sm font-bold text-slate-100">${escapeHTML(c.defense || '0')}</span>
+                    </div>
+                  </div>
                 ` : ''}
-              </div>
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md print-surface ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
-                ${left} Left
-              </div>
-              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-indigo-950/90 border border-indigo-400/40 text-[10px] font-semibold text-indigo-200 backdrop-blur-sm">
-                <i class="fa-solid fa-cube mr-1"></i>3D View
+                ${c.restriction ? `
+                  <div class="px-2.5 py-1.5 rounded-lg bg-orange-950/30 border border-orange-500/30 text-xs text-orange-200 leading-relaxed">
+                    <span class="font-semibold text-orange-400"><i class="fa-solid fa-ban mr-1"></i>Restriction:</span> ${escapeHTML(c.restriction)}
+                  </div>
+                ` : ''}
+                ${c.ability ? `
+                  <div class="print-surface p-2.5 rounded-xl bg-slate-950/90 border border-slate-800/80 text-xs text-slate-300 leading-relaxed">
+                    <span class="font-semibold text-slate-400 block mb-0.5">Ability:</span>
+                    ${escapeHTML(c.ability)}
+                  </div>
+                ` : ''}
+                ${c.hasConditionalEvent ? `
+                  <div class="p-2.5 rounded-xl bg-cyan-950/25 border border-cyan-500/35 text-xs text-cyan-100 leading-relaxed space-y-1">
+                    <div class="font-bold text-cyan-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-bolt text-cyan-400"></i> Conditional Event / Threshold
+                    </div>
+                    ${c.conditionTrigger ? `<div><span class="font-semibold text-cyan-300/90">Condition:</span> ${escapeHTML(c.conditionTrigger)}</div>` : ''}
+                    ${c.conditionEffect ? `<div><span class="font-semibold text-cyan-300/90">Effect:</span> ${escapeHTML(c.conditionEffect)}</div>` : ''}
+                  </div>
+                ` : ''}
+                ${c.special ? `
+                  <div class="p-2.5 rounded-xl bg-fuchsia-950/20 border border-fuchsia-500/25 text-xs text-fuchsia-200 leading-relaxed">
+                    <span class="font-semibold text-fuchsia-400 block mb-0.5"><i class="fa-solid fa-star mr-1"></i>Special:</span>
+                    ${escapeHTML(c.special)}
+                  </div>
+                ` : ''}
               </div>
             </div>
-            <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
-              ${card.restriction ? `
-                <div class="px-3 py-2 rounded-lg bg-orange-500/10 print-surface border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
-                  <span class="font-bold text-orange-400 uppercase tracking-wide mr-1"><i class="fa-solid fa-ban mr-1"></i>Restriction:</span>
-                  ${escapeHTML(card.restriction)}
-                </div>
-              ` : ''}
-              <div class="bg-slate-950/80 print-surface border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
-                <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Ability</span>
-                ${card.ability
-                  ? escapeHTML(card.ability)
-                  : '<span class="text-slate-600 italic">No ability description.</span>'}
-              </div>
-              ${card.hasConditionalEvent && (card.conditionTrigger || card.conditionEffect) ? `
-                <div class="bg-cyan-950/25 print-surface border border-cyan-500/30 rounded-xl p-3 text-xs text-cyan-100 leading-relaxed space-y-1">
-                  <span class="block text-[10px] font-semibold uppercase tracking-wider text-cyan-400"><i class="fa-solid fa-bolt mr-1"></i>Conditional Event</span>
-                  ${card.conditionTrigger ? `<p class="text-[11px] text-cyan-300"><span class="font-semibold">Condition:</span> ${escapeHTML(card.conditionTrigger)}</p>` : ''}
-                  ${card.conditionEffect ? `<p class="text-[11px] text-slate-200"><span class="font-semibold text-cyan-300">Effect:</span> ${escapeHTML(card.conditionEffect)}</p>` : ''}
-                </div>
-              ` : ''}
-              ${card.special ? `
-                <div class="bg-fuchsia-950/25 print-surface border border-fuchsia-500/30 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
-                  <span class="block text-[10px] font-semibold uppercase tracking-wider text-fuchsia-400 mb-0.5"><i class="fa-solid fa-star mr-1"></i>Special</span>
-                  ${escapeHTML(card.special)}
-                </div>
-              ` : ''}
-              ${hasCombatStats ? `
-                <div class="grid grid-cols-2 gap-2 pt-0.5">
-                  <div class="bg-rose-500/10 print-surface border border-rose-500/25 rounded-lg py-1.5 px-3 text-center">
-                    <span class="text-[10px] uppercase tracking-wider text-rose-400 block font-semibold">Attack</span>
-                    <span class="text-sm font-extrabold text-rose-200">${escapeHTML(card.attack || '0')}</span>
-                  </div>
-                  <div class="bg-blue-500/10 print-surface border border-blue-500/25 rounded-lg py-1.5 px-3 text-center">
-                    <span class="text-[10px] uppercase tracking-wider text-blue-400 block font-semibold">Defense</span>
-                    <span class="text-sm font-extrabold text-blue-200">${escapeHTML(card.defense || '0')}</span>
-                  </div>
-                </div>
-              ` : ''}
-              <div class="bg-slate-950 print-surface border border-slate-800 rounded-xl p-2.5 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-slate-400">Owned:</span>
-                  <div class="flex items-center gap-1.5 no-print">
-                    <button onclick="adjustCount('${card.id}', 'owned', -1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center">-</button>
-                    <span class="font-bold text-indigo-300 w-6 text-center">${card.owned}</span>
-                    <button onclick="adjustCount('${card.id}', 'owned', 1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center">+</button>
-                  </div>
-                  <span class="hidden print:inline font-bold">${card.owned}</span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-slate-400">Used / In Deck:</span>
-                  <div class="flex items-center gap-1.5 no-print">
-                    <button onclick="adjustCount('${card.id}', 'used', -1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center">-</button>
-                    <span class="font-bold text-amber-300 w-6 text-center">${card.used}</span>
-                    <button onclick="adjustCount('${card.id}', 'used', 1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center">+</button>
-                  </div>
-                  <span class="hidden print:inline font-bold">${card.used}</span>
-                </div>
-                <div class="flex items-center justify-between text-xs pt-1.5 border-t border-slate-800/80">
-                  <span class="text-slate-400 font-medium">Left:</span>
-                  <span class="font-extrabold ${left > 0 ? 'text-emerald-400' : 'text-rose-400'}">${left}</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80 no-print">
+            <div class="px-4 pb-4 pt-2 border-t border-slate-800/80 space-y-2.5 no-print">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400">Owned: <strong class="text-slate-200">${c.owned}</strong></span>
                 <div class="flex items-center gap-1">
-                  <button onclick="open3DCardModal('${card.id}')" title="Open 3D Card Model View" class="btn-animated px-2 py-1.5 text-xs rounded-lg bg-indigo-950/70 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/30">
-                    <i class="fa-solid fa-cube"></i>
-                  </button>
-                  <button onclick="printCards('${card.id}')" title="Print or Save This Card as PDF" class="btn-animated px-2 py-1.5 text-xs rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-500/30">
-                    <i class="fa-solid fa-file-pdf"></i>
-                  </button>
-                  <button onclick="exportToExcel('${card.id}')" title="Export This Card to Excel" class="btn-animated px-2 py-1.5 text-xs rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-500/30">
-                    <i class="fa-solid fa-file-excel"></i>
-                  </button>
+                  <button onclick="adjustCount('${c.id}', 'owned', -1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">-</button>
+                  <button onclick="adjustCount('${c.id}', 'owned', 1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">+</button>
                 </div>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="openModal('${card.id}')" class="btn-animated px-2.5 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1">
-                    <i class="fa-regular fa-pen-to-square"></i> Edit
-                  </button>
-                  <button onclick="deleteCard('${card.id}')" class="btn-animated px-2.5 py-1.5 text-xs rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 flex items-center gap-1">
-                    <i class="fa-regular fa-trash-can"></i> Delete
-                  </button>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400">Used: <strong class="text-amber-400">${c.used}</strong></span>
+                <div class="flex items-center gap-1">
+                  <button onclick="adjustCount('${c.id}', 'used', -1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">-</button>
+                  <button onclick="adjustCount('${c.id}', 'used', 1)" class="btn-animated w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">+</button>
                 </div>
+              </div>
+              <div class="flex items-center justify-end gap-1.5 pt-1">
+                <button onclick="open3DCardModal('${c.id}')" title="View 3D Card Model & Ornate Back" class="btn-animated px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-950/70 hover:bg-cyan-900/80 text-cyan-200 border border-cyan-500/35">
+                  <i class="fa-solid fa-cube mr-1"></i> 3D View
+                </button>
+                <button onclick="printCards('${c.id}')" title="Print / Save This Card as PDF" class="btn-animated px-2.5 py-1.5 text-xs font-medium rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-200 border border-rose-500/30">
+                  <i class="fa-solid fa-print"></i>
+                </button>
+                <button onclick="openModal('${c.id}')" class="btn-animated px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">
+                  <i class="fa-solid fa-pen mr-1"></i> Edit
+                </button>
+                <button onclick="deleteCard('${c.id}')" class="btn-animated px-2.5 py-1.5 text-xs font-medium rounded-lg bg-rose-950/50 hover:bg-rose-900/70 text-rose-400">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </div>
           </div>
         `;
       }).join('');
+    }
+    function exportData() {
+      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `custom-cards-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (Array.isArray(imported)) {
+            cards = imported;
+            saveToStorage();
+            renderCards();
+          } else {
+            alert('Invalid backup file.');
+          }
+        } catch {
+          alert('Could not read JSON file.');
+        }
+      };
+      reader.readAsText(file);
     }
     function escapeHTML(str) {
       return String(str)

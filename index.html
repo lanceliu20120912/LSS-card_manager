@@ -3,1455 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CustomCard Vault — Card Creator, Stock & AI Deck Builder</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .rarity-Common { background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.4); }
-    .rarity-Uncommon { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.45); }
-    .rarity-Rare { background: rgba(234, 179, 8, 0.2); color: #fde047; border-color: rgba(250, 204, 21, 0.5); }
-    .rarity-Ultrarare { background: rgba(168, 85, 247, 0.22); color: #d8b4fe; border-color: rgba(192, 132, 252, 0.55); }
-    .rarity-Unique { background: rgba(6, 182, 212, 0.22); color: #67e8f9; border-color: rgba(34, 211, 238, 0.55); }
-    .rarity-Secret { background: linear-gradient(90deg, rgba(244, 63, 94, 0.25), rgba(56, 189, 248, 0.25), rgba(250, 204, 21, 0.25)); color: #fff1f2; border-color: rgba(251, 113, 133, 0.6); }
-    .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
-    .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
-
-    @media print {
-      body { background: #ffffff !important; color: #0f172a !important; }
-      header, .no-print, #cardModal, #aiDeckModal, #lightbox { display: none !important; }
-      main { max-width: 100% !important; padding: 0 !important; }
-      #cardGrid {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 16px !important;
-      }
-      .card-item {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1.5px solid #cbd5e1 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-      .card-item * {
-        color: #0f172a !important;
-        border-color: #cbd5e1 !important;
-      }
-      .card-item .print-surface {
-        background: #f8fafc !important;
-      }
-      body.print-single-mode .card-item:not(.print-target) {
-        display: none !important;
-      }
-      body.print-single-mode #cardGrid {
-        grid-template-columns: minmax(0, 440px) !important;
-        justify-content: center !important;
-      }
-    }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <i class="fa-solid fa-layer-group text-white text-lg"></i>
-        </div>
-        <div>
-          <h1 class="text-lg font-bold tracking-tight text-white">CustomCard Vault</h1>
-          <p class="text-xs text-slate-400">Card IDs, Stats, Artwork, Nation, Rarity & AI Deck Builder</p>
-        </div>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
-        <button onclick="openAIDeckModal()" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 transition flex items-center gap-2">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deck Agent
-        </button>
-        <button onclick="printCards()" title="Print or Save as PDF" class="px-3 py-2 text-xs font-medium rounded-lg bg-rose-950/70 hover:bg-rose-900/80 text-rose-200 border border-rose-500/40 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-file-pdf"></i><span>Print / PDF</span>
-        </button>
-        <button onclick="exportToExcel()" title="Export Visible Cards to Excel (.xlsx)" class="px-3 py-2 text-xs font-medium rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-500/40 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-file-excel"></i><span>Excel</span>
-        </button>
-        <button onclick="exportData()" title="Download JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-download"></i><span class="hidden md:inline">JSON</span>
-        </button>
-        <label title="Restore JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-upload"></i><span class="hidden md:inline">Import</span>
-          <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
-        </label>
-        <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
-          <i class="fa-solid fa-plus"></i> Add Card
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <p class="text-xs text-slate-400">Unique Cards</p>
-        <p id="statUnique" class="text-2xl font-bold text-white mt-0.5">0</p>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <p class="text-xs text-slate-400">Total Owned</p>
-        <p id="statOwned" class="text-2xl font-bold text-indigo-400 mt-0.5">0</p>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <p class="text-xs text-slate-400">Used / In Deck</p>
-        <p id="statUsed" class="text-2xl font-bold text-amber-400 mt-0.5">0</p>
-      </div>
-      <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-4">
-        <p class="text-xs text-emerald-400 font-medium">Available Left</p>
-        <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
-      </div>
-    </div>
-
-    <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6 no-print">
-      <div class="relative flex-1 max-w-md">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-        <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search ID, name, nation, rarity, ability, condition..."
-          class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
-      </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <select id="filterNation" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Nations</option>
-          <option value="Universal">Universal</option>
-          <option value="Japan">Japan</option>
-          <option value="India">India</option>
-          <option value="China">China</option>
-          <option value="Other">Other</option>
-        </select>
-        <select id="filterRarity" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Rarities</option>
-          <option value="Common">Common</option>
-          <option value="Uncommon">Uncommon</option>
-          <option value="Rare">Rare</option>
-          <option value="Ultrarare">Ultrarare</option>
-          <option value="Unique">Unique</option>
-          <option value="Secret">Secret</option>
-          <option value="Leader">Leader</option>
-          <option value="None">None</option>
-        </select>
-        <select id="filterToken" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">Tokens & Regular</option>
-          <option value="tokens_only">Tokens Only</option>
-          <option value="non_tokens">Non-Tokens Only</option>
-        </select>
-        <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Card Types</option>
-        </select>
-        <select id="filterMana" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Mana Effects</option>
-          <option value="spend">Spends Mana</option>
-          <option value="add">Adds Mana</option>
-        </select>
-        <select id="filterCondition" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Events</option>
-          <option value="has_condition">Has Conditional Event</option>
-          <option value="no_condition">No Conditional Event</option>
-        </select>
-        <select id="filterStock" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-          <option value="all">All Stock</option>
-          <option value="available">Has Cards Left (greater than 0)</option>
-          <option value="none_left">0 Left (All Used)</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
-    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl no-print">
-      <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl">
-        <i class="fa-solid fa-wand-sparkles"></i>
-      </div>
-      <h3 class="text-lg font-semibold text-slate-200 mb-1">No cards created yet</h3>
-      <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Add a card with its Card ID, picture, nation, rarity, stats, ability, conditional events, and track how many copies you have left.</p>
-      <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
-        Create Your First Card
-      </button>
-    </div>
-  </main>
-
-  <!-- Add / Edit Card Modal -->
-  <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h2 id="modalTitle" class="text-lg font-bold text-white">Add Card</h2>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <form id="cardForm" onsubmit="saveCard(event)" class="space-y-4">
-        <input type="hidden" id="cardId" />
-        <input type="hidden" id="imageData" />
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1.5">Card Picture</label>
-          <div class="flex items-center gap-4">
-            <div id="imagePreviewBox" class="w-24 h-28 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center overflow-hidden shrink-0 text-slate-500">
-              <i class="fa-regular fa-image text-xl mb-1"></i>
-              <span class="text-[10px]">No Image</span>
-            </div>
-            <div class="flex-1 space-y-2">
-              <label class="w-full px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-camera"></i> Upload Photo
-                <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
-              </label>
-              <input type="url" id="imageUrlInput" oninput="handleImageUrl(this.value)" placeholder="Or paste image URL..."
-                class="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:outline-none focus:border-indigo-500" />
-              <button type="button" onclick="clearImage()" class="text-[11px] text-rose-400 hover:underline">Remove picture</button>
-            </div>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-emerald-400 mb-1">Card ID / Code *</label>
-            <div class="flex rounded-lg overflow-hidden border border-slate-800 bg-slate-950 focus-within:border-emerald-500">
-              <input type="text" id="cardCode" required placeholder="e.g., JP-001"
-                class="w-full px-2.5 py-2 bg-slate-950 text-sm font-mono font-bold text-emerald-300 uppercase focus:outline-none" />
-              <button type="button" onclick="fillGeneratedCardCode()" title="Auto-generate Card ID"
-                class="px-2.5 bg-slate-900 hover:bg-slate-800 text-[11px] font-semibold text-slate-300 border-l border-slate-800 shrink-0">
-                Auto
-              </button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Card Name *</label>
-            <input type="text" id="name" required placeholder="e.g., Celestial Sovereign"
-              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Type of Card *</label>
-            <input type="text" id="cardType" required placeholder="e.g., Warrior, Spell, Relic"
-              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500" />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-amber-400 mb-1">Nation *</label>
-            <select id="nation" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-amber-500">
-              <option value="Universal">Universal</option>
-              <option value="Japan">Japan</option>
-              <option value="India">India</option>
-              <option value="China">China</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-purple-400 mb-1">Rarity *</label>
-            <select id="rarity" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-100 focus:outline-none focus:border-purple-500">
-              <option value="Common">Common</option>
-              <option value="Uncommon">Uncommon</option>
-              <option value="Rare">Rare</option>
-              <option value="Ultrarare">Ultrarare</option>
-              <option value="Unique">Unique (Max 1 / Deck)</option>
-              <option value="Secret">Secret</option>
-              <option value="Leader">Leader (1 / Deck)</option>
-              <option value="None">None</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800">
-          <label for="isToken" class="flex items-center gap-2.5 text-sm font-medium text-teal-300 cursor-pointer select-none">
-            <input type="checkbox" id="isToken" class="w-4 h-4 rounded accent-teal-500 cursor-pointer" />
-            <span><i class="fa-solid fa-coins mr-1.5 text-teal-400"></i>Token Card</span>
-          </label>
-          <span class="text-[11px] text-slate-500">Mark if this card is a Token</span>
-        </div>
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-sky-400 mb-1">Mana Action & Value</label>
-            <div class="flex rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
-              <select id="manaAction" class="px-2 py-2 bg-slate-900 text-xs font-semibold text-slate-200 border-r border-slate-800 focus:outline-none">
-                <option value="spend">Spend (-)</option>
-                <option value="add">Add (+)</option>
-                <option value="none">None</option>
-              </select>
-              <input type="number" id="manaValue" min="0" value="0" placeholder="0"
-                class="w-full px-2 py-2 bg-slate-950 text-sm font-bold text-center focus:outline-none" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-rose-400 mb-1">Attack Damage</label>
-            <input type="text" id="attack" placeholder="e.g., 5 or 1200"
-              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-rose-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-blue-400 mb-1">Defense</label>
-            <input type="text" id="defense" placeholder="e.g., 4 or 1000"
-              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-blue-500" />
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-orange-400 mb-1">Card Restriction (if required)</label>
-          <input type="text" id="restriction" placeholder="e.g., Unique, Max 1 per deck, Cannot attack on turn 1..."
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-orange-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Description of Ability</label>
-          <textarea id="ability" rows="2" placeholder="Describe what this card does when played or activated..."
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
-        </div>
-
-        <!-- Conditional Event Section -->
-        <div class="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-3">
-          <div class="flex items-center justify-between">
-            <label for="hasConditionalEvent" class="flex items-center gap-2.5 text-sm font-semibold text-cyan-300 cursor-pointer select-none">
-              <input type="checkbox" id="hasConditionalEvent" onchange="toggleConditionalFields()" class="w-4 h-4 rounded accent-cyan-500 cursor-pointer" />
-              <span><i class="fa-solid fa-bolt mr-1.5 text-cyan-400"></i>Conditional Event</span>
-            </label>
-            <span class="text-[11px] text-cyan-400/70">If / When trigger</span>
-          </div>
-          <div id="conditionalEventFields" class="hidden space-y-2.5 pt-2 border-t border-cyan-500/20">
-            <div>
-              <label class="block text-xs font-medium text-cyan-300 mb-1">Trigger Condition (If / When...)</label>
-              <input type="text" id="conditionTrigger" placeholder="e.g., When HP is below 50%, If another Japan card is in play..."
-                class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-cyan-300 mb-1">Conditional Effect (Then...)</label>
-              <textarea id="conditionEffect" rows="2" placeholder="e.g., Gain +3 ATK and draw 1 card..."
-                class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-fuchsia-400 mb-1">Special</label>
-          <textarea id="special" rows="2" placeholder="Special mechanics, combo notes, artwork/foil info, or unique rules..."
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500"></textarea>
-        </div>
-        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-indigo-400 mb-1">Total Owned *</label>
-              <input type="number" id="owned" min="0" value="1" required oninput="updateModalPreview()"
-                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm font-bold focus:outline-none focus:border-indigo-500" />
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-amber-400 mb-1">Used / In Deck *</label>
-              <input type="number" id="used" min="0" value="0" required oninput="updateModalPreview()"
-                class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm font-bold focus:outline-none focus:border-amber-500" />
-            </div>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
-            <span class="text-slate-400">Cards Left Available:</span>
-            <span id="modalLeftPreview" class="text-sm font-bold text-emerald-400">1 left</span>
-          </div>
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button>
-          <button type="submit" class="px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white">Save Card</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- AI Deck Builder Modal -->
-  <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3.5">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white">
-            <i class="fa-solid fa-robot"></i>
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-white">AI Deck Builder Agent</h2>
-            <p class="text-xs text-slate-400">Reads Restriction, Ability, Conditional Event & Special text + enforces deck rules</p>
-          </div>
-        </div>
-        <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-
-      <!-- Active AI Deck Rules Banner -->
-      <div class="p-3 rounded-xl bg-slate-950/90 border border-fuchsia-500/30 text-xs text-slate-300 space-y-1.5">
-        <div class="font-semibold text-fuchsia-300 flex items-center gap-1.5">
-          <i class="fa-solid fa-scale-balanced"></i> Active AI Deck-Building Rules & Card Text Reader:
-        </div>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300 list-disc pl-4">
-          <li><strong>Unique Cards:</strong> Max <strong>1 copy</strong> per Unique card (non-Unique cards may have duplicates).</li>
-          <li><strong>Nation Lock:</strong> Only <strong>1 Nation + Universal</strong> cards allowed per deck.</li>
-          <li><strong>Leader Requirement:</strong> Must include <strong>exactly 1 Leader</strong> card.</li>
-          <li><strong>Minimum Size:</strong> Must contain at least <strong>15 cards</strong> total.</li>
-        </ul>
-        <p class="text-[11px] text-cyan-300 pt-0.5">
-          <i class="fa-solid fa-book-open mr-1"></i> Reads each card's <strong>Restriction</strong>, <strong>Ability</strong>, <strong>Conditional Event</strong>, and <strong>Special</strong> text to evaluate synergy, triggers, and playstyle fit.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        <div>
-          <label class="block text-xs font-medium text-amber-400 mb-1">Nation (+ Universal)</label>
-          <select id="aiNation" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
-            <option value="Auto">Auto-Pick Best Nation</option>
-            <option value="Universal">Universal Only</option>
-            <option value="Japan">Japan + Universal</option>
-            <option value="India">India + Universal</option>
-            <option value="China">China + Universal</option>
-            <option value="Other">Other + Universal</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-indigo-400 mb-1">Playstyle</label>
-          <select id="aiStyle" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
-            <option value="balanced">Balanced Curve</option>
-            <option value="aggro">Aggro (High ATK)</option>
-            <option value="control">Defense / Control</option>
-            <option value="mana">Mana Ramp / Engine</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-teal-400 mb-1">Token Pool</label>
-          <select id="aiTokenMode" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500">
-            <option value="exclude">Non-Tokens</option>
-            <option value="include">Include Tokens</option>
-            <option value="only">Tokens Only</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-emerald-400 mb-1">Deck Size (Min 15)</label>
-          <input type="number" id="aiDeckSize" min="15" max="100" value="20"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-sky-400 mb-1">Max Copies (Non-Unique)</label>
-          <input type="number" id="aiMaxCopies" min="1" max="10" value="3"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
-        </div>
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-slate-400 mb-1">Deck Prompt or Special Instructions (optional)</label>
-        <input type="text" id="aiPrompt" placeholder="e.g., Focus on conditional events, draw/mana combos, or low restrictions..."
-          class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500" />
-      </div>
-      <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <label class="flex items-center gap-2 text-xs font-semibold text-slate-200 cursor-pointer">
-            <input type="checkbox" id="useGeminiToggle" onchange="toggleGeminiKeyInput()" class="rounded accent-fuchsia-500" />
-            Use Gemini API for deeper AI strategy & explanations (optional)
-          </label>
-          <span class="text-[11px] text-slate-500">Local engine works without key</span>
-        </div>
-        <div id="geminiKeyBox" class="hidden pt-1">
-          <input type="password" id="geminiApiKey" oninput="saveGeminiKey(this.value)" placeholder="Paste Gemini API key (stored only in your browser)..."
-            class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs focus:outline-none focus:border-fuchsia-500" />
-        </div>
-      </div>
-      <div class="flex justify-end gap-2">
-        <button type="button" onclick="generateAIDeck()" id="generateDeckBtn" class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg transition flex items-center gap-2">
-          <i class="fa-solid fa-sparkles"></i> Build Deck Now
-        </button>
-      </div>
-      <div id="aiDeckResult" class="hidden space-y-4 pt-3 border-t border-slate-800">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h3 id="generatedDeckTitle" class="text-base font-bold text-white">Suggested Deck</h3>
-            <p id="generatedDeckSummary" class="text-xs text-slate-400"></p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="copyDeckList()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
-              <i class="fa-regular fa-copy mr-1"></i> Copy List
-            </button>
-            <button onclick="applyDeckToUsedStock()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white">
-              <i class="fa-solid fa-check mr-1"></i> Apply to "Used" Stock
-            </button>
-          </div>
-        </div>
-        <div id="aiRuleWarnings" class="hidden p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 leading-relaxed space-y-1"></div>
-        <div id="aiStrategyNote" class="hidden p-3 rounded-xl bg-violet-950/30 border border-violet-500/30 text-xs text-violet-100 leading-relaxed"></div>
-        <div id="generatedDeckCards" class="divide-y divide-slate-800 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lightbox -->
-  <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out">
-    <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain" />
-  </div>
-
-  <script>
-    const STORAGE_KEY = 'customcard_vault_v3';
-    const GEMINI_KEY_STORAGE = 'customcard_gemini_key_v1';
-    let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    let lastGeneratedDeck = [];
-    const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE);
-    if (savedKey) {
-      document.getElementById('geminiApiKey').value = savedKey;
-    }
-
-    function generateCardCode(nation = 'Universal', excludeId = null) {
-      const prefixMap = {
-        Universal: 'UNV',
-        Japan: 'JP',
-        India: 'IN',
-        China: 'CN',
-        Other: 'OTH'
-      };
-      const prefix = prefixMap[nation] || 'CRD';
-      const existingCodes = new Set(
-        cards
-          .filter(c => c.id !== excludeId && c.cardCode)
-          .map(c => c.cardCode.toUpperCase())
-      );
-      let num = cards.length + 1;
-      let candidate = `${prefix}-${String(num).padStart(3, '0')}`;
-      while (existingCodes.has(candidate)) {
-        num += 1;
-        candidate = `${prefix}-${String(num).padStart(3, '0')}`;
-      }
-      return candidate;
-    }
-
-    function fillGeneratedCardCode() {
-      const nation = document.getElementById('nation').value;
-      const excludeId = document.getElementById('cardId').value || null;
-      document.getElementById('cardCode').value = generateCardCode(nation, excludeId);
-    }
-
-    // Backfill cardCode for any older saved cards that didn't have one
-    let needsMigrationSave = false;
-    cards = cards.map((c, idx) => {
-      if (c.cardCode) return c;
-      needsMigrationSave = true;
-      const prefixMap = { Universal: 'UNV', Japan: 'JP', India: 'IN', China: 'CN', Other: 'OTH' };
-      const prefix = prefixMap[c.nation] || 'CRD';
-      return { ...c, cardCode: `${prefix}-${String(idx + 1).padStart(3, '0')}` };
-    });
-    if (needsMigrationSave) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-    }
-
-    function saveGeminiKey(val) {
-      localStorage.setItem(GEMINI_KEY_STORAGE, val.trim());
-    }
-    function toggleGeminiKeyInput() {
-      const checked = document.getElementById('useGeminiToggle').checked;
-      document.getElementById('geminiKeyBox').classList.toggle('hidden', !checked);
-    }
-    function toggleConditionalFields() {
-      const checked = document.getElementById('hasConditionalEvent').checked;
-      document.getElementById('conditionalEventFields').classList.toggle('hidden', !checked);
-    }
-    function saveToStorage() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-      } catch (e) {
-        alert('Browser storage is full! Please export a backup and remove a few large images.');
-      }
-    }
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 520;
-          const scale = Math.min(1, MAX_WIDTH / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-          document.getElementById('imageData').value = compressedDataUrl;
-          document.getElementById('imageUrlInput').value = '';
-          setPreviewImage(compressedDataUrl);
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-    function handleImageUrl(url) {
-      const trimmed = url.trim();
-      document.getElementById('imageData').value = trimmed;
-      setPreviewImage(trimmed);
-    }
-    function setPreviewImage(src) {
-      const box = document.getElementById('imagePreviewBox');
-      if (src) {
-        box.innerHTML = `<img src="${src}" class="w-full h-full object-cover" alt="Preview" />`;
-      } else {
-        box.innerHTML = `<i class="fa-regular fa-image text-xl mb-1"></i><span class="text-[10px]">No Image</span>`;
-      }
-    }
-    function clearImage() {
-      document.getElementById('imageData').value = '';
-      document.getElementById('imageUrlInput').value = '';
-      document.getElementById('photoInput').value = '';
-      setPreviewImage('');
-    }
-    function updateModalPreview() {
-      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
-      const used = Math.max(0, parseInt(document.getElementById('used').value) || 0);
-      const left = Math.max(0, owned - used);
-      const preview = document.getElementById('modalLeftPreview');
-      preview.textContent = `${left} left`;
-      preview.className = left > 0 ? 'text-sm font-bold text-emerald-400' : 'text-sm font-bold text-rose-400';
-    }
-    function adjustCount(id, field, delta) {
-      cards = cards.map(c => {
-        if (c.id !== id) return c;
-        let owned = c.owned;
-        let used = c.used;
-        if (field === 'owned') {
-          owned = Math.max(0, owned + delta);
-          if (used > owned) used = owned;
-        } else if (field === 'used') {
-          used = Math.min(owned, Math.max(0, used + delta));
-        }
-        return { ...c, owned, used };
-      });
-      saveToStorage();
-      renderCards();
-    }
-    function openModal(id = null) {
-      const modal = document.getElementById('cardModal');
-      document.getElementById('cardForm').reset();
-      document.getElementById('cardId').value = '';
-      document.getElementById('nation').value = 'Universal';
-      document.getElementById('rarity').value = 'Common';
-      document.getElementById('cardCode').value = generateCardCode('Universal');
-      document.getElementById('isToken').checked = false;
-      document.getElementById('hasConditionalEvent').checked = false;
-      toggleConditionalFields();
-      document.getElementById('modalTitle').textContent = 'Add Card';
-      clearImage();
-      if (id) {
-        const c = cards.find(item => item.id === id);
-        if (c) {
-          document.getElementById('modalTitle').textContent = 'Edit Card';
-          document.getElementById('cardId').value = c.id;
-          document.getElementById('cardCode').value = c.cardCode || generateCardCode(c.nation || 'Universal', c.id);
-          document.getElementById('name').value = c.name;
-          document.getElementById('cardType').value = c.cardType || '';
-          document.getElementById('nation').value = c.nation || 'Universal';
-          document.getElementById('rarity').value = c.rarity || 'None';
-          document.getElementById('isToken').checked = Boolean(c.isToken);
-          document.getElementById('manaAction').value = c.manaAction || 'spend';
-          document.getElementById('manaValue').value = c.manaValue ?? 0;
-          document.getElementById('attack').value = c.attack || '';
-          document.getElementById('defense').value = c.defense || '';
-          document.getElementById('restriction').value = c.restriction || '';
-          document.getElementById('ability').value = c.ability || '';
-          document.getElementById('hasConditionalEvent').checked = Boolean(c.hasConditionalEvent);
-          document.getElementById('conditionTrigger').value = c.conditionTrigger || '';
-          document.getElementById('conditionEffect').value = c.conditionEffect || '';
-          toggleConditionalFields();
-          document.getElementById('special').value = c.special || '';
-          document.getElementById('owned').value = c.owned;
-          document.getElementById('used').value = c.used;
-          if (c.image) {
-            document.getElementById('imageData').value = c.image;
-            if (c.image.startsWith('http')) {
-              document.getElementById('imageUrlInput').value = c.image;
-            }
-            setPreviewImage(c.image);
-          }
-        }
-      }
-      updateModalPreview();
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-    function closeModal() {
-      const modal = document.getElementById('cardModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-    function openAIDeckModal() {
-      const modal = document.getElementById('aiDeckModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-    function closeAIDeckModal() {
-      const modal = document.getElementById('aiDeckModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-    function openLightbox(src) {
-      if (!src) return;
-      document.getElementById('lightboxImg').src = src;
-      const lb = document.getElementById('lightbox');
-      lb.classList.remove('hidden');
-      lb.classList.add('flex');
-    }
-    function closeLightbox() {
-      const lb = document.getElementById('lightbox');
-      lb.classList.add('hidden');
-      lb.classList.remove('flex');
-    }
-    function saveCard(e) {
-      e.preventDefault();
-      const id = document.getElementById('cardId').value;
-      const nation = document.getElementById('nation').value;
-      const rawCode = document.getElementById('cardCode').value.trim().toUpperCase();
-      const cardCode = rawCode || generateCardCode(nation, id || null);
-      const owned = Math.max(0, parseInt(document.getElementById('owned').value) || 0);
-      const used = Math.min(owned, Math.max(0, parseInt(document.getElementById('used').value) || 0));
-      const hasConditionalEvent = document.getElementById('hasConditionalEvent').checked;
-      const conditionTrigger = hasConditionalEvent ? document.getElementById('conditionTrigger').value.trim() : '';
-      const conditionEffect = hasConditionalEvent ? document.getElementById('conditionEffect').value.trim() : '';
-
-      const cardObj = {
-        id: id || crypto.randomUUID(),
-        cardCode,
-        name: document.getElementById('name').value.trim(),
-        cardType: document.getElementById('cardType').value.trim(),
-        nation,
-        rarity: document.getElementById('rarity').value,
-        isToken: document.getElementById('isToken').checked,
-        manaAction: document.getElementById('manaAction').value,
-        manaValue: Math.max(0, parseInt(document.getElementById('manaValue').value) || 0),
-        attack: document.getElementById('attack').value.trim(),
-        defense: document.getElementById('defense').value.trim(),
-        restriction: document.getElementById('restriction').value.trim(),
-        ability: document.getElementById('ability').value.trim(),
-        hasConditionalEvent: hasConditionalEvent && Boolean(conditionTrigger || conditionEffect),
-        conditionTrigger,
-        conditionEffect,
-        special: document.getElementById('special').value.trim(),
-        image: document.getElementById('imageData').value.trim(),
-        owned,
-        used
-      };
-      if (id) {
-        cards = cards.map(c => c.id === id ? cardObj : c);
-      } else {
-        cards.unshift(cardObj);
-      }
-      saveToStorage();
-      closeModal();
-      renderCards();
-    }
-    function deleteCard(id) {
-      if (confirm('Delete this card?')) {
-        cards = cards.filter(c => c.id !== id);
-        saveToStorage();
-        renderCards();
-      }
-    }
-    function parseStatNumber(val) {
-      const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
-      return Number.isNaN(num) ? 0 : num;
-    }
-    function isCardUnique(card) {
-      const rarityLower = (card.rarity || '').toLowerCase();
-      const restrLower = (card.restriction || '').toLowerCase();
-      const specialLower = (card.special || '').toLowerCase();
-      return rarityLower === 'unique' ||
-             restrLower.includes('unique') ||
-             restrLower.includes('1 per deck') ||
-             restrLower.includes('limit 1') ||
-             specialLower.includes('unique');
-    }
-    function isCardLeader(card) {
-      return (card.rarity || '').toLowerCase() === 'leader';
-    }
-
-    /* Reads Restriction, Ability, Conditional Event, and Special to evaluate & explain fit */
-    function analyzeCardTextForDeck(card, selectedNation, style, promptText) {
-      let textScore = 0;
-      const reasons = [];
-
-      const restrictionText = (card.restriction || '').trim();
-      const abilityText = (card.ability || '').trim();
-      const hasCond = Boolean(card.hasConditionalEvent && (card.conditionTrigger || card.conditionEffect));
-      const condTriggerText = hasCond ? (card.conditionTrigger || '').trim() : '';
-      const condEffectText = hasCond ? (card.conditionEffect || '').trim() : '';
-      const specialText = (card.special || '').trim();
-
-      const rLower = restrictionText.toLowerCase();
-      const aLower = abilityText.toLowerCase();
-      const cLower = `${condTriggerText} ${condEffectText}`.toLowerCase();
-      const sLower = specialText.toLowerCase();
-      const combinedMechanics = `${aLower} ${cLower} ${sLower}`;
-
-      // 1. Read Card Restriction
-      if (restrictionText) {
-        if (rLower.includes('cannot attack') || rLower.includes("can't attack")) {
-          if (style === 'aggro') textScore -= 16;
-          else if (style === 'control') {
-            textScore += 6;
-            reasons.push('Restriction fits defensive setup');
-          }
-        }
-        if (rLower.includes('only') || rLower.includes('must') || rLower.includes('turn 1') || rLower.includes('first turn')) {
-          textScore -= 3;
-        }
-      }
-
-      // 2. Read Description of Ability + Conditional Event + Special against Playstyle
-      const aggroTerms = ['attack', 'atk', 'damage', 'strike', 'pierce', 'double', 'haste', 'rush', 'burn', 'destroy', 'ko'];
-      const controlTerms = ['defend', 'defense', 'def', 'shield', 'guard', 'block', 'heal', 'restore', 'negate', 'cancel', 'lock', 'reduce'];
-      const manaTerms = ['mana', 'draw', 'search', 'tutor', 'add', 'ramp', 'cost', 'energy', 'summon', 'token'];
-
-      const countMatches = (str, terms) => terms.reduce((acc, t) => acc + (str.includes(t) ? 1 : 0), 0);
-
-      if (abilityText) {
-        textScore += 6;
-        if (style === 'aggro') textScore += countMatches(aLower, aggroTerms) * 6;
-        if (style === 'control') textScore += countMatches(aLower, controlTerms) * 6;
-        if (style === 'mana') textScore += countMatches(aLower, manaTerms) * 6;
-      }
-
-      if (hasCond) {
-        textScore += 9;
-        if (style === 'aggro') textScore += countMatches(cLower, aggroTerms) * 6;
-        if (style === 'control') textScore += countMatches(cLower, controlTerms) * 6;
-        if (style === 'mana') textScore += countMatches(cLower, manaTerms) * 6;
-
-        if (selectedNation && selectedNation !== 'Auto' && selectedNation !== 'Universal') {
-          if (cLower.includes(selectedNation.toLowerCase()) || cLower.includes('universal')) {
-            textScore += 12;
-            reasons.push(`Event matches ${selectedNation}/Universal`);
-          }
-        }
-        reasons.push(`Event: ${condTriggerText || 'active condition'} → ${condEffectText || 'bonus effect'}`);
-      }
-
-      if (specialText) {
-        textScore += 7;
-        if (style === 'aggro') textScore += countMatches(sLower, aggroTerms) * 5;
-        if (style === 'control') textScore += countMatches(sLower, controlTerms) * 5;
-        if (style === 'mana') textScore += countMatches(sLower, manaTerms) * 5;
-        if (sLower.includes('combo') || sLower.includes('synergy')) {
-          textScore += 8;
-          reasons.push('Special combo synergy');
-        }
-      }
-
-      // 3. Match user prompt keywords against Restriction, Ability, Conditional Event & Special
-      let promptMatched = false;
-      if (promptText) {
-        const keywords = promptText.toLowerCase().split(/\W+/).filter(w => w.length > 2);
-        for (const kw of keywords) {
-          if (combinedMechanics.includes(kw) || rLower.includes(kw)) {
-            textScore += 14;
-            promptMatched = true;
-          }
-        }
-        if (promptMatched) reasons.push('Matches deck prompt');
-      }
-
-      if (reasons.length === 0) {
-        if (hasCond && abilityText) reasons.push('Ability + Conditional Event synergy');
-        else if (hasCond) reasons.push(`Conditional Event (${condTriggerText || condEffectText})`);
-        else if (abilityText) reasons.push(`Ability: ${abilityText.slice(0, 68)}${abilityText.length > 68 ? '…' : ''}`);
-        else if (specialText) reasons.push(`Special: ${specialText.slice(0, 68)}${specialText.length > 68 ? '…' : ''}`);
-        else if (restrictionText) reasons.push(`Restriction: ${restrictionText.slice(0, 60)}${restrictionText.length > 60 ? '…' : ''}`);
-        else reasons.push('Stat & nation curve fit');
-      }
-
-      return {
-        textScore,
-        reason: reasons.slice(0, 2).join(' • ')
-      };
-    }
-
-    function scoreCardForDeck(card, selectedNation, style, promptText) {
-      let score = 50;
-      const left = Math.max(0, card.owned - card.used);
-      if (left > 0) score += 35 + Math.min(left * 3, 15);
-      else score -= 40;
-      const cardNation = card.nation || 'Universal';
-      if (selectedNation !== 'Universal') {
-        if (cardNation === selectedNation) score += 30;
-        else if (cardNation === 'Universal') score += 18;
-      }
-      if (card.rarity === 'Secret' || card.rarity === 'Ultrarare' || card.rarity === 'Unique') score += 10;
-
-      const textEval = analyzeCardTextForDeck(card, selectedNation, style, promptText);
-      score += textEval.textScore;
-
-      const atk = parseStatNumber(card.attack);
-      const def = parseStatNumber(card.defense);
-      const manaVal = Number(card.manaValue) || 0;
-      if (style === 'aggro') {
-        score += atk * 2;
-        if (card.manaAction === 'spend' && manaVal <= 3) score += 10;
-      } else if (style === 'control') {
-        score += def * 2;
-      } else if (style === 'mana') {
-        if (card.manaAction === 'add') score += 25 + manaVal * 5;
-        if (card.manaAction === 'spend' && manaVal >= 4) score += 10;
-      } else {
-        score += (atk + def) * 0.8;
-      }
-
-      if (promptText) {
-        const keywords = promptText.toLowerCase().split(/\W+/).filter(w => w.length > 2);
-        const haystack = `${card.cardCode || ''} ${card.name} ${card.cardType} ${card.nation} ${card.rarity} ${card.isToken ? 'token' : ''}`.toLowerCase();
-        for (const kw of keywords) {
-          if (haystack.includes(kw)) score += 12;
-        }
-      }
-      score += Math.random() * 4;
-      return score;
-    }
-
-    async function generateAIDeck() {
-      if (cards.length === 0) {
-        alert('Add some cards to your collection first so the AI Deck Builder can build a deck!');
-        return;
-      }
-
-      const nationSetting = document.getElementById('aiNation').value;
-      const style = document.getElementById('aiStyle').value;
-      const tokenMode = document.getElementById('aiTokenMode').value;
-      const requestedSize = parseInt(document.getElementById('aiDeckSize').value) || 15;
-      const deckSize = Math.max(15, requestedSize);
-      document.getElementById('aiDeckSize').value = deckSize;
-      const maxCopies = Math.max(1, parseInt(document.getElementById('aiMaxCopies').value) || 3);
-      const promptText = document.getElementById('aiPrompt').value.trim();
-      const useGemini = document.getElementById('useGeminiToggle').checked;
-      const geminiKey = document.getElementById('geminiApiKey').value.trim();
-
-      let tokenFiltered = cards.filter(c => {
-        if (tokenMode === 'only') return Boolean(c.isToken);
-        if (tokenMode === 'exclude') return !c.isToken;
-        return true;
-      });
-      if (tokenFiltered.length === 0) {
-        tokenFiltered = [...cards];
-      }
-
-      // Rule 2: Resolve single primary nation (+ Universal)
-      let activeNation = nationSetting;
-      if (nationSetting === 'Auto') {
-        const nonUniversalNations = [...new Set(
-          tokenFiltered
-            .map(c => c.nation || 'Universal')
-            .filter(n => n !== 'Universal')
-        )];
-        if (nonUniversalNations.length === 0) {
-          activeNation = 'Universal';
-        } else {
-          nonUniversalNations.sort((a, b) => {
-            const aCards = tokenFiltered.filter(c => (c.nation || 'Universal') === a);
-            const bCards = tokenFiltered.filter(c => (c.nation || 'Universal') === b);
-            const aHasLeader = aCards.some(isCardLeader) ? 100 : 0;
-            const bHasLeader = bCards.some(isCardLeader) ? 100 : 0;
-            const aStock = aCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-            const bStock = bCards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-            return (bHasLeader + bStock) - (aHasLeader + aStock);
-          });
-          activeNation = nonUniversalNations[0];
-        }
-      }
-
-      const nationLegalPool = tokenFiltered.filter(c => {
-        const n = c.nation || 'Universal';
-        if (activeNation === 'Universal') return n === 'Universal';
-        return n === activeNation || n === 'Universal';
-      });
-
-      const leaderPool = nationLegalPool
-        .filter(isCardLeader)
-        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-
-      const nonLeaderPool = nationLegalPool
-        .filter(c => !isCardLeader(c))
-        .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-
-      const pickedMap = new Map();
-      let totalPicked = 0;
-      const warnings = [];
-
-      // Rule 3: Pick 1 and only 1 Leader
-      const chosenLeader = leaderPool.find(c => Math.max(0, c.owned - c.used) > 0) || leaderPool[0];
-      if (chosenLeader) {
-        const left = Math.max(0, chosenLeader.owned - chosenLeader.used);
-        const leaderEval = analyzeCardTextForDeck(chosenLeader, activeNation, style, promptText);
-        pickedMap.set(chosenLeader.id, {
-          card: chosenLeader,
-          count: 1,
-          fromStock: left > 0,
-          reason: `Deck Leader • ${leaderEval.reason}`
-        });
-        totalPicked += 1;
-      } else {
-        warnings.push(`Missing Leader: No Leader card found for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} / Universal`}. Add a card with Rarity set to "Leader" to satisfy the 1-Leader rule.`);
-      }
-
-      // Rule 1: Unique cards may only appear once in a deck
-      const getCardCap = (card) => isCardUnique(card) ? 1 : maxCopies;
-
-      // Pass 1: Fill non-leader slots from available remaining stock
-      for (const card of nonLeaderPool) {
-        if (totalPicked >= deckSize) break;
-        const left = Math.max(0, card.owned - card.used);
-        if (left <= 0) continue;
-        const cap = getCardCap(card);
-        const addCount = Math.min(cap, left, deckSize - totalPicked);
-        if (addCount > 0) {
-          const textEval = analyzeCardTextForDeck(card, activeNation, style, promptText);
-          pickedMap.set(card.id, { card, count: addCount, fromStock: true, reason: textEval.reason });
-          totalPicked += addCount;
-        }
-      }
-
-      // Pass 2: If still under deckSize, fill up to cardCap from legal nation pool
-      if (totalPicked < deckSize) {
-        for (const card of nonLeaderPool) {
-          if (totalPicked >= deckSize) break;
-          const existing = pickedMap.get(card.id);
-          const currentCount = existing ? existing.count : 0;
-          const cap = getCardCap(card);
-          const extraNeeded = Math.min(cap - currentCount, deckSize - totalPicked);
-          if (extraNeeded > 0) {
-            const textEval = analyzeCardTextForDeck(card, activeNation, style, promptText);
-            pickedMap.set(card.id, {
-              card,
-              count: currentCount + extraNeeded,
-              fromStock: existing ? existing.fromStock : false,
-              reason: existing ? existing.reason : textEval.reason
-            });
-            totalPicked += extraNeeded;
-          }
-        }
-      }
-
-      if (totalPicked < 15) {
-        warnings.push(`Minimum 15-Card Rule: Only ${totalPicked} legal card(s) could be assembled for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`} (remember Unique cards can only appear once, and only 1 Leader is allowed). Add more non-Unique ${activeNation} or Universal cards to reach at least 15 cards.`);
-      }
-
-      lastGeneratedDeck = [...pickedMap.values()];
-      document.getElementById('aiDeckResult').classList.remove('hidden');
-
-      const nationTitle = activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`;
-      document.getElementById('generatedDeckTitle').textContent =
-        `${nationTitle} ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
-      document.getElementById('generatedDeckSummary').textContent =
-        `${totalPicked} cards total • ${chosenLeader ? `Leader: ${chosenLeader.name}` : '0 Leaders'} • Unique max 1 • Non-Unique max ${maxCopies}`;
-
-      const warningBox = document.getElementById('aiRuleWarnings');
-      if (warnings.length > 0) {
-        warningBox.classList.remove('hidden');
-        warningBox.innerHTML = warnings.map(w => `<div><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i>${escapeHTML(w)}</div>`).join('');
-      } else {
-        warningBox.classList.add('hidden');
-        warningBox.innerHTML = '';
-      }
-
-      const strategyBox = document.getElementById('aiStrategyNote');
-      strategyBox.classList.remove('hidden');
-      strategyBox.innerHTML = `<i class="fa-solid fa-book-open mr-1.5 text-fuchsia-400"></i> <strong>Card-Text & Rule Engine:</strong> Read each card's Restriction, Ability, Conditional Event, and Special text to select a ${totalPicked}-card ${nationTitle} deck (${chosenLeader ? '1 Leader' : 'no Leader'}, Unique max 1, min 15 cards).`;
-      renderGeneratedDeckList();
-
-      if (useGemini && geminiKey) {
-        strategyBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5 text-fuchsia-400"></i> Asking Gemini to read card mechanics and give deck strategy...`;
-        try {
-          const compactDeck = lastGeneratedDeck.map(item => ({
-            cardCode: item.card.cardCode || '',
-            name: item.card.name,
-            count: item.count,
-            nation: item.card.nation,
-            type: item.card.cardType,
-            rarity: item.card.rarity,
-            isUnique: isCardUnique(item.card),
-            isLeader: isCardLeader(item.card),
-            isToken: Boolean(item.card.isToken),
-            mana: `${item.card.manaAction}:${item.card.manaValue}`,
-            atk: item.card.attack,
-            def: item.card.defense,
-            restriction: item.card.restriction,
-            ability: item.card.ability,
-            conditionalEvent: item.card.hasConditionalEvent
-              ? { trigger: item.card.conditionTrigger, effect: item.card.conditionEffect }
-              : null,
-            special: item.card.special
-          }));
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: `You are a trading card game deck coach. Carefully read every card's restriction, ability, conditionalEvent, and special text in this ${nationTitle} deck (${JSON.stringify(compactDeck)}). Rules in effect: (1) Unique cards max 1 copy, non-Unique may have duplicates; (2) Only 1 Nation + Universal; (3) Exactly 1 Leader; (4) Minimum 15 cards. User note: "${promptText || style}". Write a concise 3-4 sentence strategy explanation referencing specific card IDs/names, abilities, conditional events, special effects, and restrictions.`
-                }]
-              }]
-            })
-          });
-          const data = await resp.json();
-          const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (aiText) {
-            strategyBox.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-fuchsia-400"></i> <strong>Gemini Coach:</strong> ${escapeHTML(aiText)}`;
-          }
-        } catch (err) {
-          strategyBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-400"></i> Gemini request failed—showing card-text local deck build instead.`;
-        }
-      }
-    }
-
-    function renderGeneratedDeckList() {
-      const container = document.getElementById('generatedDeckCards');
-      container.innerHTML = lastGeneratedDeck.map(({ card, count, reason }) => {
-        const left = Math.max(0, card.owned - card.used);
-        const shortage = count > left;
-        const uniqueFlag = isCardUnique(card);
-        const leaderFlag = isCardLeader(card);
-        return `
-          <div class="p-3 flex items-start justify-between gap-3 text-xs">
-            <div class="min-w-0 space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${count}x</span>
-                ${card.cardCode ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] font-bold text-emerald-300">${escapeHTML(card.cardCode)}</span>` : ''}
-                <span class="font-bold text-white text-sm">${escapeHTML(card.name)}</span>
-                ${leaderFlag ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold"><i class="fa-solid fa-crown mr-0.5"></i>LEADER</span>` : ''}
-                ${uniqueFlag ? `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-semibold">UNIQUE (1 MAX)</span>` : ''}
-                ${card.isToken ? `<span class="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 text-[10px] font-semibold">TOKEN</span>` : ''}
-                ${card.hasConditionalEvent ? `<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-semibold"><i class="fa-solid fa-bolt mr-0.5"></i>EVENT</span>` : ''}
-                <span class="text-slate-400">${escapeHTML(card.nation || 'Universal')} • ${escapeHTML(card.rarity || 'None')}</span>
-              </div>
-              ${reason ? `<p class="text-[11px] text-fuchsia-300/90"><i class="fa-solid fa-sparkles mr-1 text-[10px]"></i>${escapeHTML(reason)}</p>` : ''}
-              ${card.restriction ? `<p class="text-[11px] text-orange-300"><i class="fa-solid fa-ban mr-1"></i>Restriction: ${escapeHTML(card.restriction)}</p>` : ''}
-            </div>
-            <div class="text-right shrink-0">
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ${shortage ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}">
-                ${left} in stock left
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    function copyDeckList() {
-      if (!lastGeneratedDeck.length) return;
-      const text = lastGeneratedDeck
-        .map(({ card, count }) => `${count}x ${card.cardCode ? `[${card.cardCode}] ` : ''}${card.name}${card.isToken ? ' [Token]' : ''} [${card.nation || 'Universal'} | ${card.rarity || 'None'}]`)
-        .join('\n');
-      navigator.clipboard.writeText(text);
-      alert('Deck list copied to clipboard!');
-    }
-    function applyDeckToUsedStock() {
-      if (!lastGeneratedDeck.length) return;
-      const addMap = new Map();
-      lastGeneratedDeck.forEach(({ card, count }) => {
-        addMap.set(card.id, (addMap.get(card.id) || 0) + count);
-      });
-      cards = cards.map(c => {
-        const addUsed = addMap.get(c.id) || 0;
-        if (!addUsed) return c;
-        const newUsed = Math.min(c.owned, c.used + addUsed);
-        return { ...c, used: newUsed };
-      });
-      saveToStorage();
-      renderCards();
-      renderGeneratedDeckList();
-      alert('Updated "Used" counts on your cards (capped at Total Owned).');
-    }
-
-    /* Export & Print Functions */
-    function getFilteredCards() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const nationFilter = document.getElementById('filterNation').value;
-      const rarityFilter = document.getElementById('filterRarity').value;
-      const tokenFilter = document.getElementById('filterToken').value;
-      const stockFilter = document.getElementById('filterStock').value;
-      const typeFilter = document.getElementById('filterType').value;
-      const manaFilter = document.getElementById('filterMana').value;
-      const conditionFilter = document.getElementById('filterCondition').value;
-
-      return cards.filter(c => {
-        const left = Math.max(0, c.owned - c.used);
-        const matchesQuery = (c.cardCode && c.cardCode.toLowerCase().includes(query)) ||
-                             c.name.toLowerCase().includes(query) ||
-                             (c.nation && c.nation.toLowerCase().includes(query)) ||
-                             (c.rarity && c.rarity.toLowerCase().includes(query)) ||
-                             (c.cardType && c.cardType.toLowerCase().includes(query)) ||
-                             (c.isToken && 'token'.includes(query)) ||
-                             (c.hasConditionalEvent && 'conditional event'.includes(query)) ||
-                             (c.conditionTrigger && c.conditionTrigger.toLowerCase().includes(query)) ||
-                             (c.conditionEffect && c.conditionEffect.toLowerCase().includes(query)) ||
-                             (c.restriction && c.restriction.toLowerCase().includes(query)) ||
-                             (c.ability && c.ability.toLowerCase().includes(query)) ||
-                             (c.special && c.special.toLowerCase().includes(query));
-        const matchesNation = nationFilter === 'all' || (c.nation || 'Universal') === nationFilter;
-        const matchesRarity = rarityFilter === 'all' || (c.rarity || 'None') === rarityFilter;
-        const matchesToken = tokenFilter === 'all' ||
-                             (tokenFilter === 'tokens_only' && Boolean(c.isToken)) ||
-                             (tokenFilter === 'non_tokens' && !c.isToken);
-        const matchesStock = stockFilter === 'all' ||
-                             (stockFilter === 'available' && left > 0) ||
-                             (stockFilter === 'none_left' && left === 0);
-        const matchesType = typeFilter === 'all' || c.cardType === typeFilter;
-        const matchesMana = manaFilter === 'all' || c.manaAction === manaFilter;
-        const matchesCondition = conditionFilter === 'all' ||
-                                 (conditionFilter === 'has_condition' && Boolean(c.hasConditionalEvent)) ||
-                                 (conditionFilter === 'no_condition' && !c.hasConditionalEvent);
-        return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana && matchesCondition;
-      });
-    }
-
-    function printCards(singleCardId = null) {
-      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
-      if (!targetCards.length) {
-        alert('No cards available to print or save as PDF.');
-        return;
-      }
-
-      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
-      if (singleCardId) {
-        document.body.classList.add('print-single-mode');
-        const targetEl = document.getElementById(`card-${singleCardId}`);
-        if (targetEl) targetEl.classList.add('print-target');
-      } else {
-        document.body.classList.remove('print-single-mode');
-      }
-
-      window.print();
-
-      document.body.classList.remove('print-single-mode');
-      document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
-    }
-
-    function exportToExcel(singleCardId = null) {
-      const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
-      if (!targetCards.length) {
-        alert('No cards available to export to Excel.');
-        return;
-      }
-      if (typeof XLSX === 'undefined') {
-        alert('Excel export library failed to load. Check your internet connection and reload.');
-        return;
-      }
-
-      const rows = targetCards.map(c => {
-        const left = Math.max(0, (c.owned || 0) - (c.used || 0));
-        const manaText = (!c.manaAction || c.manaAction === 'none')
-          ? 'None'
-          : `${c.manaAction === 'add' ? '+' : '-'}${c.manaValue || 0}`;
-
-        return {
-          'Card ID': c.cardCode || '',
-          'Card Name': c.name || '',
-          'Type': c.cardType || '',
-          'Nation': c.nation || 'Universal',
-          'Rarity': c.rarity || 'None',
-          'Is Token': c.isToken ? 'Yes' : 'No',
-          'Mana': manaText,
-          'Attack (ATK)': c.attack || '',
-          'Defense (DEF)': c.defense || '',
-          'Restriction': c.restriction || '',
-          'Ability': c.ability || '',
-          'Conditional Trigger': c.hasConditionalEvent ? (c.conditionTrigger || '') : '',
-          'Conditional Effect': c.hasConditionalEvent ? (c.conditionEffect || '') : '',
-          'Special': c.special || '',
-          'Total Owned': c.owned || 0,
-          'Used / In Deck': c.used || 0,
-          'Available Left': left,
-          'Image URL': (c.image && c.image.startsWith('http')) ? c.image : (c.image ? '[Embedded Photo]' : '')
-        };
-      });
-
-      const worksheet = XLSX.utils.json_to_sheet(rows);
-      worksheet['!cols'] = [
-        { wch: 14 }, { wch: 24 }, { wch: 15 }, { wch: 13 }, { wch: 13 }, { wch: 10 },
-        { wch: 10 }, { wch: 13 }, { wch: 13 }, { wch: 24 }, { wch: 36 },
-        { wch: 28 }, { wch: 32 }, { wch: 28 }, { wch: 12 }, { wch: 14 },
-        { wch: 14 }, { wch: 24 }
-      ];
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Cards');
-
-      const safeName = singleCardId
-        ? `${(targetCards[0].cardCode || targetCards[0].name || 'card').replace(/[^a-z0-9-_]/gi, '_')}.xlsx`
-        : `customcards-${new Date().toISOString().slice(0, 10)}.xlsx`;
-
-      XLSX.writeFile(workbook, safeName);
-    }
-
-    function exportData() {
-      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `customcards-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
-            cards = imported;
-            saveToStorage();
-            renderCards();
-          }
-        } catch {
-          alert('Invalid JSON backup file.');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-    function updateTypeDropdown() {
-      const select = document.getElementById('filterType');
-      const currentVal = select.value;
-      const types = [...new Set(cards.map(c => c.cardType).filter(Boolean))].sort();
-      select.innerHTML = `<option value="all">All Card Types</option>` +
-        types.map(t => `<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');
-      if (types.includes(currentVal)) select.value = currentVal;
-    }
-    function renderManaBadge(card) {
-      if (!card.manaAction || card.manaAction === 'none') return '';
-      if (card.manaAction === 'add') {
-        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0" title="Adds Mana">
-                  <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>+${card.manaValue} Mana
-                </span>`;
-      }
-      return `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-500/40 shrink-0" title="Spends Mana">
-                <i class="fa-solid fa-droplet mr-1 text-[10px]"></i>-${card.manaValue} Mana
-              </span>`;
-    }
-    function renderCards() {
-      updateTypeDropdown();
-      const grid = document.getElementById('cardGrid');
-      const empty = document.getElementById('emptyState');
-      const totalOwned = cards.reduce((sum, c) => sum + c.owned, 0);
-      const totalUsed = cards.reduce((sum, c) => sum + c.used, 0);
-      const totalLeft = cards.reduce((sum, c) => sum + Math.max(0, c.owned - c.used), 0);
-      document.getElementById('statUnique').textContent = cards.length;
-      document.getElementById('statOwned').textContent = totalOwned;
-      document.getElementById('statUsed').textContent = totalUsed;
-      document.getElementById('statLeft').textContent = totalLeft;
-
-      const filtered = getFilteredCards();
-      if (filtered.length === 0) {
-        grid.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-      empty.classList.add('hidden');
-      grid.innerHTML = filtered.map(card => {
-        const left = Math.max(0, card.owned - card.used);
-        const hasCombatStats = card.attack !== '' || card.defense !== '';
-        const nationLabel = card.nation || 'Universal';
-        const rarityLabel = card.rarity || 'None';
-        return `
-          <div id="card-${card.id}" class="card-item bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
-            <div class="px-4 py-3 bg-slate-950/70 print-surface border-b border-slate-800 flex items-center justify-between gap-2">
-              <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                  ${card.cardCode ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] font-bold text-emerald-300 shrink-0">${escapeHTML(card.cardCode)}</span>` : ''}
-                  <h3 class="font-bold text-base text-white truncate">${escapeHTML(card.name)}</h3>
-                </div>
-                <p class="text-[11px] font-medium text-indigo-400 uppercase tracking-wider truncate mt-0.5">${escapeHTML(card.cardType || 'Card')}</p>
-              </div>
-              ${renderManaBadge(card)}
-            </div>
-            <div class="relative aspect-[4/3] bg-slate-950 print-surface flex items-center justify-center overflow-hidden group border-b border-slate-800">
-              ${card.image
-                ? `<img src="${card.image}" alt="${escapeHTML(card.name)}" onclick="openLightbox('${card.image}')" class="w-full h-full object-cover cursor-zoom-in transition duration-300 group-hover:scale-105" />`
-                : `<div class="text-center p-4 text-slate-600">
-                     <i class="fa-regular fa-image text-3xl mb-1.5"></i>
-                     <p class="text-xs">No Picture Uploaded</p>
-                   </div>`
-              }
-              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 max-w-[72%]">
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/90 print-surface text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                  <i class="fa-solid fa-flag mr-1 text-[10px]"></i>${escapeHTML(nationLabel)}
-                </span>
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-md print-surface rarity-${escapeHTML(rarityLabel)}">
-                  <i class="fa-solid ${rarityLabel === 'Leader' ? 'fa-crown' : 'fa-gem'} mr-1 text-[10px]"></i>${escapeHTML(rarityLabel)}
-                </span>
-                ${card.isToken ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-950/90 print-surface text-teal-300 border border-teal-400/40 backdrop-blur-md">
-                    <i class="fa-solid fa-coins mr-1 text-[10px]"></i>Token
-                  </span>
-                ` : ''}
-                ${card.hasConditionalEvent ? `
-                  <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-950/90 print-surface text-cyan-300 border border-cyan-400/40 backdrop-blur-md">
-                    <i class="fa-solid fa-bolt mr-1 text-[10px]"></i>Conditional
-                  </span>
-                ` : ''}
-              </div>
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md print-surface ${left > 0 ? 'bg-emerald-600/90 text-white' : 'bg-rose-600/90 text-white'}">
-                ${left} Left
-              </div>
-            </div>
-            <div class="p-4 flex-1 flex flex-col justify-between space-y-2.5">
-              ${card.restriction ? `
-                <div class="px-3 py-2 rounded-lg bg-orange-500/10 print-surface border border-orange-500/30 text-[11px] text-orange-200 leading-snug">
-                  <span class="font-bold text-orange-400 uppercase tracking-wide mr-1"><i class="fa-solid fa-ban mr-1"></i>Restriction:</span>
-                  ${escapeHTML(card.restriction)}
-                </div>
-              ` : ''}
-              <div class="bg-slate-950/80 print-surface border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed min-h-[56px]">
-                <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">Ability</span>
-                ${card.ability
-                  ? escapeHTML(card.ability)
-                  : '<span class="text-slate-600 italic">No ability description.</span>'}
-              </div>
-              ${card.hasConditionalEvent && (card.conditionTrigger || card.conditionEffect) ? `
-                <div class="bg-cyan-950/25 print-surface border border-cyan-500/30 rounded-xl p-3 text-xs text-cyan-100 leading-relaxed space-y-1">
-                  <span class="block text-[10px] font-semibold uppercase tracking-wider text-cyan-400"><i class="fa-solid fa-bolt mr-1"></i>Conditional Event</span>
-                  ${card.conditionTrigger ? `<p class="text-[11px] text-cyan-300"><span class="font-semibold">If/When:</span> ${escapeHTML(card.conditionTrigger)}</p>` : ''}
-                  ${card.conditionEffect ? `<p class="text-xs text-slate-200"><span class="font-semibold text-cyan-300">Then:</span> ${escapeHTML(card.conditionEffect)}</p>` : ''}
-                </div>
-              ` : ''}
-              ${card.special ? `
-                <div class="bg-fuchsia-950/25 print-surface border border-fuchsia-500/25 rounded-xl p-3 text-xs text-fuchsia-100 leading-relaxed">
-                  <span class="block text-[10px] font-semibold uppercase tracking-wider text-fuchsia-400 mb-0.5"><i class="fa-solid fa-sparkles mr-1"></i>Special</span>
-                  ${escapeHTML(card.special)}
-                </div>
-              ` : ''}
-              ${hasCombatStats ? `
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-rose-500/10 print-surface border border-rose-500/25 text-xs">
-                    <span class="text-rose-300 font-medium"><i class="fa-solid fa-khanda mr-1.5"></i>ATK</span>
-                    <span class="font-extrabold text-rose-400 text-sm">${escapeHTML(card.attack || '0')}</span>
-                  </div>
-                  <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 print-surface border border-blue-500/25 text-xs">
-                    <span class="text-blue-300 font-medium"><i class="fa-solid fa-shield-halved mr-1.5"></i>DEF</span>
-                    <span class="font-extrabold text-blue-400 text-sm">${escapeHTML(card.defense || '0')}</span>
-                  </div>
-                </div>
-              ` : ''}
-              <div class="space-y-2 pt-2 border-t border-slate-800">
-                <div class="grid grid-cols-2 gap-2 text-xs no-print">
-                  <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
-                    <span class="text-slate-400">Owned:</span>
-                    <div class="flex items-center gap-1.5">
-                      <button onclick="adjustCount('${card.id}', 'owned', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
-                      <span class="font-bold w-4 text-center text-white">${card.owned}</span>
-                      <button onclick="adjustCount('${card.id}', 'owned', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
-                    </div>
-                  </div>
-                  <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
-                    <span class="text-slate-400">Used:</span>
-                    <div class="flex items-center gap-1.5">
-                      <button onclick="adjustCount('${card.id}', 'used', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
-                      <span class="font-bold w-4 text-center text-amber-400">${card.used}</span>
-                      <button onclick="adjustCount('${card.id}', 'used', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center pt-1 text-xs">
-                  <span class="text-slate-500">${card.owned} owned &minus; ${card.used} used</span>
-                  <div class="flex items-center gap-2.5 no-print">
-                    <button onclick="printCards('${card.id}')" title="Print or Save Card as PDF" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
-                      <i class="fa-solid fa-file-pdf"></i>
-                    </button>
-                    <button onclick="exportToExcel('${card.id}')" title="Export Card to Excel" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-                      <i class="fa-solid fa-file-excel"></i>
-                    </button>
-                    <button onclick="openModal('${card.id}')" class="text-slate-400 hover:text-white flex items-center gap-1">
-                      <i class="fa-solid fa-pen"></i> Edit
-                    </button>
-                    <button onclick="deleteCard('${card.id}')" class="text-slate-400 hover:text-rose-400 flex items-center gap-1">
-                      <i class="fa-solid fa-trash"></i> Delete
-                    </button>
-                  </div><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CustomCard Vault — Legends of Steel & Silk Card Creator & AI Deck Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -1468,9 +19,94 @@
     .rarity-Leader { background: linear-gradient(135deg, rgba(245, 158, 11, 0.28), rgba(234, 88, 12, 0.28)); color: #fde68a; border-color: rgba(251, 191, 36, 0.7); }
     .rarity-None { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border-color: rgba(71, 85, 105, 0.5); }
 
+    /* Interactive Animations */
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes modalBackdropIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes modalPanelIn {
+      0% { opacity: 0; transform: translateY(18px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @keyframes shimmerSweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+    @keyframes statPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.14); }
+      100% { transform: scale(1); }
+    }
+
+    .animate-card-enter {
+      animation: fadeSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-modal-backdrop {
+      animation: modalBackdropIn 0.22s ease-out both;
+    }
+    .animate-modal-panel {
+      animation: modalPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .animate-tab-panel {
+      animation: fadeSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .animate-float-slow {
+      animation: gentleFloat 3.4s ease-in-out infinite;
+    }
+    .animate-stat-pop {
+      animation: statPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .btn-animated {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .btn-animated:hover {
+      transform: translateY(-1.5px);
+    }
+    .btn-animated:active {
+      transform: translateY(0.5px) scale(0.97);
+    }
+    .btn-shimmer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 50%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      pointer-events: none;
+    }
+    .btn-shimmer:hover::after {
+      animation: shimmerSweep 0.75s ease-in-out;
+    }
+    .card-item {
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .card-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 35px -10px rgba(79, 70, 229, 0.22);
+      border-color: rgba(99, 102, 241, 0.45);
+    }
+    .stat-card {
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.8);
+    }
+
     @media print {
       body { background: #ffffff !important; color: #0f172a !important; }
-      header, .no-print, #cardModal, #aiDeckModal, #lightbox { display: none !important; }
+      header, .no-print, #cardModal, #aiDeckModal, #rulebookModal, #lightbox { display: none !important; }
       main { max-width: 100% !important; padding: 0 !important; }
       #cardGrid {
         display: grid !important;
@@ -1482,6 +118,8 @@
         color: #0f172a !important;
         border: 1.5px solid #cbd5e1 !important;
         box-shadow: none !important;
+        animation: none !important;
+        transform: none !important;
         break-inside: avoid;
         page-break-inside: avoid;
       }
@@ -1506,7 +144,7 @@
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 animate-float-slow">
           <i class="fa-solid fa-layer-group text-white text-lg"></i>
         </div>
         <div>
@@ -1515,57 +153,58 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
-        <button onclick="openAIDeckModal()" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 transition flex items-center gap-2">
+        <button onclick="openRulebookModal()" title="Open Official Legends of Steel & Silk Rulebook" class="btn-animated btn-shimmer px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg shadow-amber-500/20 flex items-center gap-2">
+          <i class="fa-solid fa-book-open"></i> Rulebook
+        </button>
+        <button onclick="openAIDeckModal()" class="btn-animated btn-shimmer px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20 flex items-center gap-2">
           <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deck Agent
         </button>
-        <button onclick="printCards()" title="Print or Save as PDF" class="px-3 py-2 text-xs font-medium rounded-lg bg-rose-950/70 hover:bg-rose-900/80 text-rose-200 border border-rose-500/40 transition flex items-center gap-1.5">
+        <button onclick="printCards()" title="Print or Save as PDF" class="btn-animated px-3 py-2 text-xs font-medium rounded-lg bg-rose-950/70 hover:bg-rose-900/80 text-rose-200 border border-rose-500/40 flex items-center gap-1.5">
           <i class="fa-solid fa-file-pdf"></i><span>Print / PDF</span>
         </button>
-        <button onclick="exportToExcel()" title="Export Visible Cards to Excel (.xlsx)" class="px-3 py-2 text-xs font-medium rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-500/40 transition flex items-center gap-1.5">
+        <button onclick="exportToExcel()" title="Export Visible Cards to Excel (.xlsx)" class="btn-animated px-3 py-2 text-xs font-medium rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-500/40 flex items-center gap-1.5">
           <i class="fa-solid fa-file-excel"></i><span>Excel</span>
         </button>
-        <button onclick="exportData()" title="Download JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+        <button onclick="exportData()" title="Download JSON Backup" class="btn-animated px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5">
           <i class="fa-solid fa-download"></i><span class="hidden md:inline">JSON</span>
         </button>
-        <label title="Restore JSON Backup" class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+        <label title="Restore JSON Backup" class="btn-animated px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-upload"></i><span class="hidden md:inline">Import</span>
           <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
         </label>
-        <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
+        <button onclick="openModal()" class="btn-animated btn-shimmer px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 flex items-center gap-2">
           <i class="fa-solid fa-plus"></i> Add Card
         </button>
       </div>
     </div>
   </header>
-
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
         <p class="text-xs text-slate-400">Unique Cards</p>
         <p id="statUnique" class="text-2xl font-bold text-white mt-0.5">0</p>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
         <p class="text-xs text-slate-400">Total Owned</p>
         <p id="statOwned" class="text-2xl font-bold text-indigo-400 mt-0.5">0</p>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div class="stat-card bg-slate-900 border border-slate-800 rounded-xl p-4">
         <p class="text-xs text-slate-400">Used / In Deck</p>
         <p id="statUsed" class="text-2xl font-bold text-amber-400 mt-0.5">0</p>
       </div>
-      <div class="bg-slate-900 border border-emerald-500/30 rounded-xl p-4">
+      <div class="stat-card bg-slate-900 border border-emerald-500/30 rounded-xl p-4">
         <p class="text-xs text-emerald-400 font-medium">Available Left</p>
         <p id="statLeft" class="text-2xl font-bold text-emerald-400 mt-0.5">0</p>
       </div>
     </div>
-
     <div class="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-6 no-print">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
         <input type="text" id="searchInput" oninput="renderCards()" placeholder="Search ID, name, faction, rarity, ability, condition..."
-          class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" />
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <select id="filterNation" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterNation" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Factions / Nations</option>
           <option value="Universal">Universal / Neutral</option>
           <option value="Japan">Japan</option>
@@ -1573,7 +212,7 @@
           <option value="China">China</option>
           <option value="Other">Other</option>
         </select>
-        <select id="filterRarity" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterRarity" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Rarities</option>
           <option value="Common">Common</option>
           <option value="Uncommon">Uncommon</option>
@@ -1584,48 +223,338 @@
           <option value="Leader">Leader</option>
           <option value="None">None</option>
         </select>
-        <select id="filterToken" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterToken" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">Tokens & Regular</option>
           <option value="tokens_only">Tokens Only</option>
           <option value="non_tokens">Non-Tokens Only</option>
         </select>
-        <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterType" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Card Types</option>
         </select>
-        <select id="filterMana" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterMana" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Resource Effects</option>
           <option value="spend">Spends Resource</option>
           <option value="add">Adds Resource</option>
         </select>
-        <select id="filterCondition" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterCondition" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Events</option>
           <option value="has_condition">Has Conditional Event</option>
           <option value="no_condition">No Conditional Event</option>
         </select>
-        <select id="filterStock" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+        <select id="filterStock" onchange="renderCards()" class="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           <option value="all">All Stock</option>
           <option value="available">Has Cards Left (greater than 0)</option>
           <option value="none_left">0 Left (All Used)</option>
         </select>
       </div>
     </div>
-
     <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
-    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl no-print">
-      <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl">
+    <div id="emptyState" class="hidden text-center py-20 px-4 border-2 border-dashed border-slate-800 rounded-2xl no-print animate-card-enter">
+      <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 text-indigo-400 text-xl animate-float-slow">
         <i class="fa-solid fa-wand-sparkles"></i>
       </div>
       <h3 class="text-lg font-semibold text-slate-200 mb-1">No cards created yet</h3>
       <p class="text-sm text-slate-400 max-w-sm mx-auto mb-6">Add a card with its Card ID, picture, faction, rarity, stats, ability, conditional events, and track how many copies you have left.</p>
-      <button onclick="openModal()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
+      <button onclick="openModal()" class="btn-animated px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
         Create Your First Card
       </button>
     </div>
   </main>
 
+  <!-- Official Rulebook Modal -->
+  <div id="rulebookModal" onclick="if(event.target===this) closeRulebookModal()" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
+    <div class="bg-slate-900 border border-amber-500/30 rounded-2xl max-w-4xl w-full shadow-2xl max-h-[92vh] flex flex-col overflow-hidden animate-modal-panel">
+      <!-- Rulebook Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-slate-950 via-amber-950/30 to-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
+            <i class="fa-solid fa-book-open text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white tracking-tight">Legends of Steel and Silk — Official Rulebook</h2>
+            <p class="text-xs text-amber-300/80">Complete Game Rules, Card Types, Turn Phases, Keywords & Victory Conditions</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="rulebookSearch" oninput="filterRulebookSections()" placeholder="Search rules, keywords..."
+              class="pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 w-44 sm:w-56" />
+          </div>
+          <button onclick="closeRulebookModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div id="rulebookTabs" class="px-6 py-2.5 bg-slate-950/80 border-b border-slate-800 flex flex-wrap gap-1.5 shrink-0">
+        <button onclick="selectRulebookTab('all')" data-rb-tab="all" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 text-white transition">
+          <i class="fa-solid fa-layer-group mr-1"></i>All Sections
+        </button>
+        <button onclick="selectRulebookTab('overview')" data-rb-tab="overview" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-chess-board mr-1"></i>Overview & Field
+        </button>
+        <button onclick="selectRulebookTab('cards')" data-rb-tab="cards" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-id-card mr-1"></i>Card Types
+        </button>
+        <button onclick="selectRulebookTab('gameplay')" data-rb-tab="gameplay" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-rotate mr-1"></i>Setup & Phases
+        </button>
+        <button onclick="selectRulebookTab('victory')" data-rb-tab="victory" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-trophy mr-1"></i>Winning
+        </button>
+        <button onclick="selectRulebookTab('keywords')" data-rb-tab="keywords" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-bolt mr-1"></i>Keywords & Positions
+        </button>
+        <button onclick="selectRulebookTab('advanced')" data-rb-tab="advanced" class="rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i class="fa-solid fa-scale-balanced mr-1"></i>Special & Multiplayer
+        </button>
+      </div>
+
+      <!-- Rulebook Content Body -->
+      <div id="rulebookBody" class="p-6 overflow-y-auto space-y-5 text-sm text-slate-200 leading-relaxed">
+
+        <!-- Section 1: Overview & Play Field -->
+        <section data-rb-section="overview" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
+            <i class="fa-solid fa-chess-board"></i>
+            <h3>1. What is Legends of Steel and Silk? & The Play Field</h3>
+          </div>
+          <p class="text-slate-300">
+            <strong>Legends of Steel and Silk (LSS)</strong> is a collectible card game for two or more players. Each player selects a <strong>Leader</strong> or <strong>Capital</strong> and builds a board full of champions and buildings. You can win by destroying the enemy's leader/capital, obtaining a high amount of resources, or building a great capital.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-xs">
+            <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-indigo-300 uppercase tracking-wider"><i class="fa-solid fa-arrows-up-down mr-1.5"></i>Two-Row Board Layout</div>
+              <p class="text-slate-300">Each player has <strong>two rows</strong> (<strong>Front Row</strong> and <strong>Back Row</strong>, 5 slots each) separated by the Battle Line, plus a face-down Deck (minimum <strong>15 cards</strong>) and a Discard Pile.</p>
+              <p class="text-slate-400">Some cards may move between rows during the Move phase, while others (such as Capitals and Buildings) remain locked on the row where they are played.</p>
+            </div>
+            <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-emerald-300 uppercase tracking-wider"><i class="fa-solid fa-droplet mr-1.5"></i>Resource Cap System</div>
+              <p class="text-slate-300">Players have a <strong>resource cap</strong> that limits how many cards they can maintain in play. Your cap is determined by your starting Leader or Capital, Buildings, and other in-game effects.</p>
+              <p class="text-slate-400">Champions hold onto their resource cost while in play until they leave play or you gain more resources.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 2: Card Types -->
+        <section data-rb-section="cards" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-purple-400 font-bold text-base">
+            <i class="fa-solid fa-id-card"></i>
+            <h3>2. Card Types & Traits</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <!-- Capitals -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-amber-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-amber-300 text-sm"><i class="fa-solid fa-landmark mr-1.5"></i>Capitals</span>
+                <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-200 text-[10px] font-semibold">Back Row Only • Max 1</span>
+              </div>
+              <p class="text-slate-300">Represent the center of your civilization (e.g., <em>Mohenjo-Daro: +5 Res, 0 ATK, 6 DEF, Condition: Play a Shudra or Vaisya, Threshold: 5</em>).</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Starting with a Capital grants its resource bonus (e.g., +5) and represents you as the player.</li>
+                <li>Playing a Capital from hand grants <strong>no resource bonus</strong>, costs 0, counts as your <strong>1 building for that turn</strong>, and must be placed on the <strong>back row</strong>.</li>
+                <li>Cannot move between rows and cannot attack.</li>
+                <li><strong>Heritage Tokens:</strong> Meeting the Capital's Condition places 1 Heritage Token on it (<strong>+1 Defense</strong> each). Reaching its <strong>Threshold</strong> wins the game!</li>
+              </ul>
+            </div>
+
+            <!-- Champions -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-rose-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-rose-300 text-sm"><i class="fa-solid fa-khanda mr-1.5"></i>Champions</span>
+                <span class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-200 text-[10px] font-semibold">Enters Unprepared</span>
+              </div>
+              <p class="text-slate-300">Represent the people who work and fight for your civilization (e.g., <em>Sunzi: Cost 4, 3 ATK, 3 DEF, Champion - Scholar, Unique</em>).</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Played during the Play phase; may fight in Fight phase and move in Move phase.</li>
+                <li>Play any number per turn up to your <strong>resource cap</strong>.</li>
+                <li><strong>Heals at end of turn:</strong> Unlike Leaders or Capitals, damaged Champions restore full defense at the end of the Move phase.</li>
+                <li>Subtypes (e.g., <em>Scholar, Kshatriya, Shudra, Vaisya</em>) trigger synergy abilities.</li>
+              </ul>
+            </div>
+
+            <!-- Buildings -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-emerald-300 text-sm"><i class="fa-solid fa-gopuram mr-1.5"></i>Buildings</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-200 text-[10px] font-semibold">Limit 1 Per Turn</span>
+              </div>
+              <p class="text-slate-300">Structures and monuments created by your civilization (e.g., <em>Irrigation System: Neutral, +1 Res, 0 ATK, 1 DEF</em>).</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Usually cost 0 resources and often <strong>increase your resource cap</strong> (e.g., +1).</li>
+                <li>Each player may only play <strong>one Building (or Capital) per turn</strong> during the Play phase.</li>
+                <li>Remain locked on the row where they are played and cannot move.</li>
+              </ul>
+            </div>
+
+            <!-- Tactics -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-cyan-300 text-sm"><i class="fa-solid fa-scroll mr-1.5"></i>Tactics</span>
+                <span class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-200 text-[10px] font-semibold">0 Cost • One-Time Effect</span>
+              </div>
+              <p class="text-slate-300">One-time effects played when a specific condition is met (e.g., <em>Horse Sacrifice: India, Condition: It is your play phase, Effect: Friendly Kshatriya get +1/+0 this turn and must attack</em>).</p>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Do <strong>not</strong> require resources to play.</li>
+                <li>When its <strong>Condition</strong> is met, reveal it from your hand to resolve its <strong>Effect</strong>, then place it in your discard pile.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: Setup & Turn Phases -->
+        <section data-rb-section="gameplay" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex items-center gap-2 text-sky-400 font-bold text-base">
+            <i class="fa-solid fa-rotate"></i>
+            <h3>3. Deck Setup & The Four Turn Phases</h3>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2">
+            <div class="font-bold text-amber-300 uppercase tracking-wider">Pre-Game Setup & Deck Rules</div>
+            <ul class="list-disc pl-4 space-y-1 text-slate-300">
+              <li>Construct a main deck of <strong>at least 15 cards</strong> (excluding your starting Leader or Capital).</li>
+              <li><strong>Faction Rule:</strong> You may ONLY include cards that match your Leader or Capital's faction, plus <strong>Neutral / Universal</strong> cards.</li>
+              <li><strong>Copy Limits:</strong> Max <strong>3 copies</strong> of any standard card; max <strong>1 copy</strong> of any <strong>Unique</strong> card.</li>
+              <li>Start with <strong>1 Leader or Capital in play</strong> (choose front or back row). The player whose starting card has the <strong>lower resource score goes first</strong>.</li>
+              <li>After placing your starting Leader/Capital, each player <strong>draws 4 cards</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-indigo-500/30 space-y-1.5">
+              <div class="font-extrabold text-indigo-300">Phase 1: DRAW</div>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Draw <strong>1 card</strong> from your deck (skip draw on Round 1 if going first).</li>
+                <li><strong>Prepare</strong> all your unprepared champions (turn upright).</li>
+                <li>If you have <strong>10+ resources</strong>, gain <strong>1 Silk Token</strong>.</li>
+              </ul>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-1.5">
+              <div class="font-extrabold text-emerald-300">Phase 2: PLAY</div>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Play up to <strong>1 Building or Capital</strong> per turn.</li>
+                <li>Play any number of <strong>Champions</strong> within your resource cap.</li>
+                <li>New Champions enter play <strong>unprepared</strong> (turned sideways; cannot attack or move this turn).</li>
+              </ul>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-rose-500/30 space-y-1.5">
+              <div class="font-extrabold text-rose-300">Phase 3: FIGHT</div>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Attack with prepared Champions and/or Leader.</li>
+                <li>Must target enemy <strong>front row</strong> first unless empty or attacker has <strong>Ranged</strong>.</li>
+                <li>Non-Ranged attackers must be in your <strong>front row</strong> (unless your front row is empty).</li>
+                <li>Attacker and target deal <strong>simultaneous Strength damage</strong> to each other's Defense; 0 Defense dies.</li>
+              </ul>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-amber-500/30 space-y-1.5">
+              <div class="font-extrabold text-amber-300">Phase 4: MOVE</div>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Move prepared Champions and/or Leader between rows or reorder slots on their current row.</li>
+                <li>Damaged <strong>Champions and Buildings heal</strong> to full defense (Leaders & Capitals do <strong>not</strong> heal).</li>
+                <li>If you have <strong>3+ Silk Tokens</strong>, you win!</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4: Victory Conditions -->
+        <section data-rb-section="victory" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-base">
+            <i class="fa-solid fa-trophy"></i>
+            <h3>4. Three Ways to Win the Game</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-4 rounded-xl bg-gradient-to-b from-rose-950/40 to-slate-900 border border-rose-500/35 space-y-1.5">
+              <div class="font-extrabold text-rose-300 text-sm"><i class="fa-solid fa-sword mr-1.5"></i>Steel Victory</div>
+              <p class="text-slate-300">Reduce your opponent's <strong>Leader</strong> or <strong>Capital</strong> on their rows to <strong>0 Defense</strong> and you immediately win the game.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-gradient-to-b from-amber-950/40 to-slate-900 border border-amber-500/35 space-y-1.5">
+              <div class="font-extrabold text-amber-300 text-sm"><i class="fa-solid fa-landmark mr-1.5"></i>Legend Victory</div>
+              <p class="text-slate-300">Start with or play a <strong>Capital</strong>. Each time you meet its Condition, place <strong>1 Heritage Token</strong> (+1 DEF) on it. Reach the Capital's <strong>Threshold</strong> to win.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-gradient-to-b from-cyan-950/40 to-slate-900 border border-cyan-500/35 space-y-1.5">
+              <div class="font-extrabold text-cyan-300 text-sm"><i class="fa-solid fa-coins mr-1.5"></i>Silk Victory</div>
+              <p class="text-slate-300">During your <strong>Draw phase</strong>, if you have <strong>10+ resources</strong>, gain <strong>1 Silk Token</strong> (dropping below 10 removes all Silk Tokens). Have <strong>3+ Silk Tokens</strong> at the end of your Move phase to win.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5: Keywords & Board Positions -->
+        <section data-rb-section="keywords" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex items-center gap-2 text-cyan-400 font-bold text-base">
+            <i class="fa-solid fa-bolt"></i>
+            <h3>5. Official Keywords & Board Positions</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-indigo-300">Attack:</strong> Effect triggers when this card attacks.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-rose-300">Breach:</strong> If this destroys a front-row unit, it also deals its damage to the unit directly behind it on the back row.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-slate-200">Death:</strong> Effect triggers when this card dies.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-emerald-300">Move:</strong> Effect triggers when this card moves.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-amber-300">Pacifist:</strong> Cannot attack, but can be attacked and deals its Strength in damage when attacked.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-sky-300">Play:</strong> Effect triggers when this card is played.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-purple-300">Ranged:</strong> Can attack any row (cannot target Leader/Capital if front row has units). Takes no counter-damage when attacking across 2+ rows.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-fuchsia-300">Reincarnate:</strong> Can be played from the discard pile once (triggering its reincarnate effect), unless stated otherwise.</div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800"><strong class="text-cyan-300">Unique:</strong> Only 1 copy of this card may be included in a deck.</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs pt-1">
+            <div class="p-3 rounded-lg bg-indigo-950/25 border border-indigo-500/25">
+              <div class="font-bold text-indigo-300">Adjacent</div>
+              <p class="text-slate-300 mt-0.5">Next to each other in any direction (up to 3 adjacent friendly cards on a full board: 1 across rows, 2 on same row).</p>
+            </div>
+            <div class="p-3 rounded-lg bg-indigo-950/25 border border-indigo-500/25">
+              <div class="font-bold text-indigo-300">In Front Of</div>
+              <p class="text-slate-300 mt-0.5">On the front row and directly adjacent to the referenced card on the back row.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-indigo-950/25 border border-indigo-500/25">
+              <div class="font-bold text-indigo-300">Behind</div>
+              <p class="text-slate-300 mt-0.5">On the back row and directly adjacent to the referenced card on the front row.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-indigo-950/25 border border-indigo-500/25">
+              <div class="font-bold text-indigo-300">Beside</div>
+              <p class="text-slate-300 mt-0.5">Adjacent to each other on the exact same row.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 6: Additional & Multiplayer Rules -->
+        <section data-rb-section="advanced" class="rb-section animate-tab-panel bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center gap-2 text-fuchsia-400 font-bold text-base">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <h3>6. Additional Rules, Leaders/Capitals & Multiplayer</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+              <div class="font-bold text-amber-300">Leaders & Capitals in the Same Deck</div>
+              <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                <li>Start with a <strong>Leader</strong>: you may include at most <strong>1 matching-faction Capital</strong> in your 15-card deck (0 Leaders in deck).</li>
+                <li>Start with a <strong>Capital</strong>: you may include at most <strong>1 matching-faction Leader</strong> in your 15-card deck (0 Capitals in deck).</li>
+                <li>Played from hand: grants <strong>no resource bonus</strong> and costs <strong>0 resources</strong>. A Capital counts as a 0-cost Building; a Leader counts as a 0-cost Champion.</li>
+                <li><strong>Win-Condition Impact:</strong> Playing a Capital from hand does <em>not</em> let the enemy win by destroying it. Playing a Leader from hand <em>does</em> give the enemy an extra Steel Victory target!</li>
+              </ul>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+              <div>
+                <div class="font-bold text-emerald-300">Set Deckbuilding Limits</div>
+                <p class="text-slate-300 mt-0.5">As of <strong>Set 1</strong>, each main deck must contain at least <strong>15 cards</strong> plus a starting Leader or Capital (planned to expand to 20 in Set 2 and 25–30 later).</p>
+              </div>
+              <div class="pt-1 border-t border-slate-800">
+                <div class="font-bold text-sky-300">Multiplayer Games (3+ Players)</div>
+                <p class="text-slate-300 mt-0.5">Playable in <strong>Teams</strong> or <strong>Free-For-All</strong>. In multiplayer games, <strong>all front rows are considered adjacent to all other front rows</strong>.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Add / Edit Card Modal -->
-  <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+  <div id="cardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto animate-modal-panel">
       <div class="flex justify-between items-center mb-4">
         <h2 id="modalTitle" class="text-lg font-bold text-white">Add Card</h2>
         <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -1641,7 +570,7 @@
               <span class="text-[10px]">No Image</span>
             </div>
             <div class="flex-1 space-y-2">
-              <label class="w-full px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer">
+              <label class="btn-animated w-full px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-camera"></i> Upload Photo
                 <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
               </label>
@@ -1740,7 +669,6 @@
           <textarea id="ability" rows="2" placeholder="e.g., Play, Attack: Look at a random card in opponent's hand. Breach, Ranged..."
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500"></textarea>
         </div>
-
         <!-- Conditional Event Section -->
         <div class="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-3">
           <div class="flex items-center justify-between">
@@ -1763,7 +691,6 @@
             </div>
           </div>
         </div>
-
         <div>
           <label class="block text-xs font-medium text-fuchsia-400 mb-1">Special</label>
           <textarea id="special" rows="2" placeholder="Special mechanics, positional synergy (Adjacent/Behind/Beside), win-condition notes..."
@@ -1788,16 +715,15 @@
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button>
-          <button type="submit" class="px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white">Save Card</button>
+          <button type="button" onclick="closeModal()" class="btn-animated px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button>
+          <button type="submit" class="btn-animated btn-shimmer px-5 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white">Save Card</button>
         </div>
       </form>
     </div>
   </div>
-
   <!-- AI Deck Builder Modal -->
-  <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
+  <div id="aiDeckModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50 animate-modal-backdrop">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5 animate-modal-panel">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3.5">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white">
@@ -1810,11 +736,15 @@
         </div>
         <button onclick="closeAIDeckModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
       <!-- Official LSS Rulebook Banner -->
       <div class="p-3 rounded-xl bg-slate-950/90 border border-fuchsia-500/30 text-xs text-slate-300 space-y-1.5">
-        <div class="font-semibold text-fuchsia-300 flex items-center gap-1.5">
-          <i class="fa-solid fa-book"></i> Legends of Steel & Silk (LSS) Rulebook Constraints:
+        <div class="flex items-center justify-between gap-2">
+          <div class="font-semibold text-fuchsia-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-book"></i> Legends of Steel & Silk (LSS) Rulebook Constraints:
+          </div>
+          <button type="button" onclick="closeAIDeckModal(); openRulebookModal();" class="text-[11px] font-semibold text-amber-300 hover:text-amber-200 underline">
+            Open Full Rulebook
+          </button>
         </div>
         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-300 list-disc pl-4">
           <li><strong>Main Deck Size:</strong> At least <strong>15 cards</strong> (starting Leader/Capital is separate).</li>
@@ -1826,7 +756,6 @@
           <i class="fa-solid fa-trophy mr-1"></i> Evaluates <strong>Steel Victory</strong> (0 DEF on enemy Leader/Capital), <strong>Legend Victory</strong> (Capital heritage threshold), and <strong>Silk Victory</strong> (10+ resources / 3 Silk tokens), plus keywords (<em>Breach, Ranged, Pacifist, Reincarnate, Play, Attack, Death, Move</em>).
         </p>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
           <label class="block text-xs font-medium text-amber-400 mb-1">Faction (+ Universal)</label>
@@ -1867,7 +796,6 @@
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm font-bold focus:outline-none focus:border-fuchsia-500" />
         </div>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-medium text-teal-400 mb-1">Token / Tactic Pool</label>
@@ -1883,7 +811,6 @@
             class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-fuchsia-500" />
         </div>
       </div>
-
       <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between">
           <label class="flex items-center gap-2 text-xs font-semibold text-slate-200 cursor-pointer">
@@ -1897,13 +824,11 @@
             class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs focus:outline-none focus:border-fuchsia-500" />
         </div>
       </div>
-
       <div class="flex justify-end gap-2">
-        <button type="button" onclick="generateAIDeck()" id="generateDeckBtn" class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg transition flex items-center gap-2">
+        <button type="button" onclick="generateAIDeck()" id="generateDeckBtn" class="btn-animated btn-shimmer px-5 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg flex items-center gap-2">
           <i class="fa-solid fa-sparkles"></i> Build LSS Deck Now
         </button>
       </div>
-
       <div id="aiDeckResult" class="hidden space-y-4 pt-3 border-t border-slate-800">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -1911,10 +836,10 @@
             <p id="generatedDeckSummary" class="text-xs text-slate-400"></p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="copyDeckList()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
+            <button onclick="copyDeckList()" class="btn-animated px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
               <i class="fa-regular fa-copy mr-1"></i> Copy List
             </button>
-            <button onclick="applyDeckToUsedStock()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white">
+            <button onclick="applyDeckToUsedStock()" class="btn-animated px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white">
               <i class="fa-solid fa-check mr-1"></i> Apply to "Used" Stock
             </button>
           </div>
@@ -1926,22 +851,71 @@
       </div>
     </div>
   </div>
-
   <!-- Lightbox -->
-  <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out">
-    <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain" />
+  <div id="lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50 cursor-zoom-out animate-modal-backdrop">
+    <img id="lightboxImg" src="" alt="Full card" class="max-h-[90vh] max-w-[92vw] rounded-2xl shadow-2xl object-contain animate-modal-panel" />
   </div>
-
   <script>
     const STORAGE_KEY = 'customcard_vault_v3';
     const GEMINI_KEY_STORAGE = 'customcard_gemini_key_v1';
     let cards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     let lastGeneratedDeck = [];
     let lastStarterCard = null;
+    let activeRulebookTab = 'all';
     const savedKey = localStorage.getItem(GEMINI_KEY_STORAGE);
     if (savedKey) {
       document.getElementById('geminiApiKey').value = savedKey;
     }
+
+    /* Rulebook Modal & Tab Controls */
+    function openRulebookModal() {
+      const modal = document.getElementById('rulebookModal');
+      document.getElementById('rulebookSearch').value = '';
+      selectRulebookTab('all');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeRulebookModal() {
+      const modal = document.getElementById('rulebookModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    function selectRulebookTab(tab) {
+      activeRulebookTab = tab;
+      document.querySelectorAll('.rb-tab-btn').forEach(btn => {
+        const isActive = btn.getAttribute('data-rb-tab') === tab;
+        btn.className = isActive
+          ? 'rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 text-white shadow-md shadow-amber-500/20 transition'
+          : 'rb-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+      });
+      filterRulebookSections();
+    }
+    function filterRulebookSections() {
+      const query = (document.getElementById('rulebookSearch').value || '').toLowerCase().trim();
+      document.querySelectorAll('.rb-section').forEach(section => {
+        const secKey = section.getAttribute('data-rb-section');
+        const matchesTab = activeRulebookTab === 'all' || secKey === activeRulebookTab;
+        const matchesQuery = !query || section.textContent.toLowerCase().includes(query);
+        if (matchesTab && matchesQuery) {
+          section.classList.remove('hidden');
+          section.classList.remove('animate-tab-panel');
+          void section.offsetWidth;
+          section.classList.add('animate-tab-panel');
+        } else {
+          section.classList.add('hidden');
+        }
+      });
+    }
+
+    /* Keyboard Escape Handler */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeRulebookModal();
+        closeModal();
+        closeAIDeckModal();
+        closeLightbox();
+      }
+    });
 
     function generateCardCode(nation = 'Universal', excludeId = null) {
       const prefixMap = {
@@ -1965,13 +939,11 @@
       }
       return candidate;
     }
-
     function fillGeneratedCardCode() {
       const nation = document.getElementById('nation').value;
       const excludeId = document.getElementById('cardId').value || null;
       document.getElementById('cardCode').value = generateCardCode(nation, excludeId);
     }
-
     // Backfill cardCode for any older saved cards
     let needsMigrationSave = false;
     cards = cards.map((c, idx) => {
@@ -1984,7 +956,6 @@
     if (needsMigrationSave) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
     }
-
     function saveGeminiKey(val) {
       localStorage.setItem(GEMINI_KEY_STORAGE, val.trim());
     }
@@ -2053,6 +1024,13 @@
       preview.textContent = `${left} left`;
       preview.className = left > 0 ? 'text-sm font-bold text-emerald-400' : 'text-sm font-bold text-rose-400';
     }
+    function triggerStatPop(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.classList.remove('animate-stat-pop');
+      void el.offsetWidth;
+      el.classList.add('animate-stat-pop');
+    }
     function adjustCount(id, field, delta) {
       cards = cards.map(c => {
         if (c.id !== id) return c;
@@ -2068,6 +1046,9 @@
       });
       saveToStorage();
       renderCards();
+      triggerStatPop('statOwned');
+      triggerStatPop('statUsed');
+      triggerStatPop('statLeft');
     }
     function openModal(id = null) {
       const modal = document.getElementById('cardModal');
@@ -2156,7 +1137,6 @@
       const hasConditionalEvent = document.getElementById('hasConditionalEvent').checked;
       const conditionTrigger = hasConditionalEvent ? document.getElementById('conditionTrigger').value.trim() : '';
       const conditionEffect = hasConditionalEvent ? document.getElementById('conditionEffect').value.trim() : '';
-
       const cardObj = {
         id: id || crypto.randomUUID(),
         cardCode,
@@ -2187,6 +1167,9 @@
       saveToStorage();
       closeModal();
       renderCards();
+      triggerStatPop('statUnique');
+      triggerStatPop('statOwned');
+      triggerStatPop('statLeft');
     }
     function deleteCard(id) {
       if (confirm('Delete this card?')) {
@@ -2199,7 +1182,6 @@
       const num = parseFloat(String(val || '').replace(/[^0-9.-]/g, ''));
       return Number.isNaN(num) ? 0 : num;
     }
-
     /* Legends of Steel and Silk Card Role Helpers */
     function isCardUnique(card) {
       const rarityLower = (card.rarity || '').toLowerCase();
@@ -2227,25 +1209,21 @@
     function isStarterRoleCard(card) {
       return isCardLeader(card) || isCardCapital(card);
     }
-
     /* Reads Restriction, Ability, Conditional Event, and Special under LSS Rules */
     function analyzeCardTextForDeck(card, selectedNation, style, promptText) {
       let textScore = 0;
       const reasons = [];
-
       const restrictionText = (card.restriction || '').trim();
       const abilityText = (card.ability || '').trim();
       const hasCond = Boolean(card.hasConditionalEvent && (card.conditionTrigger || card.conditionEffect));
       const condTriggerText = hasCond ? (card.conditionTrigger || '').trim() : '';
       const condEffectText = hasCond ? (card.conditionEffect || '').trim() : '';
       const specialText = (card.special || '').trim();
-
       const rLower = restrictionText.toLowerCase();
       const aLower = abilityText.toLowerCase();
       const cLower = `${condTriggerText} ${condEffectText}`.toLowerCase();
       const sLower = specialText.toLowerCase();
       const combinedMechanics = `${aLower} ${cLower} ${sLower}`;
-
       // 1. Read Card Restriction (LSS row/movement/pacifist/unique rules)
       if (restrictionText) {
         if (rLower.includes('cannot attack') || rLower.includes("can't attack") || rLower.includes('pacifist')) {
@@ -2259,27 +1237,22 @@
           reasons.push('Back row placement');
         }
       }
-
       // 2. Read Ability, Conditional Event & Special for LSS Keywords, Types & Win Paths
       const aggroTerms = ['attack', 'atk', 'strength', 'damage', 'strike', 'breach', 'ranged', 'must attack', 'steel'];
       const controlTerms = ['defense', 'def', 'heal', 'restore', 'guard', 'pacifist', 'back row', 'adjacent', 'behind', 'beside'];
       const manaTerms = ['resource', 'resources', 'silk', 'heritage', 'threshold', 'reincarnate', 'draw', 'shudra', 'vaisya', 'legend'];
-
       const countMatches = (str, terms) => terms.reduce((acc, t) => acc + (str.includes(t) ? 1 : 0), 0);
-
       if (abilityText) {
         textScore += 6;
         if (style === 'aggro') textScore += countMatches(aLower, aggroTerms) * 6;
         if (style === 'control') textScore += countMatches(aLower, controlTerms) * 6;
         if (style === 'mana') textScore += countMatches(aLower, manaTerms) * 6;
       }
-
       if (hasCond) {
         textScore += 10;
         if (style === 'aggro') textScore += countMatches(cLower, aggroTerms) * 6;
         if (style === 'control') textScore += countMatches(cLower, controlTerms) * 6;
         if (style === 'mana') textScore += countMatches(cLower, manaTerms) * 7;
-
         if (cLower.includes('heritage') || cLower.includes('threshold')) {
           textScore += 10;
           reasons.push('Advances Legend Victory threshold');
@@ -2296,7 +1269,6 @@
         }
         reasons.push(`Condition: ${condTriggerText || 'trigger'} → ${condEffectText || 'effect'}`);
       }
-
       if (specialText) {
         textScore += 7;
         if (style === 'aggro') textScore += countMatches(sLower, aggroTerms) * 5;
@@ -2307,7 +1279,6 @@
           reasons.push('LSS positional synergy');
         }
       }
-
       // 3. Match user prompt keywords (e.g., Shudra, Vaisya, Scholar, Kshatriya, Breach, Ranged)
       let promptMatched = false;
       if (promptText) {
@@ -2320,7 +1291,6 @@
         }
         if (promptMatched) reasons.push('Matches LSS deck prompt');
       }
-
       if (reasons.length === 0) {
         if (hasCond && abilityText) reasons.push('Ability + Condition synergy');
         else if (hasCond) reasons.push(`Condition (${condTriggerText || condEffectText})`);
@@ -2329,13 +1299,11 @@
         else if (restrictionText) reasons.push(`Restriction: ${restrictionText.slice(0, 60)}${restrictionText.length > 60 ? '…' : ''}`);
         else reasons.push('Faction & resource curve fit');
       }
-
       return {
         textScore,
         reason: reasons.slice(0, 2).join(' • ')
       };
     }
-
     function scoreCardForDeck(card, selectedNation, style, promptText) {
       let score = 50;
       const left = Math.max(0, card.owned - card.used);
@@ -2347,10 +1315,8 @@
         else if (cardNation === 'Universal') score += 18;
       }
       if (card.rarity === 'Secret' || card.rarity === 'Ultrarare' || card.rarity === 'Unique') score += 10;
-
       const textEval = analyzeCardTextForDeck(card, selectedNation, style, promptText);
       score += textEval.textScore;
-
       const atk = parseStatNumber(card.attack);
       const def = parseStatNumber(card.defense);
       const manaVal = Number(card.manaValue) || 0;
@@ -2365,7 +1331,6 @@
       } else {
         score += (atk + def) * 0.8;
       }
-
       if (promptText) {
         const keywords = promptText.toLowerCase().split(/\W+/).filter(w => w.length > 2);
         const haystack = `${card.cardCode || ''} ${card.name} ${card.cardType} ${card.nation} ${card.rarity} ${card.isToken ? 'token' : ''}`.toLowerCase();
@@ -2376,13 +1341,11 @@
       score += Math.random() * 4;
       return score;
     }
-
     async function generateAIDeck() {
       if (cards.length === 0) {
         alert('Add some cards to your collection first so the AI Deck Builder can build an LSS deck!');
         return;
       }
-
       const nationSetting = document.getElementById('aiNation').value;
       const starterPref = document.getElementById('aiStarterType').value;
       const style = document.getElementById('aiStyle').value;
@@ -2395,7 +1358,6 @@
       const promptText = document.getElementById('aiPrompt').value.trim();
       const useGemini = document.getElementById('useGeminiToggle').checked;
       const geminiKey = document.getElementById('geminiApiKey').value.trim();
-
       let tokenFiltered = cards.filter(c => {
         if (tokenMode === 'only') return Boolean(c.isToken);
         if (tokenMode === 'exclude') return !c.isToken;
@@ -2404,7 +1366,6 @@
       if (tokenFiltered.length === 0) {
         tokenFiltered = [...cards];
       }
-
       // 1. Resolve single Faction (+ Neutral/Universal)
       let activeNation = nationSetting;
       if (nationSetting === 'Auto') {
@@ -2428,22 +1389,18 @@
           activeNation = nonUniversalNations[0];
         }
       }
-
       const nationLegalPool = tokenFiltered.filter(c => {
         const n = c.nation || 'Universal';
         if (activeNation === 'Universal') return n === 'Universal';
         return n === activeNation || n === 'Universal';
       });
-
       // 2. Pick Starting Leader or Capital (begins in play, does NOT count toward the 15-card main deck)
       const leadersPool = nationLegalPool
         .filter(isCardLeader)
         .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-
       const capitalsPool = nationLegalPool
         .filter(isCardCapital)
         .sort((a, b) => scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText));
-
       let starterCard = null;
       let starterRoleLabel = 'Leader';
       if (starterPref === 'capital') {
@@ -2462,7 +1419,6 @@
         }
       }
       lastStarterCard = starterCard ? { card: starterCard, role: starterRoleLabel } : null;
-
       // LSS Rule: If starting with a Leader, at most 1 Capital of matching faction in deck (and 0 Leaders in deck).
       // If starting with a Capital, at most 1 Leader of matching faction in deck (and 0 Capitals in deck).
       const starterIsCapital = starterCard ? isCardCapital(starterCard) : false;
@@ -2473,7 +1429,6 @@
         const sNation = starterCard ? (starterCard.nation || 'Universal') : activeNation;
         return sNation === 'Universal' || cNation === 'Universal' || cNation === sNation;
       });
-
       const mainDeckPool = nationLegalPool
         .filter(c => {
           if (starterCard && c.id === starterCard.id) return false;
@@ -2488,21 +1443,17 @@
           if (aOpp !== bOpp) return bOpp - aOpp;
           return scoreCardForDeck(b, activeNation, style, promptText) - scoreCardForDeck(a, activeNation, style, promptText);
         });
-
       const pickedMap = new Map();
       let totalPicked = 0;
       const warnings = [];
-
       if (!starterCard) {
         warnings.push(`Missing Starting Leader or Capital: No Leader or Capital card found for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`}. Add a card with Rarity "Leader" or Type "Capital" to begin play.`);
       }
-
       const getCardCap = (card) => {
         if (isCardUnique(card)) return 1;
         if (isStarterRoleCard(card)) return 1;
         return Math.min(3, maxCopies);
       };
-
       // Pass 1: Fill main deck from available remaining stock
       for (const card of mainDeckPool) {
         if (totalPicked >= deckSize) break;
@@ -2517,7 +1468,6 @@
           totalPicked += addCount;
         }
       }
-
       // Pass 2: If still under deckSize, fill up to cardCap from legal faction pool
       if (totalPicked < deckSize) {
         for (const card of mainDeckPool) {
@@ -2538,20 +1488,16 @@
           }
         }
       }
-
       if (totalPicked < 15) {
         warnings.push(`LSS 15-Card Main Deck Minimum: Only ${totalPicked} legal card(s) could be placed in the main deck for ${activeNation === 'Universal' ? 'Universal' : `${activeNation} + Universal`} (Unique cards max 1, standard cards max 3, starting Leader/Capital is separate).`);
       }
-
       lastGeneratedDeck = [...pickedMap.values()];
       document.getElementById('aiDeckResult').classList.remove('hidden');
-
       const nationTitle = activeNation === 'Universal' ? 'Neutral / Universal' : `${activeNation} + Universal`;
       document.getElementById('generatedDeckTitle').textContent =
         `${nationTitle} — ${style.charAt(0).toUpperCase() + style.slice(1)} Deck`;
       document.getElementById('generatedDeckSummary').textContent =
         `${totalPicked} main-deck cards (excl. starter) • Max 3 copies (Unique: 1)`;
-
       const starterBanner = document.getElementById('aiStarterBanner');
       if (starterCard) {
         starterBanner.classList.remove('hidden');
@@ -2560,7 +1506,6 @@
       } else {
         starterBanner.classList.add('hidden');
       }
-
       const warningBox = document.getElementById('aiRuleWarnings');
       if (warnings.length > 0) {
         warningBox.classList.remove('hidden');
@@ -2569,12 +1514,10 @@
         warningBox.classList.add('hidden');
         warningBox.innerHTML = '';
       }
-
       const strategyBox = document.getElementById('aiStrategyNote');
       strategyBox.classList.remove('hidden');
       strategyBox.innerHTML = `<i class="fa-solid fa-book mr-1.5 text-fuchsia-400"></i> <strong>LSS Rule & Card-Text Engine:</strong> Built a ${totalPicked}-card ${nationTitle} main deck around starting ${starterCard ? escapeHTML(starterCard.name) : 'card'}, checking Restrictions, Abilities, Conditional Events, and Special mechanics for Steel, Legend, and Silk win paths.`;
       renderGeneratedDeckList();
-
       if (useGemini && geminiKey) {
         strategyBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5 text-fuchsia-400"></i> Asking Gemini to analyze your LSS deck under Legends of Steel and Silk rules...`;
         try {
@@ -2638,17 +1581,16 @@
         }
       }
     }
-
     function renderGeneratedDeckList() {
       const container = document.getElementById('generatedDeckCards');
-      container.innerHTML = lastGeneratedDeck.map(({ card, count, reason }) => {
+      container.innerHTML = lastGeneratedDeck.map(({ card, count, reason }, idx) => {
         const left = Math.max(0, card.owned - card.used);
         const shortage = count > left;
         const uniqueFlag = isCardUnique(card);
         const leaderFlag = isCardLeader(card);
         const capitalFlag = isCardCapital(card);
         return `
-          <div class="p-3 flex items-start justify-between gap-3 text-xs">
+          <div style="animation-delay: ${Math.min(idx * 35, 350)}ms" class="animate-card-enter p-3 flex items-start justify-between gap-3 text-xs">
             <div class="min-w-0 space-y-1">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">${count}x</span>
@@ -2704,9 +1646,10 @@
       saveToStorage();
       renderCards();
       renderGeneratedDeckList();
+      triggerStatPop('statUsed');
+      triggerStatPop('statLeft');
       alert('Updated "Used" counts on your cards (capped at Total Owned).');
     }
-
     /* Export & Print Functions */
     function getFilteredCards() {
       const query = document.getElementById('searchInput').value.toLowerCase();
@@ -2717,7 +1660,6 @@
       const typeFilter = document.getElementById('filterType').value;
       const manaFilter = document.getElementById('filterMana').value;
       const conditionFilter = document.getElementById('filterCondition').value;
-
       return cards.filter(c => {
         const left = Math.max(0, c.owned - c.used);
         const matchesQuery = (c.cardCode && c.cardCode.toLowerCase().includes(query)) ||
@@ -2748,14 +1690,12 @@
         return matchesQuery && matchesNation && matchesRarity && matchesToken && matchesStock && matchesType && matchesMana && matchesCondition;
       });
     }
-
     function printCards(singleCardId = null) {
       const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
       if (!targetCards.length) {
         alert('No cards available to print or save as PDF.');
         return;
       }
-
       document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
       if (singleCardId) {
         document.body.classList.add('print-single-mode');
@@ -2764,13 +1704,10 @@
       } else {
         document.body.classList.remove('print-single-mode');
       }
-
       window.print();
-
       document.body.classList.remove('print-single-mode');
       document.querySelectorAll('.card-item').forEach(el => el.classList.remove('print-target'));
     }
-
     function exportToExcel(singleCardId = null) {
       const targetCards = singleCardId ? cards.filter(c => c.id === singleCardId) : getFilteredCards();
       if (!targetCards.length) {
@@ -2781,13 +1718,11 @@
         alert('Excel export library failed to load. Check your internet connection and reload.');
         return;
       }
-
       const rows = targetCards.map(c => {
         const left = Math.max(0, (c.owned || 0) - (c.used || 0));
         const manaText = (!c.manaAction || c.manaAction === 'none')
           ? 'None'
           : `${c.manaAction === 'add' ? '+' : '-'}${c.manaValue || 0}`;
-
         return {
           'Card ID': c.cardCode || '',
           'Card Name': c.name || '',
@@ -2809,7 +1744,6 @@
           'Image URL': (c.image && c.image.startsWith('http')) ? c.image : (c.image ? '[Embedded Photo]' : '')
         };
       });
-
       const worksheet = XLSX.utils.json_to_sheet(rows);
       worksheet['!cols'] = [
         { wch: 14 }, { wch: 24 }, { wch: 18 }, { wch: 13 }, { wch: 13 }, { wch: 10 },
@@ -2817,17 +1751,13 @@
         { wch: 28 }, { wch: 32 }, { wch: 28 }, { wch: 12 }, { wch: 14 },
         { wch: 14 }, { wch: 24 }
       ];
-
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Cards');
-
       const safeName = singleCardId
         ? `${(targetCards[0].cardCode || targetCards[0].name || 'card').replace(/[^a-z0-9-_]/gi, '_')}.xlsx`
         : `lss-cards-${new Date().toISOString().slice(0, 10)}.xlsx`;
-
       XLSX.writeFile(workbook, safeName);
     }
-
     function exportData() {
       const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -2886,7 +1816,6 @@
       document.getElementById('statOwned').textContent = totalOwned;
       document.getElementById('statUsed').textContent = totalUsed;
       document.getElementById('statLeft').textContent = totalLeft;
-
       const filtered = getFilteredCards();
       if (filtered.length === 0) {
         grid.innerHTML = '';
@@ -2894,13 +1823,14 @@
         return;
       }
       empty.classList.add('hidden');
-      grid.innerHTML = filtered.map(card => {
+      grid.innerHTML = filtered.map((card, idx) => {
         const left = Math.max(0, card.owned - card.used);
         const hasCombatStats = card.attack !== '' || card.defense !== '';
         const nationLabel = card.nation || 'Universal';
         const rarityLabel = card.rarity || 'None';
+        const animDelay = Math.min(idx * 45, 450);
         return `
-          <div id="card-${card.id}" class="card-item bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between transition hover:-translate-y-1">
+          <div id="card-${card.id}" style="animation-delay: ${animDelay}ms" class="card-item animate-card-enter bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between">
             <div class="px-4 py-3 bg-slate-950/70 print-surface border-b border-slate-800 flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
@@ -2984,53 +1914,36 @@
                   <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
                     <span class="text-slate-400">Owned:</span>
                     <div class="flex items-center gap-1.5">
-                      <button onclick="adjustCount('${card.id}', 'owned', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
+                      <button onclick="adjustCount('${card.id}', 'owned', -1)" class="btn-animated w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
                       <span class="font-bold w-4 text-center text-white">${card.owned}</span>
-                      <button onclick="adjustCount('${card.id}', 'owned', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
+                      <button onclick="adjustCount('${card.id}', 'owned', 1)" class="btn-animated w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
                     </div>
                   </div>
                   <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
                     <span class="text-slate-400">Used:</span>
                     <div class="flex items-center gap-1.5">
-                      <button onclick="adjustCount('${card.id}', 'used', -1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
+                      <button onclick="adjustCount('${card.id}', 'used', -1)" class="btn-animated w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">-</button>
                       <span class="font-bold w-4 text-center text-amber-400">${card.used}</span>
-                      <button onclick="adjustCount('${card.id}', 'used', 1)" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
+                      <button onclick="adjustCount('${card.id}', 'used', 1)" class="btn-animated w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 font-bold">+</button>
                     </div>
                   </div>
                 </div>
                 <div class="flex justify-between items-center pt-1 text-xs">
                   <span class="text-slate-500">${card.owned} owned &minus; ${card.used} used</span>
                   <div class="flex items-center gap-2.5 no-print">
-                    <button onclick="printCards('${card.id}')" title="Print or Save Card as PDF" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
+                    <button onclick="printCards('${card.id}')" title="Print or Save Card as PDF" class="btn-animated text-rose-400 hover:text-rose-300 flex items-center gap-1">
                       <i class="fa-solid fa-file-pdf"></i>
                     </button>
-                    <button onclick="exportToExcel('${card.id}')" title="Export Card to Excel" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                    <button onclick="exportToExcel('${card.id}')" title="Export Card to Excel" class="btn-animated text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
                       <i class="fa-solid fa-file-excel"></i>
                     </button>
-                    <button onclick="openModal('${card.id}')" class="text-slate-400 hover:text-white flex items-center gap-1">
+                    <button onclick="openModal('${card.id}')" class="btn-animated text-slate-400 hover:text-white flex items-center gap-1">
                       <i class="fa-solid fa-pen"></i> Edit
                     </button>
-                    <button onclick="deleteCard('${card.id}')" class="text-slate-400 hover:text-rose-400 flex items-center gap-1">
+                    <button onclick="deleteCard('${card.id}')" class="btn-animated text-slate-400 hover:text-rose-400 flex items-center gap-1">
                       <i class="fa-solid fa-trash"></i> Delete
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    function escapeHTML(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[tag]));
-    }
-    renderCards();
-  </script>
-</body>
-</html>
                 </div>
               </div>
             </div>
